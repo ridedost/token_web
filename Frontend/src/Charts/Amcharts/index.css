@@ -1,0 +1,118 @@
+.bar-charts {
+  width: 100%;
+  height: 420px;
+}
+.bar-heading {
+  min-width: 425px;
+  width: 100%;
+  height: 18%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.bar-text > p {
+  margin-bottom: 0;
+  color: var(--card-heading-color);
+  font-weight: 500;
+}
+
+.bar-text > h3 {
+  font-weight: 700;
+  color: #1b2559;
+  font-size: xx-large;
+}
+
+.bar-dotted-line {
+  min-width: 380px;
+  width: 95%;
+  height: 2px;
+  margin-top: 45px;
+  background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' stroke='%233574F2FF' stroke-width='4' stroke-dasharray='6%2c 18' stroke-dashoffset='0' stroke-linecap='square'/%3e%3c/svg%3e");
+  position: relative;
+}
+
+.bar-dotted-line > p {
+  position: absolute;
+  top: -14px;
+  right: -40px;
+  color: var(--color-secondary-variant);
+  font-weight: 500;
+}
+
+.bar-chart {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  height: 204px;
+  width: 100%;
+}
+
+.bar {
+  min-width: 20px;
+  max-width: 45px;
+  width: 100%;
+  background-color: #e9edf7;
+  margin: 0 8px;
+  position: relative;
+  transition: height 0.3s ease-in-out;
+  border-radius: 8px;
+}
+
+.max-bar {
+  background-color: var(--color-primary);
+}
+
+.bar-label {
+  text-align: center;
+  margin-top: 8px;
+  font-size: 15px;
+  font-weight: bold;
+  position: absolute;
+  bottom: -25px;
+  font-weight: 500;
+  color: var(--card-heading-color);
+  display: flex;
+  justify-content: center;
+  max-width: 45px;
+  width: 100%;
+}
+
+.bar-value {
+  position: absolute;
+  bottom: -25px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 12px;
+  display: none;
+}
+
+@media (max-width: 527px) {
+  .bar-charts {
+    max-width: 426px;
+    overflow: auto;
+  }
+}
+
+@media (max-width: 425px) {
+  .bar-charts {
+    max-width: 318px;
+    width: 100%;
+    overflow: auto;
+  }
+}
+
+@media (max-width: 375px) {
+  .bar-charts {
+    max-width: 285px;
+    width: 100%;
+    overflow: auto;
+  }
+}
+
+@media (max-width: 320px) {
+  .bar-charts {
+    max-width: 230px;
+    width: 100%;
+    overflow: auto;
+  }
+}

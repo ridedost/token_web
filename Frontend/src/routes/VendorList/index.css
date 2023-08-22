@@ -1,0 +1,81 @@
+.drop-down {
+  inset: 40px auto auto 0px !important;
+  width: 120px !important;
+}
+
+.drop-up {
+  inset: -57px auto auto 0px !important;
+  width: 120px !important;
+}
+
+.dropdown-toggle {
+  border: 0;
+  width: 160px;
+  height: 40px;
+  border-radius: 34px;
+}
+
+.dropdown-pending {
+  background: var(--pendign-light-color);
+  color: var(--pendign-solid-color);
+}
+
+.dropdown-reject {
+  background: var(--reject-light-color);
+  color: var(--reject-solid-color);
+}
+
+.dropdown-approve {
+  background: var(--approve-light-color);
+  color: var(--approve-solid-color);
+}
+
+.dropdown-item {
+  max-height: 190px;
+  height: 100%;
+  padding: 8px 20px;
+  justify-content: center;
+
+  font-size: medium;
+  border-radius: 37px;
+}
+
+.dropdown-color-approve {
+  background: var(--approve-light-color);
+  color: var(--approve-solid-color);
+}
+
+.dropdown-color-approve:hover {
+  background: var(--approve-light-color);
+  color: var(--approve-solid-color);
+}
+
+.dropdown-color-reject {
+  background: var(--reject-light-color);
+  color: var(--reject-solid-color);
+}
+
+.dropdown-color-reject:hover {
+  background: var(--reject-light-color);
+  color: var(--reject-solid-color);
+}
+
+.dropdown-color-pending {
+  background: var(--pendign-light-color);
+  color: var(--pendign-solid-color);
+}
+
+.dropdown-color-pending:hover {
+  background: var(--pendign-light-color);
+  color: var(--pendign-solid-color);
+}
+
+.dropdown-color-edit {
+  background: #a8aefd;
+  color: #5c07fa;
+}
+
+.dropdown-color-edit:hover {
+  background: #a8aefd;
+  color: #5c07fa;
+}

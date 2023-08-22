@@ -1,0 +1,261 @@
+.wizard {
+  max-width: 1100px;
+  width: 100%;
+  height: 600px;
+  border-radius: 20px;
+  box-shadow: 0px 5px 16px 0px #080f340f;
+  background: var(--color-white);
+  border: 1px solid #eff0f6;
+  padding: 35px;
+}
+
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  word-wrap: break-word;
+  background-color: var(--color-white);
+  background-clip: border-box;
+  border: 0 solid var(--color-background);
+  border-radius: 0.25rem;
+}
+
+.card-body {
+  padding-inline: 55px;
+}
+
+.card-title {
+  font-size: 18px;
+  margin: 0 0 7px;
+  font-weight: 500;
+}
+
+.mb-4 {
+  margin-bottom: 1.5rem !important;
+}
+
+.twitter-bs-wizard .twitter-bs-wizard-nav {
+  position: relative;
+}
+
+.nav {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-wrap: wrap;
+  flex-wrap: wrap;
+  padding-left: 0;
+  margin-bottom: 0;
+  list-style: none;
+}
+
+.twitter-bs-wizard .twitter-bs-wizard-nav .nav-link.active {
+  background-color: transparent;
+  color: var(--light-grey);
+}
+
+.nav-fill .nav-item .nav-link,
+.nav-justified .nav-item .nav-link {
+  width: 100%;
+}
+
+.nav-pills .nav-link.active,
+.nav-pills .show > .nav-link {
+  color: var(--color-white);
+  background-color: var(--light-primary);
+}
+
+.nav-pills .nav-link {
+  background: none;
+  border: 0;
+  border-radius: 0.25rem;
+}
+
+.nav-pills > a,
+.nav-pills > li > a,
+.nav-tabs > li > a {
+  color: var(--light-grey);
+  font-weight: 500;
+}
+
+.nav-link {
+  cursor: pointer;
+}
+
+.nav-link {
+  display: block;
+  padding: 0.5rem 1rem;
+  color: var(--light-primary);
+  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out,
+    border-color 0.15s ease-in-out;
+}
+
+.twitter-bs-wizard .twitter-bs-wizard-nav .nav-link.active .step-number {
+  background-color: #006cff;
+  color: var(--color-white);
+}
+
+.twitter-bs-wizard .twitter-bs-wizard-nav .step-number {
+  display: inline-block;
+  width: 45px;
+  height: 45px;
+  line-height: 40px;
+  border: 0;
+  color: #6f6c90;
+  text-align: center;
+  border-radius: 50%;
+  position: relative;
+  background-color: #eff0f6;
+  font-size: x-large;
+}
+
+.twitter-bs-wizard .twitter-bs-wizard-nav .nav-link .step-title {
+  display: block;
+  margin-top: 8px;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.twitter-bs-wizard-tab-content {
+  padding-top: 45px;
+  min-height: 262px;
+}
+
+.twitter-bs-wizard .twitter-bs-wizard-pager-link {
+  padding-top: 24px;
+  padding-left: 0;
+  list-style: none;
+  margin-bottom: 0;
+  display: flex;
+  justify-content: space-between;
+}
+
+.text-muted {
+  color: var(--color-white) !important;
+}
+
+.nav-item > span {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+span > .empty-line {
+  position: relative;
+}
+
+span > .half-line {
+  position: absolute;
+  top: 28px;
+  left: 186px;
+}
+
+.details-margin-top {
+  margin-top: 100px;
+}
+
+.submit-request {
+  width: 100%;
+  height: 375px;
+  padding: 0px 120px;
+}
+
+.button-go {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  max-width: 1100px;
+  width: 100%;
+  padding: 20px 0px;
+}
+
+.button-go > .primary-button {
+  max-width: 165px;
+  width: 100%;
+  height: 60px;
+  border-radius: 56px;
+  padding: 20px, 40px, 21px, 40px;
+  box-shadow: var(--box-shadow-light-blue);
+  background: var(--color-secondary-variant);
+  border: 0;
+  color: var(--color-white);
+}
+/* media query here */
+@media (max-width: 1200px) {
+  .submit-request {
+    width: 100%;
+    height: 375px;
+    padding: 0px 45px;
+  }
+}
+
+@media (max-width: 1120px) {
+  .details-margin-top {
+    margin-top: 5px;
+  }
+  .twitter-bs-wizard-tab-content {
+    padding-top: 5px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .submit-request {
+    width: 100%;
+    height: 375px;
+    padding: 0px 0px;
+  }
+}
+@media (max-width: 992px) {
+  .details-margin-top {
+    margin-top: 50px;
+  }
+
+  .twitter-bs-wizard-tab-content {
+    padding-top: 45px;
+  }
+
+  .submit-request {
+    width: 100%;
+    height: 375px;
+    padding: 0px 90px;
+  }
+}
+
+@media (max-width: 767px) {
+  .details-margin-top {
+    margin-top: 25px;
+  }
+  .twitter-bs-wizard-tab-content {
+    padding-top: 5px;
+  }
+
+  .wizard {
+    padding: 10px;
+  }
+  .submit-request {
+    width: 100%;
+    height: 375px;
+    padding: 0px 0px;
+  }
+}
+@media (max-width: 500px) {
+  .twitter-bs-wizard .twitter-bs-wizard-pager-link {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .save-btn {
+    margin-top: 10px !important;
+  }
+}
+
+@media (max-width: 456px) {
+  .card-body {
+    padding-inline: 0px;
+  }
+}
+
+@media (max-width: 375px) {
+  .wizard {
+    padding: 15px;
+  }
+}

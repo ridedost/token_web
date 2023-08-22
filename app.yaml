@@ -1,0 +1,16 @@
+runtime: nodejs16
+env: standard
+instance_class: F1
+handlers:
+  - url: .*
+    script: auto
+env_variables:
+  INSTANCE_HOST: 35.200.243.143
+  INSTANCE_PORT: '3306'
+  NODE_ENV: DEV
+automatic_scaling:
+  min_idle_instances: automatic
+  max_idle_instances: automatic
+  min_pending_latency: automatic
+  max_pending_latency: automatic
+service_account: token-web-394211@appspot.gserviceaccount.com

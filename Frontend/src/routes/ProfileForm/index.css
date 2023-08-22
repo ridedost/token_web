@@ -1,0 +1,188 @@
+.form-container {
+  box-shadow: var(--box-shadow-color);
+  width: 100%;
+  padding: 20px;
+  background: var(--color-white);
+  margin-top: 40px;
+  animation-name: DropDownSlide;
+  animation-duration: 0.3s;
+  animation-fill-mode: both;
+}
+
+.form-row {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  padding-bottom: 20px;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.form-col {
+  width: 54%;
+  position: relative;
+}
+
+.form-col-left {
+  width: 42%;
+  position: relative;
+}
+
+.form-col > .fileChange {
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  z-index: 2;
+}
+
+.form-col > input {
+  padding: 10px 0px 10px 10px;
+  height: 65px;
+  border-radius: 15px;
+  border: var(--border-light);
+  outline: 0;
+  font-size: larger;
+}
+
+.form-col > img {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 65px;
+}
+
+.form-col-left > .fileChange {
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  z-index: 2;
+}
+
+.form-col-left > input {
+  padding: 10px 0px 10px 10px;
+  height: 65px;
+  border-radius: 15px;
+  border: 1.21px solid #d5d2dc;
+  outline: 0;
+  font-size: larger;
+}
+
+.form-col-left > img {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 65px;
+}
+
+.form-col-left > input {
+  padding: 10px 0px 10px 10px;
+  height: 65px;
+  border-radius: 15px;
+  border: var(--border-light);
+  outline: 0;
+  font-size: larger;
+}
+
+.form-group-row {
+  padding-bottom: 20px;
+}
+.form-group-row > input {
+  width: 100%;
+  padding: 10px 0px 10px 10px;
+  height: 55px;
+  border: var(--border-light);
+  outline: 0;
+  border-radius: 10px;
+}
+#firstName,
+#lastName {
+  width: 100%;
+  max-width: 800px;
+}
+.btn-center {
+  display: flex;
+  justify-content: center;
+}
+
+.save-btn {
+  border-radius: 6px;
+  border: 1px solid var(--color-info-dark);
+  padding: 12px 28px;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  margin-right: 10px;
+  outline: none;
+  transition: all 0.3s ease;
+  background: var(--color-primary);
+  color: var(--color-white);
+  border: 0;
+}
+.save-btn:hover {
+  background: var(--color-secondary-variant);
+}
+
+.save-btn:disabled {
+  background-color: var(--color-background);
+  color: var(--color-dark-varient);
+  box-shadow: var(--box-shadow-color);
+}
+
+/* media query here */
+
+@media (max-width: 1120px) {
+  .form-row {
+    flex-direction: column;
+    padding-bottom: 0px;
+  }
+
+  .form-col {
+    width: 100%;
+    padding-bottom: 20px;
+  }
+
+  .form-col-left {
+    width: 100%;
+    padding-bottom: 20px;
+  }
+}
+
+@media (max-width: 992px) {
+  .form-row {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    padding-bottom: 20px;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+
+  .form-col {
+    width: 54%;
+    position: relative;
+  }
+
+  .form-col-left {
+    width: 42%;
+  }
+}
+
+@media (max-width: 767px) {
+  .form-row {
+    flex-direction: column;
+    padding-bottom: 0px;
+  }
+
+  .form-col {
+    width: 100%;
+    padding-bottom: 20px;
+  }
+
+  .form-col-left {
+    width: 100%;
+    padding-bottom: 20px;
+  }
+}

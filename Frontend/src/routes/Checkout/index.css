@@ -1,0 +1,293 @@
+.checkout-page {
+  width: 100%;
+  height: 100%;
+  padding-inline: 200px;
+}
+
+.checkout-container {
+  width: 100%;
+  height: 100%;
+  box-shadow: var(--box-shadow-color);
+  background: var(--color-white);
+  padding: 100px 150px;
+  border-radius: 15px;
+}
+
+.checkout-container > form {
+  margin-top: 40px;
+}
+
+form > .phone-number {
+  width: 100%;
+  height: 100px;
+}
+
+.phone-number {
+  width: 100%;
+  height: 100px;
+  display: flex;
+  flex-direction: column;
+}
+
+.phone-number > label {
+  font-weight: 500;
+  margin-bottom: 10px;
+  font-size: larger;
+}
+
+.phone-number > input {
+  border: var(--border-antique);
+  border-radius: 6px;
+  height: 50px;
+  font-weight: 400;
+  padding-inline: 15px;
+}
+
+.mid-input-field {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.mid-input-field > .amount {
+  width: 49%;
+  height: 100px;
+  display: flex;
+  flex-direction: column;
+}
+.mid-input-field > .coupon-code {
+  width: 49%;
+  height: 100px;
+  display: flex;
+  flex-direction: column;
+}
+
+.amount > label {
+  font-weight: 500;
+  margin-bottom: 10px;
+  font-size: larger;
+}
+
+.amount > input {
+  border: var(--border-antique);
+  border-radius: 6px;
+  height: 50px;
+  font-weight: 400;
+  padding-inline: 15px;
+}
+
+.coupon-code > label {
+  font-weight: 500;
+  margin-bottom: 10px;
+  font-size: larger;
+}
+
+.coupon-code > input {
+  border: var(--border-antique);
+  border-radius: 6px;
+  height: 50px;
+  font-weight: 400;
+  padding-inline: 15px;
+}
+
+.button-container {
+  width: 100%;
+  height: 100px;
+  margin-top: 35px;
+}
+
+.button-container > button {
+  background: var(--color-secondary-variant);
+  color: var(--color-white);
+  border: 0;
+  width: 100%;
+  height: 60px;
+  border-radius: 8px;
+  font-size: large;
+}
+
+.button-container > p {
+  padding-top: 20px;
+  color: var(--color-antique);
+  font-weight: 400;
+  font-size: large;
+}
+.coupon-code {
+  position: relative;
+}
+
+.coupon-code > label > span {
+  color: #888888;
+  font-size: initial;
+}
+.coupon-code > span {
+  position: absolute;
+  top: 51px;
+  right: 12px;
+}
+
+@media (max-width: 1866px) {
+  .checkout-container {
+    padding: 45px 120px;
+  }
+}
+
+@media (max-width: 1500px) {
+  .checkout-container {
+    padding: 45px 60px;
+  }
+  .button-container > p {
+    padding-top: 20px;
+    color: var(--color-antique);
+    font-weight: 400;
+    font-size: initial;
+  }
+}
+
+@media (max-width: 1380px) {
+  .checkout-page {
+    padding-inline: 50px;
+  }
+
+  .checkout-container {
+    padding: 25px 60px;
+  }
+  .checkout-container > form {
+    margin-top: 20px;
+  }
+  .mid-input-field {
+    flex-direction: column;
+  }
+
+  .mid-input-field > .amount {
+    width: 100%;
+  }
+
+  .mid-input-field > .coupon-code {
+    width: 100%;
+  }
+}
+
+@media (max-width: 1200px) {
+  .checkout-page {
+    padding-inline: 0px;
+  }
+
+  .checkout-container {
+    padding: 10px 60px;
+  }
+
+  .mid-input-field {
+    flex-direction: column;
+  }
+
+  .mid-input-field > .amount {
+    width: 100%;
+  }
+
+  .mid-input-field > .coupon-code {
+    width: 100%;
+  }
+  .button-container > p {
+    padding-top: 20px;
+  }
+}
+
+@media (max-width: 992px) {
+  .checkout-container {
+    padding: 65px 60px;
+  }
+  .mid-input-field {
+    flex-direction: row;
+  }
+
+  .mid-input-field > .amount {
+    width: 49%;
+  }
+
+  .mid-input-field > .coupon-code {
+    width: 49%;
+  }
+
+  .checkout-page {
+    padding-inline: 50px;
+  }
+}
+
+@media (max-width: 768px) {
+  .checkout-container {
+    padding: 10px 60px;
+  }
+  .phone-number > input {
+    padding-inline: 15px;
+  }
+
+  .mid-input-field {
+    flex-direction: column;
+  }
+
+  .mid-input-field > .amount {
+    width: 100%;
+  }
+
+  .mid-input-field > .coupon-code {
+    width: 100%;
+  }
+
+  .checkout-page {
+    padding-inline: 50px;
+  }
+}
+
+@media (max-width: 640px) {
+  .checkout-container {
+    padding: 35px 10px;
+  }
+  .checkout-page {
+    padding-inline: 5px;
+  }
+}
+
+@media (max-width: 580px) {
+  .checkout-container > form {
+    margin-top: 5px;
+  }
+}
+
+@media (max-width: 510px) {
+  .checkout-container > form {
+    margin-top: 5px;
+  }
+}
+
+@media (max-width: 425px) {
+  .checkout-page {
+    padding-inline: 0px;
+  }
+  .phone-number > input {
+    padding-inline: 15px;
+  }
+
+  .checkout-container > form {
+    margin-top: 5px;
+  }
+
+  .button-container {
+    margin-top: 15px;
+  }
+}
+
+@media (max-width: 375px) {
+  .checkout-page {
+    padding-inline: 0px;
+  }
+
+  .checkout-container > form {
+    margin-top: 5px;
+  }
+}
+
+@media (max-width: 320px) {
+  .checkout-container {
+    padding: 5px 10px;
+  }
+}

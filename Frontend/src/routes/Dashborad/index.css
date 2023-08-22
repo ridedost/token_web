@@ -1,0 +1,283 @@
+.row-table {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-gap: 25px;
+  width: 100%;
+  margin-top: 8px;
+}
+.col-table {
+  grid-column: span 1;
+}
+
+@media (max-width: 1024px) {
+  .row-table {
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    width: 100%;
+  }
+  .col-table {
+    grid-column: span 1;
+    margin-top: 20px;
+  }
+}
+
+/* /////////////////////////////////////////                                     */
+.grid-container {
+  display: grid;
+  width: 100%;
+  grid-template-columns: auto auto auto auto auto auto auto auto auto auto;
+  grid-row-gap: 20px;
+  grid-column-gap: 20px;
+}
+
+.grid-col {
+  height: 100%;
+}
+
+#div1 {
+  grid-column-start: 1;
+  grid-column-end: 9;
+}
+
+#div2 {
+  grid-column-start: 9;
+  grid-column-end: 13;
+}
+
+#div3 {
+  grid-column-start: 1;
+  grid-column-end: 5;
+}
+
+#div4 {
+  grid-column-start: 5;
+  grid-column-end: 9;
+}
+
+#div5 {
+  grid-column-start: 9;
+  grid-column-end: 13;
+}
+
+#div6 {
+  grid-column-start: 1;
+  grid-column-end: 4;
+}
+
+#div7 {
+  grid-column-start: 4;
+  grid-column-end: 7;
+}
+
+#div8 {
+  grid-column-start: 7;
+  grid-column-end: 10;
+}
+
+#div9 {
+  grid-column-start: 10;
+  grid-column-end: 13;
+}
+
+@media (max-width: 1500px) {
+  #div1 {
+    grid-column-start: 1;
+    grid-column-end: 13;
+  }
+  #div2 {
+    grid-column-start: 1;
+    grid-column-end: 7;
+  }
+
+  #div3 {
+    grid-column-start: 7;
+    grid-column-end: 13;
+  }
+  #div4 {
+    grid-column-start: 1;
+    grid-column-end: 7;
+  }
+
+  #div5 {
+    grid-column-start: 7;
+    grid-column-end: 13;
+  }
+
+  #div6 {
+    grid-column-start: 1;
+    grid-column-end: 7;
+  }
+
+  #div7 {
+    grid-column-start: 7;
+    grid-column-end: 13;
+  }
+
+  #div8 {
+    grid-column-start: 1;
+    grid-column-end: 7;
+  }
+
+  #div9 {
+    grid-column-start: 7;
+    grid-column-end: 13;
+  }
+}
+
+@media (max-width: 1200px) {
+  .grid-container {
+    grid-template-columns: auto auto auto;
+    grid-row-gap: 20px;
+    grid-column-gap: 20px;
+  }
+}
+
+@media (max-width: 1120px) {
+  #div1 {
+    grid-column-start: 1;
+    grid-column-end: 13;
+  }
+  #div2 {
+    grid-column-start: 1;
+    grid-column-end: 13;
+  }
+
+  #div3 {
+    grid-column-start: 1;
+    grid-column-end: 13;
+  }
+  #div4 {
+    grid-column-start: 1;
+    grid-column-end: 13;
+  }
+
+  #div5 {
+    grid-column-start: 1;
+    grid-column-end: 13;
+  }
+}
+
+@media (max-width: 992px) {
+  #div1 {
+    grid-column-start: 1;
+    grid-column-end: 13;
+  }
+  #div2 {
+    grid-column-start: 1;
+    grid-column-end: 7;
+  }
+
+  #div3 {
+    grid-column-start: 7;
+    grid-column-end: 13;
+  }
+  #div4 {
+    grid-column-start: 1;
+    grid-column-end: 7;
+  }
+
+  #div5 {
+    grid-column-start: 7;
+    grid-column-end: 13;
+  }
+}
+
+@media (max-width: 900px) {
+  #div1 {
+    grid-column-start: 1;
+    grid-column-end: 13;
+  }
+  #div2 {
+    grid-column-start: 1;
+    grid-column-end: 13;
+  }
+
+  #div3 {
+    grid-column-start: 1;
+    grid-column-end: 13;
+  }
+  #div4 {
+    grid-column-start: 1;
+    grid-column-end: 13;
+  }
+
+  #div5 {
+    grid-column-start: 1;
+    grid-column-end: 13;
+  }
+}
+
+@media (max-width: 768px) {
+  .grid-container {
+    grid-template-columns: auto auto;
+    grid-row-gap: 25px;
+    grid-column-gap: 25px;
+  }
+
+  #div1 {
+    grid-column-start: 1;
+    grid-column-end: 13;
+  }
+  #div2 {
+    grid-column-start: 1;
+    grid-column-end: 13;
+  }
+
+  #div3 {
+    grid-column-start: 1;
+    grid-column-end: 13;
+  }
+  #div4 {
+    grid-column-start: 1;
+    grid-column-end: 13;
+  }
+
+  #div5 {
+    grid-column-start: 1;
+    grid-column-end: 13;
+  }
+}
+
+@media (max-width: 600px) {
+  #div6 {
+    grid-column-start: 1;
+    grid-column-end: 13;
+  }
+
+  #div7 {
+    grid-column-start: 1;
+    grid-column-end: 13;
+  }
+
+  #div8 {
+    grid-column-start: 1;
+    grid-column-end: 13;
+  }
+
+  #div9 {
+    grid-column-start: 1;
+    grid-column-end: 13;
+  }
+}
+
+/* \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\   */
+
+.cards-padding {
+  padding: 15px 32px;
+}
+
+.hello-text {
+  color: var(--secondary-grey-700);
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 24px;
+  letter-spacing: -0.28px;
+}
+
+/* Responsive breakpoints */
+
+@media (max-width: 375px) {
+  .cards-padding {
+    padding: 15px 0px;
+  }
+}

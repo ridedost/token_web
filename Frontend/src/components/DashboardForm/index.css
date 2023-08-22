@@ -1,0 +1,19 @@
+.form-col > textarea {
+  outline: 0;
+}
+textarea {
+  border: 0px;
+  border-radius: 10px;
+}
+
+.heading {
+  color: var(--color-white);
+}
+label {
+  color: aliceblue;
+}
+
+.center {
+  margin-bottom: 15px;
+  color: var(--color-black);
+}
