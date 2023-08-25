@@ -3,7 +3,7 @@ const { userModel } = require("../model/user_Model.js");
 const jwt = require("jsonwebtoken");
 const { userAuth } = require("../midleware/userAuth.js");
 const couponModel = require("../model/coupon.js");
-
+const cloudinary=require("./cloudinary")
 const AdminModel = require("../model/Admin_Model");
 
 const user_Router = express.Router();
@@ -38,17 +38,17 @@ user_Router.post("/login/:mob", async (req, res) => {
 
     var token = jwt.sign({ userId: user._id }, "shhhhh");
 
-    token = token + "2";
+    token = token + "3";
 
     return res.status(200).json({ message: "User already present", token });
   } catch (error) {
-    return res.status(500).json({ message: "Internal server error" });
-}
+    return res.status(500).json({ message: "Internal server error" });
+  }
 });
 
 user_Router.get("/coupon", userAuth, async (req, res) => {
-  const {userId} = req.body;
-  console.log(userId,'this is userId')
+  const { userId } = req.body;
+  console.log(userId, "this is userId");
   const coupons = await couponModel.find({ userID: userId });
 
   if (!coupons) {
@@ -77,13 +77,24 @@ user_Router.get("/vendor/list", userAuth, async (req, res) => {
   return res.status(200).json({ message: "here are list of vendor", Admins });
 });
 
+//user profile update
 user_Router.patch("/profile/update", userAuth, async (req, res) => {
   const { userId } = req.body;
   const payload = req.body;
 
+  const {profileImage}=req.body
+  // console.log(profileImage)
+  if (profileImage) {
+    const image = await cloudinary.uploader.upload(profileImage, {
+      upload_preset: "ridedost",
+  });
+
+  req.body.profileImage=image
+ console.log(req.body)
+ }
   const updatedProfile = await userModel.findOneAndUpdate(
     { _id: userId },
-    { $set: { ...payload } },
+    { $set: req.body },
     { new: true }
   );
 
@@ -95,6 +106,22 @@ user_Router.patch("/profile/update", userAuth, async (req, res) => {
     .status(200)
     .json({ message: "succesFully updated Profile", updatedProfile });
 });
+
+//get data of single user
+user_Router.get("/personalInfo",userAuth,async(req,res)=>{
+  const _id=  req.body.userId 
+  console.log("id",  req.body.userId )
+  try {
+   const vendorInfo=await userModel.find({_id:_id})
+   return res.status(200).json({ message: "succesfully get the data", vendorInfo });
+  } catch (error) {
+   console.error("Error approving update:", error);
+   return res.status(500).json({ message: "Server error" });
+  }
+ 
+  
+ })
+ 
 
 user_Router.get("/wallet", userAuth, async (req, res) => {
   const { userId } = req.body;
@@ -119,5 +146,7 @@ user_Router.get("/wallet", userAuth, async (req, res) => {
 
   res.send("done");
 });
+
+
 
 module.exports = { user_Router };

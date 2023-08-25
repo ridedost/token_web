@@ -3,13 +3,11 @@ const mongoose = require("mongoose");
 const requestSchema = mongoose.Schema({
   sendor: {
     vendorId: { type: String, required: true },
-  
-   Date:{type:Date}
+    Date:{type:Date}
   },
   receiver: {
     vendorId: { type: String, required: true },
-  
-   Date:{type:Date}
+    Date:{type:Date}
   },
 
   status: {

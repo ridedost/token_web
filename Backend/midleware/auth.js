@@ -28,7 +28,7 @@ const AdminAithentication = async (req, res, next) => {
   console.log("this is token", token);
   const decoded = jwt.verify(token, "shhhh");
   const isAdmin = await Admin.findOne({ _id: decoded.userId });
-  if (isAdmin.role == "admin") {
+  if (isAdmin?.role == "admin") {
     req.body.adminId = isAdmin._id;
     next();
     return;
@@ -39,20 +39,23 @@ const AdminAithentication = async (req, res, next) => {
 
 const loginAuth = async (req, res, next) => {
   const auth = req.headers.authorization;
-  console.log(auth);
+  // console.log(auth);
   const token = auth?.split(" ")[1];
   const decoded = jwt.verify(token, "shhhh");
+  // console.log(decoded.userId)
   const isAdmin = await Admin.findOne({ _id: decoded.userId });
+  // console.log(decoded.userId)
   req.body.vendorId = decoded.userId;
 
-  if (isAdmin.role == "admin") {
+  if (isAdmin?.role == "admin" || isAdmin?.role == "vendor") {
     req.body.status = "completed";
   }
 
-  if (isAdmin.status == "completed") {
+  if (isAdmin?.status == "completed") {
     next();
     return;
   }
+  
   return res.status(401).json({ message: "user is unAuhorize" });
 };
 

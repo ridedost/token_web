@@ -22,7 +22,7 @@ const vendorSettlementSchema = mongoose.Schema({
       
     },
   },
-  reciever: {
+  receiver: {
     vendorId: { type: String, required: true },
     vendorName: { type: String, required: true },
     Date:{type: Date},

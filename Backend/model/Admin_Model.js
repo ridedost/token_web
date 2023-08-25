@@ -28,13 +28,44 @@ const superAdminSchema = new mongoose.Schema({
     type: String,
     default: "vendor",
   },
-  cash: {
+  presentageValue: {
     type: Number,
     default: 0,
   },
   status: {
     type: String,
     default: "pending",
+  },
+  // companyLogo:{
+  //   type:Object,
+  //   required:true
+  // },
+  address: {
+    type: String,
+    required: true,
+  },
+  address: {
+    type: String,
+    required: true,
+  },
+  id_proof: {
+    type: Object,
+    required: true,
+  },
+  thresholdvalue: {
+    type: Number,
+    default: 0,
+    required: true,
+  },
+  //ADD HERE FOR PERSONAL INFO FILED
+  gender: {
+    type: String,
+  },
+  DOB: {
+    type: String,
+  },
+  profileImage: {
+    type: Object,
   },
   vendorId: { type: String, default: "N/A" },
 });
