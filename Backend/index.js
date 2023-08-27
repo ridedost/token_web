@@ -24,7 +24,12 @@ app.use("/admin/coupons", Coupon_validate);
 
 app.use("/admin/settle", settleMentRoute);
 
-app.listen(4200, async () => {
-  console.log("port is listing 4200");
-  await connection;
+// app.listen(4200, async () => {
+//   console.log("port is listing 4200");
+//   await connection;
+// });
+
+const port = process.env.PORT || 4200;
+app.listen(port, () => {
+    console.log(`Server listening on port ${port}`);
 });
