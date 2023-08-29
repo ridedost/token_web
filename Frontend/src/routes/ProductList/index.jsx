@@ -21,6 +21,7 @@ import AddProductModal from "../../components/AddProductModal";
 import EditProductModal from "../../components/EditProductModal";
 import Apple from "../../assets/apple.svg";
 import Check from "../../assets/check.svg";
+import CheckBlue from "../../assets/blue-check.svg";
 import Dot from "../../assets/dot.svg";
 
 const ProductList = () => {
@@ -241,7 +242,7 @@ const ProductList = () => {
                   <img className="p-image" src={Apple} />
                   {select ? (
                     <>
-                      <div className="check-sign-rotate"></div>
+                      <img id="blue-check" src={CheckBlue} />
                       <img className="check" src={Check} />
                     </>
                   ) : (
@@ -318,7 +319,7 @@ const ProductList = () => {
                   <img className="p-image" src={Apple} />
                   {select ? (
                     <>
-                      <div className="check-sign-rotate"></div>
+                      <img id="blue-check" src={CheckBlue} />
                       <img className="check" src={Check} />
                     </>
                   ) : (
@@ -395,7 +396,7 @@ const ProductList = () => {
                   <img className="p-image" src={Apple} />
                   {select ? (
                     <>
-                      <div className="check-sign-rotate"></div>
+                      <img id="blue-check" src={CheckBlue} />
                       <img className="check" src={Check} />
                     </>
                   ) : (
@@ -472,7 +473,7 @@ const ProductList = () => {
                   <img className="p-image" src={Apple} />
                   {select ? (
                     <>
-                      <div className="check-sign-rotate"></div>
+                      <img id="blue-check" src={CheckBlue} />
                       <img className="check" src={Check} />
                     </>
                   ) : (
@@ -549,7 +550,7 @@ const ProductList = () => {
                   <img className="p-image" src={Apple} />
                   {select ? (
                     <>
-                      <div className="check-sign-rotate"></div>
+                      <img id="blue-check" src={CheckBlue} />
                       <img className="check" src={Check} />
                     </>
                   ) : (
@@ -626,7 +627,7 @@ const ProductList = () => {
                   <img className="p-image" src={Apple} />
                   {select ? (
                     <>
-                      <div className="check-sign-rotate"></div>
+                      <img id="blue-check" src={CheckBlue} />
                       <img className="check" src={Check} />
                     </>
                   ) : (
@@ -703,7 +704,7 @@ const ProductList = () => {
                   <img className="p-image" src={Apple} />
                   {select ? (
                     <>
-                      <div className="check-sign-rotate"></div>
+                      <img id="blue-check" src={CheckBlue} />
                       <img className="check" src={Check} />
                     </>
                   ) : (
@@ -780,7 +781,7 @@ const ProductList = () => {
                   <img className="p-image" src={Apple} />
                   {select ? (
                     <>
-                      <div className="check-sign-rotate"></div>
+                      <img id="blue-check" src={CheckBlue} />
                       <img className="check" src={Check} />
                     </>
                   ) : (
@@ -857,7 +858,7 @@ const ProductList = () => {
                   <img className="p-image" src={Apple} />
                   {select ? (
                     <>
-                      <div className="check-sign-rotate"></div>
+                      <img id="blue-check" src={CheckBlue} />
                       <img className="check" src={Check} />
                     </>
                   ) : (
@@ -934,7 +935,7 @@ const ProductList = () => {
                   <img className="p-image" src={Apple} />
                   {select ? (
                     <>
-                      <div className="check-sign-rotate"></div>
+                      <img id="blue-check" src={CheckBlue} />
                       <img className="check" src={Check} />
                     </>
                   ) : (
@@ -1011,7 +1012,7 @@ const ProductList = () => {
                   <img className="p-image" src={Apple} />
                   {select ? (
                     <>
-                      <div className="check-sign-rotate"></div>
+                      <img id="blue-check" src={CheckBlue} />
                       <img className="check" src={Check} />
                     </>
                   ) : (
@@ -1088,7 +1089,7 @@ const ProductList = () => {
                   <img className="p-image" src={Apple} />
                   {select ? (
                     <>
-                      <div className="check-sign-rotate"></div>
+                      <img id="blue-check" src={CheckBlue} />
                       <img className="check" src={Check} />
                     </>
                   ) : (
@@ -1165,7 +1166,7 @@ const ProductList = () => {
                   <img className="p-image" src={Apple} />
                   {select ? (
                     <>
-                      <div className="check-sign-rotate"></div>
+                      <img id="blue-check" src={CheckBlue} />
                       <img className="check" src={Check} />
                     </>
                   ) : (

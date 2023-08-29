@@ -72,7 +72,7 @@ const UserSidebar = ({ onLogout, showSidebar, setShowSidebar }) => {
   return (
     <>
       <div className={`${isOpen ? "vertical-menu" : "vertical-menu-hide"}`}>
-        <div className="h-100 mm-active">
+        <div className="sidebar-height">
           <div
             className={`${
               isOpen ? "navbar-brand-box" : "navbar-brand-box-hide"
@@ -98,8 +98,8 @@ const UserSidebar = ({ onLogout, showSidebar, setShowSidebar }) => {
             <ul
               className={`${
                 isOpen
-                  ? "metismenu list-unstyled mm-show mm-active"
-                  : "metismenu-hide list-unstyled mm-show mm-active"
+                  ? "metismenu list-unstyled mm-show"
+                  : "metismenu-hide list-unstyled mm-show"
               }`}
             >
               <NavLinks
@@ -134,7 +134,7 @@ const UserSidebar = ({ onLogout, showSidebar, setShowSidebar }) => {
       </div>
       {showSidebar ? (
         <div className="small-device-sidebar">
-          <div className="h-100 mm-active">
+          <div className="mm-active">
             <div className="hide-content">
               <img src={LogoNazoxLight} alt="" style={{ width: "225px" }} />
               <span

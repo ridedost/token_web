@@ -11,10 +11,14 @@ const ViewAllVendorsPoupop = ({ adminVendors, setShowAllVendors }) => {
         </span>
         <div
           className="table-main"
-          style={{ boxShadow: "0px 0px 0px 0px", marginTop: "0px" }}
+          style={{
+            boxShadow: "0px 0px 0px 0px",
+            marginTop: "0px",
+            height: "100%",
+          }}
         >
           <div className=" margin-inline card-align" style={{ top: "0px" }}>
-            <div className="table-wrapper px-4" style={{ maxHeight: "510px" }}>
+            <div className="table-wrapper px-4" style={{ maxHeight: "454px" }}>
               <table className="tables">
                 <thead className="table-head head-design">
                   <tr className="head-tr" style={{ height: "4rem" }}>

@@ -17,7 +17,12 @@ import { setFetching } from "../../redux/reducer/fetching";
 import { sendRequest } from "../../Api/adminApi";
 import { useDispatch } from "react-redux";
 
-const SendRequestPoupop = ({ coupons, setCoupons, setShowSendRequest }) => {
+const SendRequestPoupop = ({
+  coupons,
+  setCoupons,
+  setShowSendRequest,
+  fetchVendors,
+}) => {
   const handleDropdown = (id) => {
     setCoupons((prevCoupons) =>
       prevCoupons.map((user) => ({
@@ -30,20 +35,30 @@ const SendRequestPoupop = ({ coupons, setCoupons, setShowSendRequest }) => {
   const dispatch = useDispatch();
 
   const handleSendRequest = async (couponCode) => {
-    console.log(couponCode);
+    console.warn(couponCode);
     dispatch(setFetching(true));
     const maintoken = localStorage.getItem("auth_token");
     const role = maintoken.charAt(maintoken.length - 1);
     const token = maintoken.slice(0, -1);
     try {
-      if (role === "2") {
+      if (role === "1") {
         const response = await sendRequest(couponCode, token);
         if (response.status === 200) {
-          console.log(response);
+          console.warn(response);
           const data = response.data.coupons;
           setCoupons(data);
           dispatch(setFetching(false));
-          // fetchVendors();
+          fetchVendors();
+        }
+      }
+      if (role === "2") {
+        const response = await sendRequest(couponCode, token);
+        if (response.status === 200) {
+          console.warn(response);
+          const data = response.data.coupons;
+          setCoupons(data);
+          dispatch(setFetching(false));
+          fetchVendors();
         }
       }
     } catch (error) {
@@ -53,7 +68,7 @@ const SendRequestPoupop = ({ coupons, setCoupons, setShowSendRequest }) => {
     }
   };
 
-  // console.log(vendors);
+  console.log(coupons);
   return (
     <div className="modal">
       <div className="modal-content-table ">
@@ -65,10 +80,14 @@ const SendRequestPoupop = ({ coupons, setCoupons, setShowSendRequest }) => {
         </span>
         <div
           className="table-main"
-          style={{ boxShadow: "0px 0px 0px 0px", marginTop: "0px" }}
+          style={{
+            boxShadow: "0px 0px 0px 0px",
+            marginTop: "0px",
+            height: "100%",
+          }}
         >
-          <div className=" margin-inline card-align" style={{ top: "0px" }}>
-            <div className="table-wrapper px-4" style={{ maxHeight: "510px" }}>
+          <div className="margin-inline card-align" style={{ top: "0px" }}>
+            <div className="table-wrapper px-4" style={{ maxHeight: "454px" }}>
               <table className="tables">
                 <thead className="table-head head-design">
                   <tr className="head-tr" style={{ height: "4rem" }}>
@@ -92,7 +111,7 @@ const SendRequestPoupop = ({ coupons, setCoupons, setShowSendRequest }) => {
                         <td>{copon.CouponValue} Points</td>
                         <td>₹ {copon?.amount}</td>
                         <td>
-                          {copon?.coupon?.Date.slice(0, 10)}
+                          {/* {copon?.coupon?.Date.slice(0, 10)} */}
                           {/* {new Date(copon?.coupon?.Date).toLocaleDateString() ||
                           "NA"} */}
                         </td>

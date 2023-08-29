@@ -8,7 +8,7 @@ const vendorSettlementSchema = mongoose.Schema({
 
     status: {
       type: String,
-      enum: ["pending", "requested", 'accepted','forwarded'],
+      enum: ["pending", "requested", 'accepted','forwarded',"rejected"],
       default: "pending",
     },
   },
@@ -18,7 +18,7 @@ const vendorSettlementSchema = mongoose.Schema({
     Date:{type: Date},
     status: {
       type: String,
-      enum: ["pending", "forwarded", 'returning'],
+      enum: ["pending", "forwarded", 'returning',"requestedback","accepted","rejected"],
       
     },
   },

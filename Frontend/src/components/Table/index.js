@@ -235,7 +235,7 @@ const Table = () => {
                       <td>{index + 1}</td>
                       <td>
                         <img
-                          src={User}
+                          src={user?.profileImage?.url || User}
                           className="rounded-circle header-profile-user "
                         />
                         {user.name}

@@ -81,3 +81,33 @@ export const getAllUserCoupons = async (token) => {
     throw error;
   }
 };
+
+export const updateUserInfo = async (token, formData) => {
+  try {
+    const response = await axios.patch(
+      `${BASE_URL}/user/personalInfo/update`,
+      formData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getUserInfo = async (token) => {
+  try {
+    const response = await axios.get(`${BASE_URL}/user/personalInfo`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};

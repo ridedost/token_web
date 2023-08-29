@@ -7,7 +7,7 @@ const jwt = require("jsonwebtoken");
 const { sendNotification } = require("./firebase");
 const VendorSettlement = require("../model/Settlement");
 const cloudinary = require("./cloudinary");
-const requestModel=require("../model/request")
+const requestModel = require("../model/request");
 const {
   Adminauth,
   AdminAithentication,
@@ -19,6 +19,7 @@ const { paymentModel } = require("../model/Payment");
 const CouponModel = require("../model/coupon");
 const coponCode = require("coupon-code");
 const checkoutModel = require("../model/checkout_Model");
+const PaymentSettlement = require("../model/paymentSettle");
 
 admin.post("/login/:mobile", async (req, res) => {
   const { mobile } = req.params;
@@ -245,9 +246,9 @@ admin.post("/forward/:_id", AdminAithentication, async (req, res) => {
   const { _id } = req.params;
 
   const forwardRequest = await VendorSettlement.findOne({ _id: _id });
-
-  forwardRequest.sendor.status = "forwarded";
-  forwardRequest.reciever.status = "pending";
+  console.log(forwardRequest);
+  // forwardRequest.sendor.status = "forwarded";
+  forwardRequest.receiver.status = "pending";
   forwardRequest.superAdmin.status = "forwarded";
 
   const isrequested = await VendorSettlement.findByIdAndUpdate(
@@ -270,7 +271,8 @@ admin.patch("/return/:_id", AdminAithentication, async (req, res) => {
   const data = await VendorSettlement.findOne({ _id });
 
   data.superAdmin.status = "returning";
-  data.sendor.status = "requested";
+  // data.sendor.status = "requested";
+  data.sendor.status = "pending";
 
   const isUpdate = await VendorSettlement.findByIdAndUpdate(
     { _id },
@@ -328,157 +330,505 @@ admin.get("/personalInfo", loginAuth, async (req, res) => {
   }
 });
 
-
-
-
 //checkout route
 
 admin.post("/checkout", loginAuth, async (req, res) => {
-  
   const vendor_id = req.body.vendorId;
-  const data = await userModel.find({mobile: req.body.phoneNumber });
-  const admin= await Admin.find({ role:"admin"});
-  console.log("admin",admin[0]._id.toString())
-
-
+  const data = await userModel.find({ mobile: req.body.phoneNumber });
+  const admin = await Admin.find({ role: "admin" });
+  console.log("admin", admin[0]._id.toString());
 
   const thresholdvalue = await Admin.find({ _id: vendor_id });
   var discount = 0; // Initialize discount with 0
-  let coupon
+  let coupon;
   try {
     if (data && data.length > 0) {
       console.log(thresholdvalue[0].thresholdvalue);
-   
-      if(thresholdvalue && thresholdvalue.length > 0 && req.body.coupon){
-        const couponValid=await CouponModel.find({couponCode:req.body.coupon})
-        console.log(couponValid[0].generate.vendorId)
 
-        const generateCopoun=await Admin.find({_id:couponValid[0].generate.vendorId})
-        console.log(generateCopoun[0].name,"name")
-        let valid= checkCouponValidity(couponValid[0].expirationDate)
-        if(valid && couponValid[0].status=="valid"){
-          req.body.amount=req.body.amount-couponValid[0].price
-          console.log(req.body.amount)
-           const updateData={
-            status:"redeem",
-            redeem:{
-              vendorId:vendor_id ,
-              useDate:getCurrentDateFormatted(),
-            }
-           }
+      if (thresholdvalue && thresholdvalue.length > 0 && req.body.coupon) {
+        const couponValid = await CouponModel.find({
+          couponCode: req.body.coupon,
+        });
+        console.log(couponValid[0].generate.vendorId);
 
-           const updatedCoupon = await CouponModel.findByIdAndUpdate(couponValid[0]._id, updateData, {
-            new: true,  // Return the updated document after the update
-            runValidators: true  // Run Mongoose validation on the update
-           });
-           console.log("updated",updatedCoupon)
-           const sendRequest=new VendorSettlement({
-            sendor:{
-              vendorId:vendor_id,
-              vendorName:thresholdvalue[0].name,
-              Date:getCurrentDateFormatted()
+        const generateCopoun = await Admin.find({
+          _id: couponValid[0].generate.vendorId,
+        });
+        console.log(generateCopoun[0].name, "name");
+        let valid = checkCouponValidity(couponValid[0].expirationDate);
+        if (valid && couponValid[0].status == "valid") {
+          req.body.amount = req.body.amount - couponValid[0].price;
+          console.log(req.body.amount);
+          const updateData = {
+            status: "redeem",
+            redeem: {
+              vendorId: vendor_id,
+              useDate: getCurrentDateFormatted(),
             },
-            
+          };
+
+          const updatedCoupon = await CouponModel.findByIdAndUpdate(
+            couponValid[0]._id,
+            updateData,
+            {
+              new: true, // Return the updated document after the update
+              runValidators: true, // Run Mongoose validation on the update
+            }
+          );
+          console.log("updated", updatedCoupon);
+          const sendRequest = new VendorSettlement({
+            sendor: {
+              vendorId: vendor_id,
+              vendorName: thresholdvalue[0].name,
+              Date: getCurrentDateFormatted(),
+            },
+
             superAdmin: {
               adminId: admin[0]._id.toString(),
-             
-              status: "pending"
-              
+
+              status: "pending",
             },
             receiver: {
-              vendorId:couponValid[0].generate.vendorId,
-              vendorName:generateCopoun[0].name,
-              status: "pending"
-          
+              vendorId: couponValid[0].generate.vendorId,
+              vendorName: generateCopoun[0].name,
+              status: "pending",
             },
-            amount:updatedCoupon.price,
-        
-            CouponValue:updatedCoupon.point,
-            coupon:{
-              couponCode:updatedCoupon.couponCode
+            amount: updatedCoupon.price,
+
+            CouponValue: updatedCoupon.point,
+            coupon: {
+              couponCode: updatedCoupon.couponCode,
             },
-        
-            user:{
+
+            user: {
               name: data[0].name,
               userId: data[0]._id.toString(),
-            }
-        })
-           await sendRequest.save()
-          console.log("updatecopupon",updatedCoupon)
-          console.log("thresholdvalue",thresholdvalue[0].thresholdvalue)
-       
-          console.log("amount",req.body.amount)
-
-          if(req.body.amount>=thresholdvalue[0].thresholdvalue){
-            console.log("yess")
-            discount = thresholdvalue[0].thresholdvalue * (thresholdvalue[0].presentageValue / 100);
-            coupon=await new CouponModel({
-            point:discount,
-            userID:data[0]._id,
-            expirationDate: getFormattedDateSixMonthsLater(),
-            status:"valid",
-            couponCode:coponCode.generate(),
-            generate:{
-              vendorId:vendor_id 
             },
-            price:discount,
-            userName:data[0].name
-          })
-         
-          await coupon.save()
-          // return res.status(200).json(`${data[0].name} congrats, you collected ${discount} points from the payment of ${thresholdvalue[0].companyName} and your payment is done  of  ${req.body.amount} rupees`);
+          });
+          await sendRequest.save();
+          console.log("updatecopupon", updatedCoupon);
+          console.log("thresholdvalue", thresholdvalue[0].thresholdvalue);
+
+          console.log("amount", req.body.amount);
+
+          if (req.body.amount >= thresholdvalue[0].thresholdvalue) {
+            console.log("yess");
+            discount =
+              thresholdvalue[0].thresholdvalue *
+              (thresholdvalue[0].presentageValue / 100);
+            coupon = await new CouponModel({
+              point: discount,
+              userID: data[0]._id,
+              expirationDate: getFormattedDateSixMonthsLater(),
+              status: "valid",
+              couponCode: coponCode.generate(),
+              generate: {
+                vendorId: vendor_id,
+              },
+              price: discount,
+              userName: data[0].name,
+            });
+
+            await coupon.save();
+            // return res.status(200).json(`${data[0].name} congrats, you collected ${discount} points from the payment of ${thresholdvalue[0].companyName} and your payment is done  of  ${req.body.amount} rupees`);
           }
           const info = new checkoutModel(req.body);
           const response = await info.save();
-          return res.status(200).json(`${data[0].name} your payment is done  of  ${req.body.amount} rupees`);
-          
-        }else{
-          res.status(404).json({ message: 'Coupon not found' });
+          return res
+            .status(200)
+            .json(
+              `${data[0].name} your payment is done  of  ${req.body.amount} rupees`
+            );
+        } else {
+          res.status(404).json({ message: "Coupon not found" });
         }
+      } else if (
+        thresholdvalue &&
+        thresholdvalue.length > 0 &&
+        thresholdvalue[0].thresholdvalue <= req.body.amount
+      ) {
+        discount =
+          thresholdvalue[0].thresholdvalue *
+          (thresholdvalue[0].presentageValue / 100);
+        coupon = await new CouponModel({
+          point: discount,
+          userID: data[0]._id,
+          expirationDate: getFormattedDateSixMonthsLater(),
+          status: "valid",
+          couponCode: coponCode.generate(),
+          generate: {
+            vendorId: vendor_id,
+          },
+          price: discount,
+          userName: data[0].name,
+        });
 
-        
-        
-      }
+        await coupon.save();
 
-      else if (thresholdvalue && thresholdvalue.length > 0 && thresholdvalue[0].thresholdvalue <= req.body.amount) {
-        discount = thresholdvalue[0].thresholdvalue * (thresholdvalue[0].presentageValue / 100);
-        coupon=await new CouponModel({
-        point:discount,
-        userID:data[0]._id,
-        expirationDate: getFormattedDateSixMonthsLater(),
-        status:"valid",
-        couponCode:coponCode.generate(),
-        generate:{
-          vendorId:vendor_id 
-        },
-        price:discount,
-        userName:data[0].name
-      })
-
-      await coupon.save()
-
-      const info = new checkoutModel(req.body);
-      const response = await info.save();
-      return res.status(200).json(`${data[0].name} congrats, you collected ${discount} points from the payment of ${thresholdvalue[0].companyName} and your payment is done  of  ${req.body.amount} rupees`);
-
-      }
-
-      else {
         const info = new checkoutModel(req.body);
         const response = await info.save();
-        return res.status(200).json(`${data[0].name} your payment is done  of  ${req.body.amount} rupees`);
+        return res
+          .status(200)
+          .json(
+            `${data[0].name} congrats, you collected ${discount} points from the payment of ${thresholdvalue[0].companyName} and your payment is done  of  ${req.body.amount} rupees`
+          );
+      } else {
+        const info = new checkoutModel(req.body);
+        const response = await info.save();
+        return res
+          .status(200)
+          .json(
+            `${data[0].name} your payment is done  of  ${req.body.amount} rupees`
+          );
       }
-
     } else {
-      return res.status(400).json({ message: "Mobile number is not registered." });
+      return res
+        .status(400)
+        .json({ message: "Mobile number is not registered." });
     }
-
-} catch (error) {
+  } catch (error) {
     console.log("Error:", error);
     return res.status(500).json({ error: "An error occurred." });
   }
-})
+});
 
+// admin request request
+admin.get("/admin/recieved/request", AdminAithentication, async (req, res) => {
+  const _id = req.body.adminId.toString();
+
+  // const allRequest = await VendorSettlement.find({"superAdmin.adminId": _id,"sendor.status":"requested", });
+  const allRequest = await VendorSettlement.find({
+    "superAdmin.adminId": _id,
+    $or: [
+      // { "sendor.status": "requested" },
+      // { "receiver.status": "accepted"},
+      // { "receiver.status": "rejected" },
+      {
+        $and: [
+          { "sendor.status": "requested" },
+          { "receiver.status": "pending" },
+          { "superAdmin.status": "pending" },
+        ],
+      },
+      {
+        $and: [
+          { "sendor.status": "requested" },
+          { "receiver.status": "accepted" },
+          { "superAdmin.status": "forwarded" },
+        ],
+      },
+      {
+        $and: [
+          { "sendor.status": "requested" },
+          { "receiver.status": "accepted" },
+          { "superAdmin.status": "requestedback" },
+        ],
+      },
+    ],
+  });
+
+  console.log(allRequest.length);
+
+  if (allRequest.length == 0 || !allRequest) {
+    return res
+      .status(404)
+      .json({ message: "no incoming settlement avavilable.." });
+  }
+
+  res
+    .status(200)
+    .json({ message: "here all the pending request..", allRequest });
+});
+
+//vendor recieved request
+admin.get("/vendor/recieved/request", loginAuth, async (req, res) => {
+  const _id = req.body.vendorId;
+  console.log("id", _id);
+  const allRequest = await VendorSettlement.find({
+    "sendor.vendorId": _id,
+    $or: [
+      
+      {
+        $and: [
+          { "sendor.status": "requested" },
+          { "receiver.status": "pending" },
+          { "superAdmin.status": "accepted" },
+        ],
+      },
+      {
+        $and: [
+          { "sendor.status": "pending" },
+          { "receiver.status": "accepted" },
+          { "superAdmin.status": "returning" },
+        ],
+      },
+      {
+        $and: [
+          { "sendor.status": "pending" },
+          { "receiver.status": "pending" },
+          { "superAdmin.status": "accepted" },
+        ],
+      },
+      {
+        $and: [
+          { "sendor.status": "requested" },
+          { "receiver.status": "pending" },
+          { "superAdmin.status": "forwarded" },
+        ],
+      },
+    ],
+  });
+
+  console.log(allRequest);
+
+  if (allRequest.length == 0 || !allRequest) {
+    // return res
+    //   .status(404)
+    //   .json({ message: "no incoming settlement avavilable.." });
+    const allReq = await VendorSettlement.find({
+      "receiver.vendorId": _id,
+      $or: [
+        // {"superAdmin.status": "returning"},
+        //   // {"superAdmin.status":"forwarded"},
+        //   // {"sendor.status":"forwarded",},
+        //   {"receiver.status":"accepted"},
+        //   {"sendor.status":"pending"},
+        // { $and: [  {"sendor.status":"requested"},{"receiver.status":"pending"},{"superAdmin.status":"forwarded"}] },
+        {
+          $and: [
+            { "sendor.status": "requested" },
+            { "receiver.status": "pending" },
+            { "superAdmin.status": "accepted" },
+          ],
+        },
+        {
+          $and: [
+            { "sendor.status": "pending" },
+            { "receiver.status": "accepted" },
+            { "superAdmin.status": "returning" },
+          ],
+        },
+        {
+          $and: [
+            { "sendor.status": "pending" },
+            { "receiver.status": "pending" },
+            { "superAdmin.status": "accepted" },
+          ],
+        },
+        {
+          $and: [
+            { "sendor.status": "requested" },
+            { "receiver.status": "pending" },
+            { "superAdmin.status": "forwarded" },
+          ],
+        },
+      ],
+    });
+    return res
+      .status(200)
+      .json({ message: "here all the pending request..", allReq });
+  }
+
+  res
+    .status(200)
+    .json({ message: "here all the pending request..", allRequest });
+});
+
+
+
+
+
+// admin.get("/vendor/recieved/request/accepted", loginAuth, async (req, res) => {
+//   const _id = req.body.vendorId;
+//   console.log("id", _id);
+
+//   const allRequest = await VendorSettlement.find({
+//     "receiver.vendorId": _id,
+//     $or: [
+//       // {"superAdmin.status": "returning"},
+//       //   // {"superAdmin.status":"forwarded"},
+//       //   // {"sendor.status":"forwarded",},
+//       //   {"receiver.status":"accepted"},
+//       //   {"sendor.status":"pending"},
+//       // { $and: [  {"sendor.status":"requested"},{"receiver.status":"pending"},{"superAdmin.status":"forwarded"}] },
+//       {
+//         $and: [
+//           { "sendor.status": "requested" },
+//           { "receiver.status": "pending" },
+//           { "superAdmin.status": "accepted" },
+//         ],
+//       },
+//       {
+//         $and: [
+//           { "sendor.status": "requested" },
+//           { "receiver.status": "pending" },
+//           { "superAdmin.status": "forwarded" },
+//         ],
+//       },
+//       {
+//         $and: [
+//           { "sendor.status": "pending" },
+//           { "receiver.status": "accepted" },
+//           { "superAdmin.status": "returning" },
+//         ],
+//       },
+//       {
+//         $and: [
+//           { "sendor.status": "pending" },
+//           { "receiver.status": "pending" },
+//           { "superAdmin.status": "accepted" },
+//         ],
+//       },
+//     ],
+//   });
+
+//   console.log(allRequest);
+
+//   if (allRequest.length == 0 || !allRequest) {
+//     return res
+//       .status(404)
+//       .json({ message: "no incoming settlement avavilable.." });
+//   }
+
+//   res
+//     .status(200)
+//     .json({ message: "here all the pending request..", allRequest });
+// });
+
+admin.patch(
+  "/vendor/recieved/request/accept/:_id",
+  loginAuth,
+  async (req, res) => {
+    const { _id } = req.params;
+
+    const data = await VendorSettlement.findOne({ _id });
+
+    if (
+      data.superAdmin.status == "accepted" && data.receiver.status == "accepted"
+    ) {
+      return res.status(409).json({ message: "already accepeted" });
+    }
+
+    if (
+      (data.superAdmin.status == "returning" &&
+        data.sendor.status == "pending") ||
+      (data.sendor.status == "pending" &&
+        data.superAdmin.status == "accepted" &&
+        data.receiver.status == "pending")
+    ) {
+      data.superAdmin.status = "accepted";
+      data.sendor.status = "accepted";
+      data.receiver.status = "accepted";
+
+      const paymentsettlemen = new PaymentSettlement({
+        requestedBy: {
+          vendorId: data.sendor.vendorId,
+          vendorName: data.sendor.vendorName,
+        },
+        requestedTo: {
+          vendorId: data.receiver.vendorId,
+          vendorName: data.receiver.vendorName,
+        },
+        amount: data.amount,
+        AprovedDate: Date.now(),
+        coupon: {
+          couponCode: data.coupon.couponCode,
+          CouponValue: data.CouponValue,
+        },
+        user: {
+          name: data.user.name,
+          userId: data.user.userId,
+        },
+      });
+
+      const isUpdate = await VendorSettlement.findOneAndUpdate(
+        { _id },
+        { ...data }
+      );
+      const response = await paymentsettlemen.save();
+      return res.status(409).json({ message: " accepeted", response });
+    }
+
+    if (
+      data.sendor.status == "requested" &&
+      data.receiver.status == "pending" &&
+      data.superAdmin.status == "pending"
+    ) {
+      data.sendor.status = "pending";
+      data.superAdmin.status = "accepted";
+      const isUpdate = await VendorSettlement.findOneAndUpdate(
+        { _id },
+        { ...data }
+      );
+      return res.status(200).json({ message: "succesfully accepeted" });
+    }
+
+    data.superAdmin.status = "requestedback";
+    data.receiver.status = "accepted";
+
+    const isUpdate = await VendorSettlement.findOneAndUpdate(
+      { _id },
+      { ...data }
+    );
+
+    if (!isUpdate) {
+      return res.status(500).json({ message: "something went wrong..." });
+    }
+
+    return res.status(200).json({ message: "succesfully accepeted" });
+  }
+);
+
+admin.patch(
+  "/vendor/recieved/request/rejected/:_id",
+  loginAuth,
+  async (req, res) => {
+    const { _id } = req.params;
+
+    const data = await VendorSettlement.findOne({ _id });
+
+    if (data.superAdmin.status == "rejected") {
+      return res.status(409).json({ message: "already rejected" });
+    }
+
+    data.sender.status = "rejected";
+    data.superAdmin.status = "rejected";
+    data.reciever.status = "rejected";
+
+    const isUpdate = await VendorSettlement.findOneAndUpdate(
+      { _id },
+      { ...data }
+    );
+
+    if (!isUpdate) {
+      return res.status(500).json({ message: "something went wrong..." });
+    }
+
+    return res.status(200).json({ message: "succesfully rejected" });
+  }
+);
+
+// admin.patch("/return/:_id", AdminAithentication, async (req, res) => {
+//   const { _id } = req.params;
+
+//   const data = await VendorSettlement.findOne({ _id });
+
+//   data.superAdmin.status ="accepted";
+//   data.sendor.status = "requested";
+
+//   const isUpdate = await VendorSettlement.findByIdAndUpdate(
+//     { _id },
+//     { ...data }
+//   );
+
+//   console.log(isUpdate);
+
+//   if (!isUpdate) {
+//     return res.status(500).json({ message: "something went wrong..." });
+//   }
+
+//   return res.status(200).json({ message: "return to vendor..." });
+// });
 
 function getFormattedDateSixMonthsLater() {
   const currentDate = new Date();
@@ -492,12 +842,11 @@ function getFormattedDateSixMonthsLater() {
   return `${year}-${month}-${day}`;
 }
 
-
 function getCurrentDateFormatted() {
   const today = new Date();
   const year = today.getFullYear();
-  const month = String(today.getMonth() + 1).padStart(2, '0');
-  const day = String(today.getDate()).padStart(2, '0');
+  const month = String(today.getMonth() + 1).padStart(2, "0");
+  const day = String(today.getDate()).padStart(2, "0");
 
   const formattedDate = `${year}-${month}-${day}`;
   return formattedDate;
@@ -508,11 +857,10 @@ function checkCouponValidity(expirationDate) {
   const expirationDateObj = new Date(expirationDate);
 
   if (currentDate <= expirationDateObj) {
-      return true;
+    return true;
   } else {
-      return false;
+    return false;
   }
 }
-
 
 module.exports = admin;

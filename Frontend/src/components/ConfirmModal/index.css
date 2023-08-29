@@ -1,0 +1,43 @@
+.check-logo {
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #effbff;
+}
+.modal-confirm {
+  height: 245px;
+  padding: 55px 40px;
+}
+
+.confirm-modal {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.confirm-text > p {
+  font-size: 18px;
+  color: #727b8599;
+}
+
+@media (max-width: 468px) {
+  .modal-confirm {
+    height: 245px;
+    padding: 55px 10px;
+  }
+}
+
+@media (max-width: 375px) {
+  .modal-confirm {
+    height: 285px;
+    padding: 55px 10px;
+  }
+}
+
+@media (max-width: 425px) {
+  .modal-confirm {
+    height: 295px;
+    padding: 55px 10px;
+  }
+}

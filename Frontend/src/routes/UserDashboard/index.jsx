@@ -58,6 +58,7 @@ const UserDashboard = () => {
   const [isLoading, setLoading] = useState(true);
   const [showAllVendors, setShowAllVendors] = useState(false);
   const [showAllCoupons, setShowAllCoupons] = useState(false);
+
   const dispatch = useDispatch();
 
   useEffect(() => {

@@ -13,13 +13,7 @@ import {
 import { BsHourglassSplit, BsDot } from "react-icons/bs";
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 
-import {
-  getAllVendors,
-  vendorUpdate,
-  vendorApprove,
-  vendorReject,
-  vendorDelete,
-} from "../../Api/adminApi";
+import { paymentSettlement } from "../../Api/adminApi";
 import { setFetching } from "../../redux/reducer/fetching";
 import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
@@ -47,13 +41,19 @@ const PaymentSettlements = () => {
     dispatch(setFetching(true));
     try {
       if (role === "1") {
-        const response = await getAllVendors(token);
+        const response = await paymentSettlement(token);
         if (response.status === 200) {
-          const data = response.data.vendors.map((user) => ({
-            ...user,
-            show: false, // Add the show property with initial value as false
-          }));
-          setVendors(data);
+          console.warn(response);
+          setVendors(response?.data);
+        } else {
+          setVendors([]);
+        }
+      }
+      if (role === "2") {
+        const response = await paymentSettlement(token);
+        if (response.status === 200) {
+          console.warn(response);
+          setVendors(response?.data);
         } else {
           setVendors([]);
         }
@@ -73,76 +73,76 @@ const PaymentSettlements = () => {
   // Change page
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
-  const handleApprove = async (id) => {
-    const maintoken = localStorage.getItem("auth_token");
-    const role = maintoken.charAt(maintoken.length - 1);
-    const token = maintoken.slice(0, -1);
+  // const handleApprove = async (id) => {
+  //   const maintoken = localStorage.getItem("auth_token");
+  //   const role = maintoken.charAt(maintoken.length - 1);
+  //   const token = maintoken.slice(0, -1);
 
-    dispatch(setFetching(true));
-    try {
-      if (role === "1") {
-        const response = await vendorApprove(id, token);
-        console.log(response);
-        if (response.status === 200) {
-          dispatch(setFetching(false));
-          toast.success("Vendors Successfully Approved!");
-          fetchVendors();
-        }
-      }
-    } catch (error) {
-      dispatch(setFetching(false));
-      toast.error("Vendor not found!");
-    }
-    // Handle the approval logic here
-  };
+  //   dispatch(setFetching(true));
+  //   try {
+  //     if (role === "1") {
+  //       const response = await vendorApprove(id, token);
+  //       console.log(response);
+  //       if (response.status === 200) {
+  //         dispatch(setFetching(false));
+  //         toast.success("Vendors Successfully Approved!");
+  //         fetchVendors();
+  //       }
+  //     }
+  //   } catch (error) {
+  //     dispatch(setFetching(false));
+  //     toast.error("Vendor not found!");
+  //   }
+  //   // Handle the approval logic here
+  // };
 
-  const handleReject = async (_id) => {
-    const maintoken = localStorage.getItem("auth_token");
-    const role = maintoken.charAt(maintoken.length - 1);
-    const token = maintoken.slice(0, -1);
+  // const handleReject = async (_id) => {
+  //   const maintoken = localStorage.getItem("auth_token");
+  //   const role = maintoken.charAt(maintoken.length - 1);
+  //   const token = maintoken.slice(0, -1);
 
-    dispatch(setFetching(true));
+  //   dispatch(setFetching(true));
 
-    try {
-      if (role === "1") {
-        const response = await vendorReject(_id, token);
-        if (response.status === 200) {
-          console.log(response);
-          // const data = response.data.vendors;
-          // setVendors(data);
-          dispatch(setFetching(false));
-          toast.success("Vendors Successfully updated!");
-        }
-      }
-    } catch (error) {
-      dispatch(setFetching(false));
-      toast.error("Vendor not found!");
-    }
-    // Handle the approval logic here
-  };
+  //   try {
+  //     if (role === "1") {
+  //       const response = await vendorReject(_id, token);
+  //       if (response.status === 200) {
+  //         console.log(response);
+  //         // const data = response.data.vendors;
+  //         // setVendors(data);
+  //         dispatch(setFetching(false));
+  //         toast.success("Vendors Successfully updated!");
+  //       }
+  //     }
+  //   } catch (error) {
+  //     dispatch(setFetching(false));
+  //     toast.error("Vendor not found!");
+  //   }
+  //   // Handle the approval logic here
+  // };
 
-  const handleDelete = async (_id) => {
-    const maintoken = localStorage.getItem("auth_token");
-    const role = maintoken.charAt(maintoken.length - 1);
-    const token = maintoken.slice(0, -1);
+  // const handleDelete = async (_id) => {
+  //   const maintoken = localStorage.getItem("auth_token");
+  //   const role = maintoken.charAt(maintoken.length - 1);
+  //   const token = maintoken.slice(0, -1);
 
-    dispatch(setFetching(true));
-    try {
-      if (role === "1") {
-        const response = await vendorDelete(_id, token);
-        console.log(response);
-        if (response.status === 200) {
-          dispatch(setFetching(false));
-          toast.success("Vendors Successfully Deleted!");
-          fetchVendors();
-        }
-      }
-    } catch (error) {
-      dispatch(setFetching(false));
-      toast.error("Vendor not found!");
-    }
-    // Handle the delete logic here
-  };
+  //   dispatch(setFetching(true));
+  //   try {
+  //     if (role === "1") {
+  //       const response = await vendorDelete(_id, token);
+  //       console.log(response);
+  //       if (response.status === 200) {
+  //         dispatch(setFetching(false));
+  //         toast.success("Vendors Successfully Deleted!");
+  //         fetchVendors();
+  //       }
+  //     }
+  //   } catch (error) {
+  //     dispatch(setFetching(false));
+  //     toast.error("Vendor not found!");
+  //   }
+  //   // Handle the delete logic here
+  // };
 
   const handleDropdown = (id) => {
     setVendors((prevVendors) =>
@@ -153,63 +153,61 @@ const PaymentSettlements = () => {
     );
   };
 
+  console.warn(vendors);
+
   return (
     <div className="table-main">
       <div className="table-container">
         <div className="table-wrapper px-4">
           <table className="tables">
-            <thead
-              className="table-head"
-              style={{
-                background: "var(--color-white)",
-                borderBottom: "1px solid #e1dede",
-              }}
-            >
+            <thead className="table-head head-design">
               <tr className="head-tr" style={{ height: "4rem" }}>
                 <th>Sr. No.</th>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Phone Number</th>
-                <th>Company</th>
-                <th>Status</th>
-                <th></th>
+                <th>User</th>
+                <th>Requested By</th>
+                <th>Requested To</th>
+                <th>Coupon Code</th>
+                <th>Coupon Points</th>
+                {/* <th>Status</th> */}
+                {/* <th></th> */}
               </tr>
             </thead>
             <tbody className="table-body">
               {vendors.length > 0 ? (
-                currentData.map((user, index) => (
+                currentData.map((vendor, index) => (
                   <tr className="body-tr" key={index}>
                     <td>{index + 1}</td>
                     <td>
-                      <img
+                      {/* <img
                         src={User}
                         className="rounded-circle header-profile-user "
-                      />
-                      {user.name}
+                      /> */}
+                      {vendor.user.name}
                     </td>
-                    <td>{user.email}</td>
-                    <td>{user.phoneNumber}</td>
-                    <td>{user.companyName}</td>
+                    <td>{vendor.requestedBy.vendorName}</td>
+                    <td>{vendor.requestedTo.vendorName}</td>
+                    <td>{vendor.coupon.couponCode}</td>
+                    <td>{vendor.amount}</td>
                     <td>
-                      {user.status === "completed" && (
+                      {vendor.status === "completed" && (
                         <div className="status-approve">
                           <span
                             className={`d-inline-block dropdown ${
-                              user.show ? "show" : ""
+                              vendor.show ? "show" : ""
                             }`}
                           >
                             <span
                               className="status-text-approved"
-                              onClick={() => handleDropdown(user._id)}
+                              onClick={() => handleDropdown(vendor._id)}
                             >
                               Approved &nbsp;
-                              {user.show ? (
+                              {vendor.show ? (
                                 <IoIosArrowUp fontSize={15} />
                               ) : (
                                 <IoIosArrowDown fontSize={15} />
                               )}
                             </span>
-                            {user.show && (
+                            {vendor.show && (
                               <div
                                 className="dropdown-menu-end dropdown-menu show"
                                 style={{ padding: "13px" }}
@@ -225,7 +223,7 @@ const PaymentSettlements = () => {
                                 <div className="dropdown-divider"></div>
                                 <div className="status-reject">
                                   <span
-                                    onClick={() => handleDelete(user._id)}
+                                    // onClick={() => handleDelete(vendor._id)}
                                     className="status-text-reject"
                                   >
                                     Delete
@@ -237,32 +235,32 @@ const PaymentSettlements = () => {
                         </div>
                       )}
 
-                      {user.status === "pending" && (
+                      {vendor.status === "pending" && (
                         <div className="status-pending">
                           <span
                             className={`d-inline-block dropdown ${
-                              user.show ? "show" : ""
+                              vendor.show ? "show" : ""
                             }`}
                           >
                             <span
                               className="status-text-pending"
-                              onClick={() => handleDropdown(user._id)}
+                              // onClick={() => handleDropdown(vendor._id)}
                             >
                               Pending &nbsp;
-                              {user.show ? (
+                              {vendor.show ? (
                                 <IoIosArrowUp fontSize={15} />
                               ) : (
                                 <IoIosArrowDown fontSize={15} />
                               )}
                             </span>
-                            {user.show && (
+                            {vendor.show && (
                               <div
                                 className="dropdown-menu-end dropdown-menu show"
                                 style={{ padding: "13px" }}
                               >
                                 <div className="status-approve">
                                   <span
-                                    onClick={() => handleApprove(user._id)}
+                                    // onClick={() => handleApprove(vendor._id)}
                                     className="status-text-approved"
                                   >
                                     Approve
@@ -271,7 +269,7 @@ const PaymentSettlements = () => {
                                 <div className="dropdown-divider"></div>
                                 <div className="status-reject">
                                   <span
-                                    onClick={() => handleReject(user._id)}
+                                    // onClick={() => handleReject(vendor._id)}
                                     className="status-text-reject"
                                   >
                                     &nbsp;Reject
@@ -283,25 +281,25 @@ const PaymentSettlements = () => {
                         </div>
                       )}
 
-                      {user.status === "Reject" && (
+                      {vendor.status === "Reject" && (
                         <div className="status-reject">
                           <span
                             className={`d-inline-block dropdown ${
-                              user.show ? "show" : ""
+                              vendor.show ? "show" : ""
                             }`}
                           >
                             <span
                               className="status-text-reject"
-                              onClick={() => handleDropdown(user._id)}
+                              // onClick={() => handleDropdown(vendor._id)}
                             >
                               Reject &nbsp;
-                              {user.show ? (
+                              {vendor.show ? (
                                 <IoIosArrowUp fontSize={15} />
                               ) : (
                                 <IoIosArrowDown fontSize={15} />
                               )}
                             </span>
-                            {user.show && (
+                            {vendor.show && (
                               <div
                                 className="dropdown-menu-end dropdown-menu show"
                                 style={{ padding: "13px" }}
@@ -309,7 +307,7 @@ const PaymentSettlements = () => {
                                 <div className="dropdown-divider"></div>
                                 <div className="status-reject">
                                   <span
-                                    onClick={() => handleDelete(user._id)}
+                                    // onClick={() => handleDelete(vendor._id)}
                                     className="status-text-reject"
                                   >
                                     Delete

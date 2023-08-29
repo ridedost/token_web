@@ -180,6 +180,22 @@ span > .half-line {
   border: 0;
   color: var(--color-white);
 }
+
+.relative {
+  position: relative;
+}
+
+.relative > #circle {
+  position: absolute;
+  top: 15px;
+}
+
+.relative > #check {
+  position: absolute;
+  top: 45px;
+  width: 35px;
+}
+
 /* media query here */
 @media (max-width: 1200px) {
   .submit-request {
@@ -231,6 +247,7 @@ span > .half-line {
 
   .wizard {
     padding: 10px;
+    height: 660px;
   }
   .submit-request {
     width: 100%;

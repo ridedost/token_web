@@ -5,18 +5,11 @@ import { BsFillHeartFill } from "react-icons/bs";
 import { FiCalendar } from "react-icons/fi";
 import VendorsTable from "../../components/VendorsTable";
 import CouponsTable from "../../components/CouponsTable";
-import { getAllVendors, getAllCoupons } from "../../Api/adminApi";
+import { getAllVendors, getAllCoupons, getAdminInfo } from "../../Api/adminApi";
 import { vendorsList, getAllUserCoupons } from "../../Api/userApi";
 import { setFetching } from "../../redux/reducer/fetching";
 import { useDispatch } from "react-redux";
 import "./index.css";
-import UserVendorsTable from "../../components/UserVendorsTable";
-import UserCouponsTable from "../../components/UserCouponsTable";
-import Bars_3 from "../../assets/bars/bars_3.svg";
-import Bars_4 from "../../assets/bars/bars_4.svg";
-import Bars_5 from "../../assets/bars/bars_5.svg";
-import Bars_6 from "../../assets/bars/bars_6.svg";
-import Bars_7 from "../../assets/bars/bars_7.svg";
 import ProfileDashboard from "../../components/ProfileDashboard";
 import ViewAllVendorsPoupop from "../../components/ViewAllVendorsPoupop";
 import ViewAllCouponPoupop from "../../components/ViewAllCouponPoupop";
@@ -50,7 +43,7 @@ const Dashboard = () => {
       value: "789",
     },
   ];
-
+  const [vendorInfo, setVendorInfo] = useState({});
   const [vendors, setVendors] = useState([]);
   const [adminVendors, setAdminVendors] = useState([]);
   const [coupons, setCoupons] = useState([]);
@@ -63,6 +56,7 @@ const Dashboard = () => {
   useEffect(() => {
     fetchAllAdminVendors();
     fetchAllCoupons();
+    getPersonalInfo();
     // fetchAllVendorsAsUser();
     // fetchAllCouponsAsUser();
   }, []);
@@ -276,6 +270,23 @@ const Dashboard = () => {
     }
   };
 
+  const getPersonalInfo = async () => {
+    const maintoken = localStorage.getItem("auth_token");
+    const role = maintoken.charAt(maintoken.length - 1);
+    const token = maintoken.slice(0, -1);
+
+    try {
+      const response = await getAdminInfo(token);
+
+      if (response.status === 200) {
+        const data = response.data.vendorInfo;
+        setVendorInfo(data);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   // Conditionally render the charts based on some condition (e.g., a state value)
   const [showPieChart, setShowPieChart] = useState(true);
   const [showLineChart, setShowLineChart] = useState(true);
@@ -324,7 +335,7 @@ const Dashboard = () => {
         </div>
         <div id="div2" className="grid-col">
           <div className="cards_2 cards-padding">
-            <ProfileDashboard />
+            <ProfileDashboard vendorInfo={vendorInfo} />
           </div>
         </div>
         <div id="div3" className="grid-col">

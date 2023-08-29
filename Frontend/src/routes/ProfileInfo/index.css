@@ -152,6 +152,10 @@
   border: 1px solid var(--color-primary);
 }
 
+.text-uppercase {
+  text-transform: capitalize;
+}
+
 @media (max-width: 1461px) {
   .profile-content-container {
     padding: 25px 100px;

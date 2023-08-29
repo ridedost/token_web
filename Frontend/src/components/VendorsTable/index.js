@@ -27,7 +27,7 @@ const VendorsTable = ({ adminVendors, fetchAllVendorsList }) => {
           ? adminVendors?.slice(0, 3).map((vendor, index) => (
               <div className="vendors-all-list" key={index}>
                 <div className="vendors-details">
-                  <img src={ProfileImg} />
+                  <img src={vendor?.profileImage?.url || ProfileImg} />
                   <div className="vendors-list">
                     <h4>{vendor.name}</h4>
                     <div className="contact">

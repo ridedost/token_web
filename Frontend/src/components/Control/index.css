@@ -1,0 +1,99 @@
+.control-container {
+  padding: 20px;
+}
+
+.control-container > .bold {
+  font-weight: 700;
+  font-size: 1.5vw;
+  color: #1b2559;
+  margin-top: 10px;
+}
+
+.control-container > p {
+  font-weight: 500;
+  font-size: 1vw;
+  color: #a3aed0;
+  margin-top: 10px;
+}
+
+.add-product-button > .control-button {
+  width: 100%;
+}
+
+@media (max-width: 1420px) {
+  .control-container > .bold {
+    font-size: 2vw;
+  }
+  .control-container > p {
+    font-size: 1.3vw;
+  }
+}
+
+@media (max-width: 1280px) {
+  .control-container > .bold {
+    font-size: 2vw;
+  }
+  .control-container > p {
+    font-size: 1.5vw;
+  }
+}
+
+@media (max-width: 1024px) {
+  .control-container > .bold {
+    font-size: 2.5vw;
+  }
+}
+
+@media (max-width: 992px) {
+  .control-container > .bold {
+    font-size: 2.8vw;
+  }
+  .control-container > p {
+    font-size: 1.7vw;
+  }
+}
+
+@media (max-width: 820px) {
+  .control-container > .bold {
+    font-size: 3vw;
+  }
+  .control-container > p {
+    font-size: 2vw;
+  }
+}
+
+@media (max-width: 768px) {
+  .control-container > .bold {
+    font-size: 4.2vw;
+  }
+  .control-container > p {
+    font-size: 3vw;
+  }
+}
+
+@media (max-width: 701px) {
+  .control-container > .bold {
+    font-size: 4.5vw;
+  }
+  .control-container > p {
+    font-size: 3vw;
+  }
+}
+
+@media (max-width: 567px) {
+  .control-container > .bold {
+    font-size: 4.8vw;
+  }
+  .control-container > p {
+    font-size: 3.8vw;
+  }
+}
+
+@media (max-width: 425px) {
+  .control-container > .bold {
+    font-size: 6vw;
+  }
+  .control-container > p {
+    font-size: 3.8vw;
+  }
+}

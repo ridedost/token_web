@@ -10,10 +10,14 @@ const ViewAllCouponPoupop = ({ coupons, setShowAllCoupons }) => {
         </span>
         <div
           className="table-main"
-          style={{ boxShadow: "0px 0px 0px 0px", marginTop: "0px" }}
+          style={{
+            boxShadow: "0px 0px 0px 0px",
+            marginTop: "0px",
+            height: "100%",
+          }}
         >
           <div className=" margin-inline card-align" style={{ top: "0px" }}>
-            <div className="table-wrapper px-4" style={{ maxHeight: "510px" }}>
+            <div className="table-wrapper px-4" style={{ maxHeight: "454px" }}>
               <table className="tables">
                 <thead className="table-head head-design">
                   <tr className="head-tr" style={{ height: "4rem" }}>
@@ -21,7 +25,7 @@ const ViewAllCouponPoupop = ({ coupons, setShowAllCoupons }) => {
                     <th>User</th>
                     <th>Coupon Code</th>
                     <th>Coupon Points</th>
-                    <th>Generated On</th>
+                    <th>Generated On</th>
                   </tr>
                 </thead>
                 <tbody className="table-body">

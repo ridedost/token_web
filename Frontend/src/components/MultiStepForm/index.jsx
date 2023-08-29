@@ -4,8 +4,8 @@ import { LuCheckCircle } from "react-icons/lu";
 import { addVendor } from "../../Api/adminApi";
 import { setFetching } from "../../redux/reducer/fetching";
 import { useNavigate } from "react-router-dom";
-import EmptyLine from "../../assets/bars/rectangle-bar-half1.svg";
-import HalfLine from "../../assets/bars/blue-rectangle-bar.svg";
+import Check from "../../assets/check.svg";
+import Circle from "../../assets/blue-circle.svg";
 import Upload from "../../assets/upload-file.svg";
 import Background from "../../assets/submit-background.svg";
 
@@ -15,6 +15,9 @@ const MultiStepForm = ({
   formData,
   renderStep,
   handleSubmit,
+  handleIdProof,
+  handleLogo,
+  handleReset,
 }) => {
   return (
     <>
@@ -30,11 +33,6 @@ const MultiStepForm = ({
                     <span className="step-number">1</span>
                   </a>
                 </li>
-                {/* <span>
-                  <img className="empty-line" src={EmptyLine} />
-                  <img className="half-line" src={HalfLine} />
-                </span> */}
-
                 <li className="nav-item">
                   <a
                     className={`nav-link ${currentStep === 2 ? "active" : ""}`}
@@ -42,10 +40,6 @@ const MultiStepForm = ({
                     <span className="step-number">2</span>
                   </a>
                 </li>
-                {/* <span>
-                  <img className="empty-line" src={EmptyLine} />
-                  <img className="half-line" src={HalfLine} />
-                </span> */}
                 <li className="nav-item">
                   <a
                     className={`nav-link ${currentStep === 3 ? "active" : ""}`}
@@ -58,9 +52,10 @@ const MultiStepForm = ({
           </div>
         </div>
         <div className="break-line" style={{ marginTop: "25px" }}></div>
-        <div className={`${currentStep === 3 ? "" : "details-margin-top"}`}>
+        <div>
           {currentStep === 1 ? <h2>Componey Details</h2> : ""}
           {currentStep === 2 ? <h2>Owner Details</h2> : ""}
+          {currentStep === 3 ? <h2>Submit your quote request</h2> : ""}
         </div>
         <form
           className="tab-content twitter-bs-wizard-tab-content"
@@ -107,6 +102,7 @@ const MultiStepForm = ({
                     id="firstName"
                     name="logo"
                     className="fileChange"
+                    onChange={handleLogo}
                     placeholder="Company Logo"
                   />
                   <img src={Upload} />
@@ -117,21 +113,32 @@ const MultiStepForm = ({
                     id="firstName"
                     name="address"
                     placeholder="Address"
-                    // value={formData.companyName}
-                    // onChange={handleChange}
-                    // required
+                    value={formData.address}
+                    onChange={handleChange}
+                    required
                   />
                 </div>
               </div>
               <div className="form-row">
-                <div className="form-col-left" style={{ width: "100%" }}>
+                <div className="form-col">
+                  <input
+                    type="text"
+                    id="firstName"
+                    name="thresholdvalue"
+                    placeholder="Coupon Threshold"
+                    value={formData.thresholdvalue}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+                <div className="form-col-left">
                   <input
                     type="text"
                     id=""
                     style={{ width: "100%" }}
-                    name="cash"
-                    placeholder="Coupon Threshold"
-                    value={formData.cash}
+                    name="presentageValue"
+                    placeholder="Percentage"
+                    value={formData.presentageValue}
                     onChange={handleChange}
                     required
                   />
@@ -139,7 +146,6 @@ const MultiStepForm = ({
               </div>
             </div>
           )}
-
           {renderStep(
             2,
             <div>
@@ -192,6 +198,7 @@ const MultiStepForm = ({
                     id="firstName"
                     name="id-proof"
                     className="fileChange"
+                    onChange={handleIdProof}
                     placeholder="ID Proof"
                   />
                   <img src={Upload} />
@@ -203,8 +210,10 @@ const MultiStepForm = ({
           {renderStep(
             3,
             <div className="submit-request">
-              <div className="align-item-center">
+              <div className="align-item-center relative">
                 <img src={Background} />
+                <img id="circle" src={Circle} />
+                <img id="check" src={Check} />
                 <h4>Submit your quote request</h4>
                 <p>
                   Please review all the information you previously typed in the
@@ -212,7 +221,9 @@ const MultiStepForm = ({
                   a project quote in 24 - 48 hours.
                 </p>
                 <div className="button-go">
-                  <button className="primary-button">Go Back</button>
+                  <button className="primary-button" onClick={handleReset}>
+                    Go Back
+                  </button>
                 </div>
               </div>
             </div>
@@ -224,3 +235,4 @@ const MultiStepForm = ({
 };
 
 export default MultiStepForm;
+// className={`${currentStep === 3 ? "" : "details-margin-top"}`}

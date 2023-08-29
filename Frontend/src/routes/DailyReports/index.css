@@ -162,6 +162,7 @@
 
 @media (max-width: 425px) {
   .report-row {
+    row-gap: 50px;
     padding-inline: 15px;
   }
 }

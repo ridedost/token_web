@@ -16,14 +16,20 @@ settleMentRoute.get("/coupon/:TovendorId", loginAuth, async (req, res) => {
 
   const coupons = await VendorSettlement.find({
     "sendor.vendorId": usageVendor,
-    "reciever.vendorId": generatedVendor,
+    "receiver.vendorId": generatedVendor,
   });
 
+ const request= coupons.filter((e)=>{
+     return e.superAdmin. status!=="returning" && e.superAdmin.status!=="accepted" && e.sendor.status!=="accepted" && e.receiver.status!=="accepted" 
+  })
+
+  console.log(request)
+ console.log(coupons)
   if (coupons.length == 0 || !coupons) {
     return res.status(404).json({ message: "no coupon present" });
   }
 
-  res.status(200).json({ message: "here all the coupons", coupons });
+  res.status(200).json({ message: "here all the coupons", request});
 });
 
 // Send request to admin for approved settlemenet....
@@ -169,8 +175,6 @@ settleMentRoute.patch("/final/accept/:_id", loginAuth, async (req, res) => {
   res.status(200).json({ message: "succesfully accepted" });
 });
 
-
-
 settleMentRoute.patch("/final/rejected/:_id", loginAuth, async (req, res) => {
   const data = await VendorSettlement.findOne({ _id });
 
@@ -186,5 +190,13 @@ settleMentRoute.patch("/final/rejected/:_id", loginAuth, async (req, res) => {
 
   res.status(200).json({ message: "succesfully accepted" });
 });
+
+
+
+
+
+
+
+
 
 module.exports = settleMentRoute;

@@ -262,14 +262,37 @@ button:not(:disabled) {
   color: var(--text, #3c3c3c);
   font-weight: 700;
   padding-right: 35px;
+  text-transform: capitalize;
 }
 
 .notification {
   margin-right: 3rem;
+  width: 30px;
+  /* background-image: url("../../assets/header/Notifications.svg"); */
+}
+
+.header-right {
+  position: relative;
+}
+
+.header-right > span {
+  display: flex;
+  align-items: center;
+  width: 35px;
+  cursor: pointer;
+  margin-right: 40px;
+}
+
+.alert-icon {
+  position: absolute;
+  top: 10px;
+  left: 20px;
 }
 
 .header-profile-user {
   margin-right: 1rem;
+  height: 50px;
+  width: 50px;
 }
 /* here is animation */
 

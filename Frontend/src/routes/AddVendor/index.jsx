@@ -4,9 +4,13 @@ import "./index.css";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { addVendor } from "../../Api/adminApi";
+import { useDispatch } from "react-redux";
+import { setFetching } from "../../redux/reducer/fetching";
 
 const AddVendor = () => {
   const [currentStep, setCurrentStep] = useState(1);
+  const [imageUrl, setImageUrl] = useState("");
+  const [companyLogo, setCompanyLogo] = useState("");
 
   const [formData, setFormData] = useState({
     companyName: "",
@@ -14,8 +18,12 @@ const AddVendor = () => {
     name: "",
     phoneNumber: "",
     email: "",
-    cash: "",
+    presentageValue: "",
+    id_proof: null,
+    companyLogo: null,
   });
+
+  const dispatch = useDispatch();
 
   useLayoutEffect(() => {
     document.title = "Add Vendor";
@@ -37,6 +45,69 @@ const AddVendor = () => {
     }));
   };
 
+  const handleIdProof = (e) => {
+    const file = e.target.files[0];
+    TransformFileData(file);
+  };
+
+  const handleLogo = (e) => {
+    const file = e.target.files[0];
+    TransformFile(file);
+  };
+
+  const TransformFileData = (file) => {
+    const reader = new FileReader();
+
+    if (file) {
+      reader.readAsDataURL(file);
+      reader.onloadend = () => {
+        setImageUrl(reader.result);
+        setFormData((prevData) => ({
+          ...prevData,
+          id_proof: reader.result,
+        }));
+      };
+    } else {
+      setImageUrl("");
+    }
+  };
+
+  const TransformFile = (file) => {
+    const reader = new FileReader();
+
+    if (file) {
+      reader.readAsDataURL(file);
+      reader.onloadend = () => {
+        setCompanyLogo(reader.result);
+        setFormData((prevData) => ({
+          ...prevData,
+          companyLogo: reader.result,
+        }));
+      };
+    } else {
+      setCompanyLogo("");
+    }
+  };
+
+  const handleSubmit = async () => {
+    const maintoken = localStorage.getItem("auth_token");
+    const role = maintoken.charAt(maintoken.length - 1);
+    const token = maintoken.slice(0, -1);
+    console.warn(formData);
+    dispatch(setFetching(true));
+    try {
+      const response = await addVendor(formData, token);
+
+      if (response.status === 201) {
+        toast.success("Vendor added Successfully");
+      }
+      handleNext();
+      dispatch(setFetching(false));
+    } catch (error) {
+      toast.error("Vendor addition failed");
+    }
+  };
+
   const handleNext = () => {
     setCurrentStep((prevStep) => prevStep + 1);
   };
@@ -54,20 +125,20 @@ const AddVendor = () => {
   };
 
   const navigate = useNavigate();
-  const handleSubmit = async () => {
-    const maintoken = localStorage.getItem("auth_token");
-    const role = maintoken.charAt(maintoken.length - 1);
-    const token = maintoken.slice(0, -1);
-    try {
-      const response = await addVendor(formData, token);
-      console.warn(response);
-      if (response.status === 201) {
-        toast.success("Vendor added Successfully");
-        navigate("/vendorslist");
-      }
-    } catch (error) {
-      toast.error("Vendor addition failed");
-    }
+  const handleReset = () => {
+    setFormData({
+      companyName: "",
+      companyOwner: "",
+      name: "",
+      phoneNumber: "",
+      email: "",
+      presentageValue: "",
+      id_proof: null,
+      companyLogo: null,
+      address: "",
+      thresholdvalue: "",
+    });
+    setCurrentStep(1);
   };
   return (
     <div className="align-item-center">
@@ -78,16 +149,23 @@ const AddVendor = () => {
         formData={formData}
         renderStep={renderStep}
         handleSubmit={handleSubmit}
+        handleIdProof={handleIdProof}
+        handleLogo={handleLogo}
+        handlePrevious={handlePrevious}
+        handleReset={handleReset}
       />
       <div className="button-navigation">
-        {currentStep > 1 && (
+        {currentStep > 1 && currentStep < 3 && (
           <button className="primary-outline" onClick={handlePrevious}>
             Previous step
           </button>
         )}
         <br />
-        {currentStep < 2 && (
-          <button className="primary-button" onClick={handleNext}>
+        {currentStep < 3 && (
+          <button
+            className={`${currentStep === 2 ? "d-none" : "primary-button"}`}
+            onClick={handleNext}
+          >
             Next
           </button>
         )}

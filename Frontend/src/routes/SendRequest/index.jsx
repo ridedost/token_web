@@ -5,14 +5,6 @@ import {
   AiOutlineRight,
   AiOutlineClockCircle,
 } from "react-icons/ai";
-import {
-  MdOutlineThumbUpOffAlt,
-  MdOutlineThumbDownOffAlt,
-  MdDeleteOutline,
-} from "react-icons/md";
-import { BsHourglassSplit, BsDot } from "react-icons/bs";
-import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
-
 import { getAllVendors, viewCoupons } from "../../Api/adminApi";
 import { setFetching } from "../../redux/reducer/fetching";
 import { useDispatch } from "react-redux";
@@ -90,11 +82,11 @@ const SendRequest = () => {
       if (role === "1") {
         const response = await viewCoupons(id, token);
         if (response.status === 200) {
-          console.log(response);
-          const data = response.data.coupons;
+          console.warn(response);
+          const data = response.data.request;
           setCoupons(data);
           dispatch(setFetching(false));
-          fetchVendors();
+          // fetchVendors();
         } else {
           setVendors([]);
         }
@@ -102,11 +94,11 @@ const SendRequest = () => {
       if (role === "2") {
         const response = await viewCoupons(id, token);
         if (response.status === 200) {
-          console.log(response);
-          const data = response.data.coupons;
+          console.warn(response);
+          const data = response.data.request;
           setCoupons(data);
           dispatch(setFetching(false));
-          fetchVendors();
+          // fetchVendors();
         } else {
           setVendors([]);
         }
@@ -223,6 +215,7 @@ const SendRequest = () => {
           coupons={coupons}
           setCoupons={setCoupons}
           setShowSendRequest={setShowSendRequest}
+          fetchVendors={fetchVendors}
         />
       ) : (
         ""

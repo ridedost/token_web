@@ -9,6 +9,7 @@ import User from "../../assets/header/user.svg";
 import RightArrow from "../../assets/right-arrow-vector.svg";
 import ProfileImg from "../../assets/header/user.svg";
 import Bar from "../../assets/vertical-bar.svg";
+import RedBar from "../../assets/bars/bar-red.svg";
 import { AiOutlineMail } from "react-icons/ai";
 import ViewAllVendorsPoupop from "../ViewAllVendorsPoupop";
 
@@ -27,6 +28,7 @@ const CouponsTable = ({ coupons, fetchAllCouponsList }) => {
           ? coupons?.slice(0, 3).map((coupon, index) => (
               <div className="vendors-all-list alignItems" key={index}>
                 <img src={Bar} height={61} />
+                {/* <img src={RedBar} height={61} /> */}
                 <div className="vendors-list">
                   <h4>{coupon.couponCode}</h4>
                   <div className="contact">
@@ -34,6 +36,12 @@ const CouponsTable = ({ coupons, fetchAllCouponsList }) => {
                     <span>&nbsp;{coupon.point} points</span>
                   </div>
                 </div>
+                {/* <div className="redeemed">
+                    <h5>REDEEMED</h5>
+                  </div> */}
+                {/* <div className="expire">
+                    <h5>EXPIRED</h5>
+                  </div> */}
               </div>
             ))
           : ""}

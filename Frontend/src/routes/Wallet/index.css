@@ -1,0 +1,48 @@
+.wallet-container {
+  display: flex;
+  gap: 15px;
+}
+.wallet-graph {
+  width: 66.5%;
+  height: 100%;
+}
+
+.wallet-point {
+  width: 32.5%;
+}
+
+.wallet-coupon {
+  display: flex;
+  gap: 15px;
+}
+
+@media (max-width: 1420px) {
+  .wallet-container {
+    flex-direction: column;
+  }
+  .wallet-graph {
+    width: 100%;
+  }
+  .wallet-point {
+    width: 100%;
+    padding-inline: 15vw;
+  }
+}
+
+@media (max-width: 1150px) {
+  .wallet-point {
+    width: 100%;
+    padding-inline: 10vw;
+  }
+}
+
+@media (max-width: 768px) {
+  .wallet-point {
+    width: 100%;
+    padding-inline: 0vw;
+  }
+
+  .wallet-coupon {
+    flex-direction: column;
+  }
+}

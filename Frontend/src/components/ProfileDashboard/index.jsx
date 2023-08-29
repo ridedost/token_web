@@ -3,22 +3,22 @@ import "./index.css";
 import ProfileImg from "../../assets/profile-img.svg";
 import LocationImg from "../../assets/location.svg";
 
-const ProfileDashboard = () => {
+const ProfileDashboard = ({ vendorInfo }) => {
   return (
     <div className="profile-dashboard">
       <div className="profile-dashboard-container">
         <div className="profile-img">
           <div className="img-ellipse">
-            <img src={ProfileImg} />
+            <img src={vendorInfo[0]?.profileImage?.url || ProfileImg} />
           </div>
         </div>
         <div className="admin-name">
-          <h2 style={{ marginTop: "30px" }}>Admin Name</h2>
+          <h2 style={{ marginTop: "30px" }}>{vendorInfo[0]?.name}</h2>
         </div>
         <div className="admin-location">
           <img src={LocationImg} style={{ width: "20px", height: "25px" }} />
           &nbsp;
-          <h5>New York, USA</h5>
+          <h5>{vendorInfo[0]?.address}</h5>
         </div>
         <div className="profile-frame">
           <div className="profile-frame-data">

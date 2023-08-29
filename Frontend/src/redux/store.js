@@ -5,7 +5,7 @@ import mobileNumber from "./reducer/mobileNumber.js";
 import auth from "./reducer/auth.js";
 import sidebar from "./reducer/sidebar.js";
 import role from "./reducer/role.js";
-
+import profileImage from "./reducer/profileImage.js";
 // Create the logger instance
 const logger = createLogger();
 
@@ -17,6 +17,7 @@ const store = configureStore({
     auth: auth,
     sidebar: sidebar,
     role: role,
+    profileImage: profileImage,
   },
   middleware: [logger],
 });

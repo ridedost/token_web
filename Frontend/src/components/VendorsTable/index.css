@@ -13,6 +13,13 @@
   color: #1b2559;
 }
 
+.list-heading > h5 {
+  margin-bottom: 0px;
+  color: #a3aed0;
+  font-weight: 500;
+  font-size: 1vw;
+}
+
 .view-all-list {
   display: flex;
   justify-content: space-between;
@@ -43,6 +50,7 @@
 
 .vendors-all-list {
   padding: 20px 0px;
+  position: relative;
 }
 
 .vendors-details {
@@ -55,7 +63,9 @@
 }
 
 .vendors-details > img {
-  width: 60px;
+  width: 55px;
+  height: 55px;
+  border-radius: 50%;
 }
 
 .vendors-list {
@@ -135,9 +145,6 @@
 }
 
 @media (max-width: 1364px) {
-  .vendors-details > img {
-    width: 45px;
-  }
   .vendors-list > h4 {
     font-size: 18px;
   }
@@ -164,7 +171,10 @@
 @media (max-width: 1280px) {
   .vendors-details > img {
     width: 45px;
+    height: 45px;
+    border-radius: 50%;
   }
+
   .vendors-list > h4 {
     font-size: 18px;
   }
@@ -195,6 +205,17 @@
   }
 }
 
+@media (max-width: 1120px) {
+  .contact {
+    width: 185px;
+  }
+  .vendors-details > img {
+    width: 55px;
+    height: 55px;
+    border-radius: 50%;
+  }
+}
+
 @media (max-width: 1100px) {
   .contact {
     width: 185px;
@@ -218,7 +239,12 @@
   }
 
   .vendors-details > img {
-    width: 72px;
+    width: 55px;
+    height: 55px;
+    border-radius: 50%;
+  }
+  .vendors-list > h4 {
+    font-size: 25px;
   }
   .contact {
     width: 380px;
@@ -255,6 +281,8 @@
 
   .vendors-details > img {
     width: 55px;
+    height: 55px;
+    border-radius: 50%;
   }
   .contact {
     width: 300px;
@@ -289,6 +317,8 @@
 
   .vendors-details > img {
     width: 40px;
+    height: 40px;
+    border-radius: 50%;
   }
   .contact {
     width: 253px;
@@ -324,6 +354,8 @@
 
   .vendors-details > img {
     width: 40px;
+    height: 40px;
+    border-radius: 50%;
   }
   .contact {
     width: 203px;
@@ -348,10 +380,6 @@
 }
 
 @media (max-width: 325px) {
-  .vendors-list-data {
-    /* max-width: 560px; */
-  }
-
   .vendors-details {
     max-width: 213px;
     height: 50px;
@@ -359,6 +387,8 @@
 
   .vendors-details > img {
     width: 32px;
+    height: 32px;
+    border-radius: 50%;
   }
   .contact {
     width: 178px;

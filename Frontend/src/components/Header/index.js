@@ -4,16 +4,27 @@ import { RiMenu2Fill } from "react-icons/ri";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { toggleSidebar } from "../../redux/reducer/sidebar";
-import Notification from "../../assets/header/Notifications.svg";
+import Notifi from "../../assets/header/Notifications.svg";
 import User from "../../assets/header/user.svg";
+import Alert from "../../assets/header/alert.svg";
 import { NavLink } from "react-router-dom";
+import { getAdminInfo } from "../../Api/adminApi";
+import Notification from "../Notification";
+
 const Header = ({ onLogout, setShowSidebar }) => {
   const [show, setShow] = useState(true);
   const [isScrolled, setIsScrolled] = useState(false); // New state to track scrolling
+  const [vendorInfo, setVendorInfo] = useState({});
+  const [selectedImage, setSelectedImage] = useState(null);
+
+  const [showNotification, setShowNotification] = useState(false);
 
   const dispatch = useDispatch();
   const isOpen = useSelector((state) => state.sidebar.isOpen);
   const role = useSelector((state) => state.role);
+  const profileImage = useSelector(
+    (state) => state?.profileImage?.profileImage
+  );
   const handleToggleSidebar = () => {
     dispatch(toggleSidebar());
     setShowSidebar(true);
@@ -28,16 +39,33 @@ const Header = ({ onLogout, setShowSidebar }) => {
     }
   };
 
-  // Add event listener for scrolling on component mount
   useEffect(() => {
+    getPersonalInfo();
     window.addEventListener("scroll", handleScroll);
     return () => {
-      // Clean up the event listener on component unmount
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
 
-  // console.log(isScrolled);
+  const getPersonalInfo = async () => {
+    const maintoken = localStorage.getItem("auth_token");
+    const role = maintoken.charAt(maintoken.length - 1);
+    const token = maintoken.slice(0, -1);
+
+    try {
+      const response = await getAdminInfo(token);
+
+      if (response.status === 200) {
+        const data = response.data.vendorInfo;
+        setVendorInfo(data);
+        setSelectedImage(data.profileImage?.url || "N/A");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  console.warn(profileImage);
 
   return (
     <header id={`${isOpen ? "page-topbar" : "page-topbar-hide"} `}>
@@ -47,8 +75,12 @@ const Header = ({ onLogout, setShowSidebar }) => {
             <RiMenu2Fill fontSize={32} />
           </button>
         </div>
-        <div className="d-flex">
-          <img src={Notification} className="notification" />
+        <div className="d-flex header-right">
+          <span onClick={() => setShowNotification(!showNotification)}>
+            <img src={Notifi} className="notification" />
+          </span>
+          <img className="alert-icon" src={Alert} />
+          {showNotification ? <Notification /> : null}
           <NavLink
             to={"profileinfo"}
             className={`${
@@ -57,10 +89,11 @@ const Header = ({ onLogout, setShowSidebar }) => {
                 : "d-inline-block user-dropdown dropdown show"
             }`}
           >
-            <img src={User} className="rounded-circle header-profile-user " />
-            <span className="username">
-              {role.admin === true ? "Admin" : "User Name"}
-            </span>
+            <img
+              src={profileImage || vendorInfo[0]?.profileImage?.url || User}
+              className="rounded-circle header-profile-user "
+            />
+            <span className="username">{vendorInfo[0]?.name}</span>
             {/* <div
               className={`${
                 show

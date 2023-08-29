@@ -31,18 +31,33 @@
   justify-content: center;
 }
 
+.img-ellipse > img {
+  width: 130px;
+  border-radius: 50%;
+  height: 130px;
+}
+
 .admin-name {
   height: 50px;
   display: flex;
   justify-content: center;
   align-items: center;
 }
+
+.admin-name > h2 {
+  text-transform: capitalize;
+}
+
 .admin-location {
   height: 35px;
   display: flex;
   justify-content: center;
   margin-top: 15px;
   color: var(--card-heading-color);
+}
+
+.admin-location > h5 {
+  text-transform: capitalize;
 }
 
 .profile-frame {

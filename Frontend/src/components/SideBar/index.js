@@ -105,7 +105,7 @@ const Sidebar = ({ onLogout, showSidebar, setShowSidebar }) => {
   return (
     <>
       <div className={`${isOpen ? "vertical-menu" : "vertical-menu-hide"}`}>
-        <div className="h-100 mm-active">
+        <div className="sidebar-height">
           <div
             className={`${
               isOpen ? "navbar-brand-box" : "navbar-brand-box-hide"
@@ -131,8 +131,8 @@ const Sidebar = ({ onLogout, showSidebar, setShowSidebar }) => {
             <ul
               className={`${
                 isOpen
-                  ? "metismenu list-unstyled mm-show mm-active"
-                  : "metismenu-hide list-unstyled mm-show mm-active"
+                  ? "metismenu list-unstyled mm-show"
+                  : "metismenu-hide list-unstyled mm-show"
               }`}
             >
               <NavLinks
@@ -166,32 +166,21 @@ const Sidebar = ({ onLogout, showSidebar, setShowSidebar }) => {
         </div>
       </div>
       {showSidebar ? (
-        <div className="small-device-sidebar">
-          <div className="h-100 mm-active">
-            {/* <div className={`${"navbar-brand-box"}`}>
-              <a className="logo logo-dark">
-                <span className="logo-lg">
-                  <img src={LogoNazoxLight} alt="" style={{ width: "225px" }} />
-                </span>
-              </a>
-            </div> */}
+        <div className="small-device-sidebar sidebar-height">
+          <div className="mm-active">
             <div className="hide-content">
-              {/* <div className="logo-container"> */}
               <img src={LogoNazoxLight} alt="" style={{ width: "225px" }} />
-              {/* </div> */}
               <span
                 className="cancle-sidebar"
                 onClick={() => setShowSidebar(false)}
               >
-                {/* <GrClose fontSize={35} /> */}
                 <AiFillCloseCircle fontSize={45} />
-                {/* <img src={Cancel} width={35} /> */}
               </span>
             </div>
             <div className="small-mm-active">
               <ul
                 className={`${"small-metismenu  list-unstyled mm-show mm-active"}`}
-                style={{ width: "280px" }}
+                style={{ width: "290px" }}
               >
                 <NavLinkSmall
                   handleClick={handleClick}

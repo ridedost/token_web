@@ -12,7 +12,10 @@ import {
 import { LiaFileInvoiceDollarSolid } from "react-icons/lia";
 import { GrSend, GrClose } from "react-icons/gr";
 import { FaUsers, FaRegHandshake } from "react-icons/fa";
-import { MdOutlineThumbUp } from "react-icons/md";
+import {
+  MdOutlineThumbUp,
+  MdOutlineShoppingCartCheckout,
+} from "react-icons/md";
 
 import { useSelector } from "react-redux";
 import NavLinks from "../NavLinks";
@@ -98,12 +101,17 @@ const VendorSidebar = ({ onLogout, showSidebar, setShowSidebar }) => {
       route: "paymentsettlements",
       Icon: FaRegHandshake,
     },
+    {
+      title: "Checkout",
+      route: "checkout",
+      Icon: MdOutlineShoppingCartCheckout,
+    },
   ];
 
   return (
     <>
       <div className={`${isOpen ? "vertical-menu" : "vertical-menu-hide"}`}>
-        <div className="h-100 mm-active">
+        <div className="sidebar-height">
           <div
             className={`${
               isOpen ? "navbar-brand-box" : "navbar-brand-box-hide"
@@ -129,8 +137,8 @@ const VendorSidebar = ({ onLogout, showSidebar, setShowSidebar }) => {
             <ul
               className={`${
                 isOpen
-                  ? "metismenu list-unstyled mm-show mm-active"
-                  : "metismenu-hide list-unstyled mm-show mm-active"
+                  ? "metismenu list-unstyled mm-show"
+                  : "metismenu-hide list-unstyled mm-show"
               }`}
             >
               <NavLinks
@@ -165,7 +173,7 @@ const VendorSidebar = ({ onLogout, showSidebar, setShowSidebar }) => {
       </div>
       {showSidebar ? (
         <div className="small-device-sidebar">
-          <div className="h-100 mm-active">
+          <div className="mm-active">
             {/* <div className={`${"navbar-brand-box"}`}>
               <a className="logo logo-dark">
                 <span className="logo-lg">
