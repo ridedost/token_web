@@ -5,14 +5,14 @@
 .control-container > .bold {
   font-weight: 700;
   font-size: 1.5vw;
-  color: #1b2559;
+  color: var(--dark-blue);
   margin-top: 10px;
 }
 
 .control-container > p {
   font-weight: 500;
   font-size: 1vw;
-  color: #a3aed0;
+  color: var(--card-heading-color);
   margin-top: 10px;
 }
 

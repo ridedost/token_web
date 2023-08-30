@@ -21,13 +21,11 @@ import { setFetching } from "../../redux/reducer/fetching";
 import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
 import EditVendorsModal from "../../components/EditVendorsModal";
-import jwtDecode from "jwt-decode";
 
-const ApprovalRequest = () => {
+const RejectedRequest = () => {
   const [showEditVendor, setShowEditVendor] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [allSendRequests, setAllSendRequests] = useState([]);
-  const [userId, setUserId] = useState(null);
   const itemsPerPage = 10;
 
   const dispatch = useDispatch();
@@ -41,17 +39,14 @@ const ApprovalRequest = () => {
     const maintoken = localStorage.getItem("auth_token");
     const role = maintoken.charAt(maintoken.length - 1);
     const token = maintoken.slice(0, -1);
-    const decodedToken = jwtDecode(token);
-    const { userId } = decodedToken;
-    setUserId(userId);
-    console.warn(userId);
+
     dispatch(setFetching(true));
     try {
       if (role === "1") {
         const response = await allSendRequestForAdmin(token);
         if (response.status === 200) {
           console.warn(response);
-          const data = response.data?.allRequest;
+          const data = response.data.allRequest;
           setAllSendRequests(data);
         } else {
           setAllSendRequests([]);
@@ -59,10 +54,10 @@ const ApprovalRequest = () => {
       } else if (role === "2") {
         const response = await allSendRequestForVendor(token);
         if (response.status === 200) {
-          console.warn(response.data?.data);
-          const data = response.data?.data;
-          // ? response.data?.allRequest
-          // : response.data?.allReq;
+          console.warn(response);
+          const data = response.data?.allRequest
+            ? response.data?.allRequest
+            : response.data?.allReq;
           setAllSendRequests(data);
         } else {
           setAllSendRequests([]);
@@ -216,11 +211,6 @@ const ApprovalRequest = () => {
     );
   };
 
-  const maintoken = localStorage.getItem("auth_token");
-  const role = maintoken.charAt(maintoken.length - 1);
-  const token = maintoken.slice(0, -1);
-  console.log(role);
-
   return (
     <div className="table-subContainer">
       <h5>Approval Request</h5>
@@ -257,9 +247,8 @@ const ApprovalRequest = () => {
                       <td>
                         {/* for   reciver  as vendor  */}
                         {user.receiver.vendorId === user.superAdmin.adminId &&
-                          user.receiver.status !== "accepted" &&
-                          user.sendor.status !== "accepted" &&
-                          user.receiver.status !== "pending" && (
+                          user.receiver?.status != "accepted" &&
+                          user.sender?.status != "accepted" && (
                             <div className="dropdown">
                               <button
                                 className="dropdown-toggle dropdown-pending"
@@ -294,108 +283,10 @@ const ApprovalRequest = () => {
                               </ul>
                             </div>
                           )}
-                        {user.receiver.vendorId === user.superAdmin.adminId &&
-                          user.receiver.status === "pending" &&
-                          user.sendor.status === "requested" &&
-                          user.superAdmin.status === "pending" &&
-                          role === "1" && (
-                            <div className="dropdown">
-                              <button
-                                className="dropdown-toggle dropdown-pending"
-                                type="button"
-                                id="dropdownMenuButton1"
-                                data-bs-toggle="dropdown"
-                                aria-expanded="false"
-                              >
-                                Pending
-                              </button>
-                              <ul
-                                className="dropdown-menu drop-down"
-                                aria-labelledby="dropdownMenuButton1"
-                              >
-                                <li>
-                                  <span
-                                    onClick={() => handleApprove(user._id)}
-                                    className="dropdown-item dropdown-color-approve"
-                                  >
-                                    Approve
-                                  </span>
-                                </li>
-                                <div className="dropdown-divider"></div>
-                                <li>
-                                  <span
-                                    onClick={() => handleReject(user._id)}
-                                    className="dropdown-item dropdown-color-reject"
-                                  >
-                                    Reject
-                                  </span>
-                                </li>
-                              </ul>
-                            </div>
-                          )}
-                        {user.receiver.vendorId === user.superAdmin.adminId &&
-                          user.receiver.status === "pending" &&
-                          user.sendor.status === "pending" &&
-                          user.superAdmin.status === "accepted" &&
-                          role === "1" && (
-                            <span className="dropdown-item dropdown-color-approve">
-                              Approved
-                            </span>
-                          )}
-                        {user.receiver.vendorId !== user.superAdmin.adminId &&
-                          user.receiver.status === "accepted" &&
-                          user.sendor.status === "requested" &&
-                          user.superAdmin.status === "requestedback" &&
-                          role === "2" &&
-                          user.receiver.vendorId === userId && (
-                            <span className="dropdown-item dropdown-color-approve">
-                              Approved
-                            </span>
-                          )}
-                        {user.receiver.vendorId === user.superAdmin.adminId &&
-                          user.receiver.status === "pending" &&
-                          user.sendor.status === "pending" &&
-                          user.superAdmin.status === "accepted" &&
-                          role === "2" && (
-                            <div className="dropdown">
-                              <button
-                                className="dropdown-toggle dropdown-pending"
-                                type="button"
-                                id="dropdownMenuButton1"
-                                data-bs-toggle="dropdown"
-                                aria-expanded="false"
-                              >
-                                Pending
-                              </button>
-                              <ul
-                                className="dropdown-menu drop-down"
-                                aria-labelledby="dropdownMenuButton1"
-                              >
-                                <li>
-                                  <span
-                                    onClick={() => handleApprove(user._id)}
-                                    className="dropdown-item dropdown-color-approve"
-                                  >
-                                    Approve
-                                  </span>
-                                </li>
-                                <div className="dropdown-divider"></div>
-                                <li>
-                                  <span
-                                    onClick={() => handleReject(user._id)}
-                                    className="dropdown-item dropdown-color-reject"
-                                  >
-                                    Reject
-                                  </span>
-                                </li>
-                              </ul>
-                            </div>
-                          )}
-                        {user.receiver.vendorId !== user.superAdmin.adminId &&
-                          user.receiver.status === "pending" &&
-                          user.sendor.status === "requested" &&
-                          user.superAdmin.status === "pending" &&
-                          role === "1" && (
+                        {user.receiver.vendorId != user.superAdmin.adminId &&
+                          user.receiver?.status != "accepted" &&
+                          user.sender?.status != "accepted" &&
+                          user.superAdmin?.status != "forwarded" && (
                             <div className="dropdown">
                               <button
                                 className="dropdown-toggle dropdown-pending"
@@ -421,101 +312,9 @@ const ApprovalRequest = () => {
                               </ul>
                             </div>
                           )}
-                        {/* {user.receiver.vendorId !== user.superAdmin.adminId &&
-                          user.receiver?.status !== "accepted" &&
-                          user.sender?.status !== "accepted" &&
-                          user.superAdmin?.status !== "forwarded" && (
-                            <div className="dropdown">
-                              <button
-                                className="dropdown-toggle dropdown-pending"
-                                type="button"
-                                id="dropdownMenuButton1"
-                                data-bs-toggle="dropdown"
-                                aria-expanded="false"
-                              >
-                                Pending
-                              </button>
-                              <ul
-                                className="dropdown-menu drop-down"
-                                aria-labelledby="dropdownMenuButton1"
-                              >
-                                <li>
-                                  <span
-                                    onClick={() => handleForward(user._id)}
-                                    className="dropdown-item dropdown-color-approve"
-                                  >
-                                    Forward
-                                  </span>
-                                </li>
-                              </ul>
-                            </div>
-                          )} */}
-                        {(user.receiver.vendorId !== user.sendor.adminId) !==
-                          user.superAdmin.vendorId &&
-                          user.receiver?.status === "pending" &&
-                          user.sendor?.status === "requested" &&
-                          user.superAdmin?.status === "forwarded" &&
-                          role === "1" && (
-                            <span className="dropdown-item dropdown-color-approve">
-                              Forwarded
-                            </span>
-                          )}
-
-                        {(user.receiver.vendorId !== user.sendor.adminId) !==
-                          user.superAdmin.vendorId &&
-                          user.receiver.status === "pending" &&
-                          user.sendor.status === "requested" &&
-                          user.superAdmin.status === "forwarded" &&
-                          role === "2" &&
-                          user.receiver.vendorId === userId && (
-                            <div className="dropdown">
-                              <button
-                                className="dropdown-toggle dropdown-pending"
-                                type="button"
-                                id="dropdownMenuButton1"
-                                data-bs-toggle="dropdown"
-                                aria-expanded="false"
-                              >
-                                Pending
-                              </button>
-                              <ul
-                                className="dropdown-menu drop-down"
-                                aria-labelledby="dropdownMenuButton1"
-                              >
-                                <li>
-                                  <span
-                                    onClick={() => handleApprove(user._id)}
-                                    className="dropdown-item dropdown-color-approve"
-                                  >
-                                    Approve
-                                  </span>
-                                </li>
-                                <div className="dropdown-divider"></div>
-                                <li>
-                                  <span
-                                    onClick={() => handleReject(user._id)}
-                                    className="dropdown-item dropdown-color-reject"
-                                  >
-                                    Reject
-                                  </span>
-                                </li>
-                              </ul>
-                            </div>
-                          )}
-                        {(user.receiver.vendorId !== user.sendor.adminId) !==
-                          user.superAdmin.vendorId &&
-                          user.receiver.status === "accepted" &&
-                          user.sendor.status === "requested" &&
-                          user.superAdmin.status === "requestedback" &&
-                          role === "2" &&
-                          user.sendor.vendorId === userId && (
-                            <span className="dropdown-item dropdown-color-approve">
-                              Requested
-                            </span>
-                          )}
-                        {/* {user.receiver.vendorId !== user.superAdmin.adminId &&
-                          user.receiver?.status !== "accepted" &&
-                          user.sender?.status !== "accepted" &&
+                        {user.receiver.vendorId != user.superAdmin.adminId &&
+                          user.receiver?.status != "accepted" &&
+                          user.sender?.status != "accepted" &&
                           user.superAdmin?.status === "forwarded" && (
                             <div className="dropdown">
                               <button
@@ -550,12 +349,11 @@ const ApprovalRequest = () => {
                                 </li>
                               </ul>
                             </div>
-                          )} */}
-                        {user.receiver.vendorId !== user.superAdmin.adminId &&
+                          )}
+                        {user.receiver.vendorId != user.superAdmin.adminId &&
                           user.receiver?.status === "accepted" &&
                           user.sendor?.status === "requested" &&
-                          user.superAdmin?.status === "requestedback" &&
-                          role === "1" && (
+                          user.superAdmin?.status === "requestedback" && (
                             <div className="dropdown">
                               <button
                                 className="dropdown-toggle dropdown-pending"
@@ -581,57 +379,10 @@ const ApprovalRequest = () => {
                               </ul>
                             </div>
                           )}
-                        {(user.receiver.vendorId !== user.sendor.adminId) !==
-                          user.superAdmin.vendorId &&
-                          user.receiver.status === "accepted" &&
-                          user.sendor.status === "pending" &&
-                          user.superAdmin.status === "returning" &&
-                          role === "1" && (
-                            <span className="dropdown-item dropdown-color-approve">
-                              Returning
-                            </span>
-                          )}
-
-                        {(user.receiver.vendorId !== user.sendor.adminId) !==
-                          user.superAdmin.vendorId &&
+                        {user.receiver.vendorId != user.superAdmin.adminId &&
                           user.receiver?.status === "accepted" &&
                           user.sendor?.status === "pending" &&
-                          user.superAdmin?.status === "returning" &&
-                          role === "2" &&
-                          user.receiver.vendorId === userId && (
-                            <span className="dropdown-item dropdown-color-approve">
-                              Approved
-                            </span>
-                          )}
-                        {(user.receiver.vendorId !== user.sendor.adminId) !==
-                          user.superAdmin.vendorId &&
-                          user.receiver?.status === "pending" &&
-                          user.sendor?.status === "requested" &&
-                          user.superAdmin?.status === "forwarded" &&
-                          role === "2" &&
-                          user.sendor.vendorId === userId && (
-                            <span className="dropdown-item dropdown-color-approve">
-                              Requested
-                            </span>
-                          )}
-                        {(user.receiver.vendorId !== user.sendor.adminId) !==
-                          user.superAdmin.vendorId &&
-                          user.receiver?.status === "pending" &&
-                          user.sendor?.status === "requested" &&
-                          user.superAdmin?.status === "pending" &&
-                          role === "2" &&
-                          user.sendor.vendorId === userId && (
-                            <span className="dropdown-item dropdown-color-approve">
-                              Requested
-                            </span>
-                          )}
-                        {(user.receiver.vendorId !== user.sendor.adminId) !==
-                          user.superAdmin.vendorId &&
-                          user.receiver?.status === "accepted" &&
-                          user.sendor?.status === "pending" &&
-                          user.superAdmin?.status === "returning" &&
-                          role === "2" &&
-                          user.sendor.vendorId === userId && (
+                          user.superAdmin?.status === "returning" && (
                             <div className="dropdown">
                               <button
                                 className="dropdown-toggle dropdown-pending"
@@ -731,4 +482,4 @@ const ApprovalRequest = () => {
   );
 };
 
-export default ApprovalRequest;
+export default RejectedRequest;

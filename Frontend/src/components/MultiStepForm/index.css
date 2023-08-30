@@ -206,6 +206,9 @@ span > .half-line {
 }
 
 @media (max-width: 1120px) {
+  .wizard {
+    height: 700px;
+  }
   .details-margin-top {
     margin-top: 5px;
   }
@@ -222,6 +225,9 @@ span > .half-line {
   }
 }
 @media (max-width: 992px) {
+  .wizard {
+    height: 660px;
+  }
   .details-margin-top {
     margin-top: 50px;
   }

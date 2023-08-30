@@ -4,7 +4,7 @@
   left: -325px;
   width: 400px;
   height: 80vh;
-  background: #fff;
+  background: var(--color-white);
   z-index: 10;
   box-shadow: var(--box-shadow-color);
   border-radius: 8px;
@@ -32,9 +32,9 @@
 #notification-text > span {
   width: 26px;
   height: 25px;
-  background: #3574f2;
+  background: var(--color-secondary-variant);
   border-radius: 50%;
-  color: #fff;
+  color: var(--color-white);
   text-align: center;
   margin-left: 8px;
 }
@@ -47,7 +47,7 @@
 
 #notification-mark > p {
   margin-bottom: 0px;
-  color: #3574f2;
+  color: var(--color-secondary-variant);
   margin-right: 10px;
   font-size: 15px;
   cursor: pointer;

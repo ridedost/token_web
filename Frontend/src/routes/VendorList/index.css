@@ -43,6 +43,7 @@
 .dropdown-color-approve {
   background: var(--approve-light-color);
   color: var(--approve-solid-color);
+  width: 160px;
 }
 
 .dropdown-color-approve:hover {

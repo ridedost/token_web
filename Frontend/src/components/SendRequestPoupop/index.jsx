@@ -68,7 +68,7 @@ const SendRequestPoupop = ({
     }
   };
 
-  console.log(coupons);
+  console.warn(coupons);
   return (
     <div className="modal">
       <div className="modal-content-table ">

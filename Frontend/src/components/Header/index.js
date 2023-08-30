@@ -65,8 +65,6 @@ const Header = ({ onLogout, setShowSidebar }) => {
     }
   };
 
-  console.warn(profileImage);
-
   return (
     <header id={`${isOpen ? "page-topbar" : "page-topbar-hide"} `}>
       <div className="navbar-header">
@@ -93,7 +91,7 @@ const Header = ({ onLogout, setShowSidebar }) => {
               src={profileImage || vendorInfo[0]?.profileImage?.url || User}
               className="rounded-circle header-profile-user "
             />
-            <span className="username">{vendorInfo[0]?.name}</span>
+            <span className="username">{vendorInfo[0]?.name.slice(0, 10)}</span>
             {/* <div
               className={`${
                 show

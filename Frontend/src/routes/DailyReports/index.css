@@ -41,7 +41,7 @@
 .img-csv > h5 {
   padding-top: 10px;
   font-weight: 700;
-  color: #1b2559;
+  color: var(--dark-blue);
 }
 
 .csv-circle {

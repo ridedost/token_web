@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import "./index.css";
-import { MdOutlineDashboard } from "react-icons/md";
+import { MdOutlineDashboard, MdOutlineThumbDown } from "react-icons/md";
 import {
   AiOutlineShoppingCart,
   AiOutlineUsergroupAdd,
@@ -14,6 +14,7 @@ import { GrSend, GrClose } from "react-icons/gr";
 import { FaUsers, FaRegHandshake } from "react-icons/fa";
 import {
   MdOutlineThumbUp,
+  MdOutlineThumbDownOffAlt,
   MdOutlineShoppingCartCheckout,
 } from "react-icons/md";
 import { RiFileDownloadLine } from "react-icons/ri";
@@ -84,6 +85,11 @@ const Sidebar = ({ onLogout, showSidebar, setShowSidebar }) => {
       title: " Approval Req.",
       route: "approvalrequest",
       Icon: MdOutlineThumbUp,
+    },
+    {
+      title: "Rejected Req.",
+      route: "rejectedrequest",
+      Icon: MdOutlineThumbDownOffAlt,
     },
     {
       title: "Payment Settle",

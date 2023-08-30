@@ -21,6 +21,7 @@ import ProfileInfo from "./routes/ProfileInfo";
 import Checkout from "./routes/Checkout";
 import DailyReports from "./routes/DailyReports";
 import UserDashboard from "./routes/UserDashboard";
+import RejectedRequest from "./routes/RejectedRequests";
 
 function App() {
   const fetching = useSelector((state) => state.fetching);
@@ -42,6 +43,7 @@ function App() {
           <Route path="sendrequest" element={<SendRequest />} />
           <Route path="paymentsettlements" element={<PaymentSettlements />} />
           <Route path="approvalrequest" element={<ApprovalRequest />} />
+          <Route path="rejectedrequest" element={<RejectedRequest />} />
           <Route path="wallet" element={<Wallet />} />
           <Route path="profile" element={<Profile />} />
           <Route path="profileinfo" element={<ProfileInfo />} />

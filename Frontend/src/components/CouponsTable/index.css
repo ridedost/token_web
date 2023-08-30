@@ -13,7 +13,7 @@
 
 .redeemed > h5 {
   padding: 15px;
-  color: #3574f2;
+  color: var(--color-secondary-variant);
   font-weight: 500;
 }
 
