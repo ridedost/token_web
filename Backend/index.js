@@ -8,6 +8,7 @@ const paymentRouter = require("./Router/payment_Routes");
 const Coupon_validate = require("./Router/CouponValidate");
 const Product_Router = require("./Router/Product");
 const settleMentRoute = require("./Router/SettlementRoute");
+const paymentSetlement = require("./Router/paymentsetllement");
 
 const app = express();
 app.use(cors());
@@ -21,15 +22,10 @@ app.use("/admin/payment", paymentRouter);
 app.use("/admin/validate", Coupon_validate);
 app.use("/admin/product", Product_Router);
 app.use("/admin/coupons", Coupon_validate);
-
+app.use("/paymentsettlement", paymentSetlement)
 app.use("/admin/settle", settleMentRoute);
 
-// app.listen(4200, async () => {
-//   console.log("port is listing 4200");
-//   await connection;
-// });
-
-const port = process.env.PORT || 4200;
-app.listen(port, () => {
-    console.log(`Server listening on port ${port}`);
+app.listen(4200, async () => {
+  console.log("port is listing 4200");
+  await connection;
 });
