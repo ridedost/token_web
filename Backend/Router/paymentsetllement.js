@@ -43,4 +43,4 @@ paymentSetlement.get("/payment-settlements",loginAuth, async (req, res) => {
 
 module.exports =  paymentSetlement;
 
-module.exports =  paymentSetlement;
+// module.exports =  paymentSetlement;
