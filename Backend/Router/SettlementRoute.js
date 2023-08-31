@@ -74,7 +74,8 @@ settleMentRoute.post("/send/:couponCode", loginAuth, async (req, res) => {
     const { _id } = superAdmin;
 
     isSettle.sendor.status = "requested";
-    isSettle.sendor.Date = new Date();
+    isSettle.sendor.Date = getCurrentDateFormatted();
+    isSettle.sendor.time =  getCurrentTime();
 
     isSettle.superAdmin.adminId = superAdmin._id;
     isSettle.superAdmin.status = "pending";
@@ -230,6 +231,26 @@ settleMentRoute.patch("/final/rejected/:_id", loginAuth, async (req, res) => {
 });
 
 
+
+function getCurrentDateFormatted() {
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, "0");
+  const day = String(today.getDate()).padStart(2, "0");
+
+  const formattedDate = `${year}-${month}-${day}`;
+  return formattedDate;
+}
+
+function getCurrentTime() {
+  const currentDate = new Date();
+  const hours = currentDate.getHours();
+  const minutes = currentDate.getMinutes();
+  const seconds = currentDate.getSeconds();
+
+  const formattedTime = `${hours}:${minutes}:${seconds}`;
+  return formattedTime;
+}
 
 
 

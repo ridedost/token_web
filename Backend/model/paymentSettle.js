@@ -16,7 +16,10 @@ requestedTo: {
     required: true,
   },
   AprovedDate: {
-    type: Date,
+    type: String,
+  },
+  AprovedDate: {
+    type: String,
   },
   coupon: {
 
@@ -28,6 +31,7 @@ requestedTo: {
     name: { type: String, required: true },
     userId: { type: String, required: true },
   },
+
 });
 
 const PaymentSettlement = mongoose.model("paymentSettlement" ,paymentSettlementSchema);

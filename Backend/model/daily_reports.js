@@ -9,10 +9,9 @@ const dailyReportSchema = mongoose.Schema({
    totalForwardByAdmin:{ type: String, },
    totalAmountGive:{ type: String,},
    totalAmountTake:{ type: String,},
-   createdAt: {
-    type: Date,
-    default: Date.now,
-  },
+   createdAt:  { type: String, default: "N/A" },
+   time:{type:String}
+  
 });
 
 const dailyReportModel = mongoose.model("request", dailyReportSchema);

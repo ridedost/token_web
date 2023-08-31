@@ -303,7 +303,8 @@ admin.post("/forward/:_id", AdminAithentication, async (req, res) => {
     // forwardRequest.sendor.status = "forwarded";
     forwardRequest.receiver.status = "pending";
     forwardRequest.superAdmin.status = "forwarded";
-
+    forwardRequest.superAdmin.time = getCurrentTime()
+    forwardRequest.superAdmin.Date=getCurrentDateFormatted()
     const isRequested = await VendorSettlement.findByIdAndUpdate(
       { _id },
       { ...forwardRequest }
@@ -330,8 +331,10 @@ admin.patch("/return/:_id", AdminAithentication, async (req, res) => {
     const data = await VendorSettlement.findOne({ _id });
 
     data.superAdmin.status = "returning";
+    data.superAdmin.time = getCurrentTime();
     // data.sendor.status = "requested";
     data.sendor.status = "pending";
+    data.sendor.time = getCurrentTime();
 
     const isUpdate = await VendorSettlement.findByIdAndUpdate(
       { _id },
@@ -435,6 +438,7 @@ admin.post("/checkout", loginAuth, async (req, res) => {
             redeem: {
               vendorId: vendor_id,
               useDate: getCurrentDateFormatted(),
+              time:getCurrentTime()
             },
           };
 
@@ -452,17 +456,19 @@ admin.post("/checkout", loginAuth, async (req, res) => {
               vendorId: vendor_id,
               vendorName: thresholdvalue[0].name,
               Date: getCurrentDateFormatted(),
+              // status: "pending",
             },
 
             superAdmin: {
               adminId: admin[0]._id.toString(),
-
+              Date: getCurrentDateFormatted(),
               status: "pending",
             },
             receiver: {
               vendorId: couponValid[0].generate.vendorId,
               vendorName: generateCopoun[0].name,
               status: "pending",
+              Date: getCurrentDateFormatted(),
             },
             amount: updatedCoupon.price,
 
@@ -495,7 +501,8 @@ admin.post("/checkout", loginAuth, async (req, res) => {
               couponCode: coponCode.generate(),
               generate: {
                 vendorId: vendor_id,
-                useDate: getCurrentDateFormatted(),
+                generateDate: getCurrentDateFormatted(),
+                time:getCurrentTime()
               },
               price: discount,
               userName: data[0].name,
@@ -531,6 +538,7 @@ admin.post("/checkout", loginAuth, async (req, res) => {
           generate: {
             vendorId: vendor_id,
             generateDate: getCurrentDateFormatted(),
+            time:getCurrentTime(),
           },
           price: discount,
           userName: data[0].name,
@@ -830,10 +838,7 @@ admin.get("/admin/recieved/request", AdminAithentication, async (req, res) => {
 
 // });
 
-admin.patch(
-  "/vendor/recieved/request/accept/:_id",
-  loginAuth,
-  async (req, res) => {
+admin.patch("/vendor/recieved/request/accept/:_id", loginAuth, async (req, res) => {
     try {
       const { _id } = req.params;
       console.log(_id);
@@ -855,8 +860,11 @@ admin.patch(
           data.receiver.status == "pending")
       ) {
         data.superAdmin.status = "accepted";
+        data.superAdmin.time = getCurrentTime();
         data.sendor.status = "accepted";
+        data.sendor.time = getCurrentTime();
         data.receiver.status = "accepted";
+        data.receiver.time = getCurrentTime();
 
         const paymentsettlemen = new PaymentSettlement({
           requestedBy: {
@@ -868,7 +876,7 @@ admin.patch(
             vendorName: data.receiver.vendorName,
           },
           amount: data.amount,
-          AprovedDate: Date.now(),
+         
           coupon: {
             couponCode: data.coupon.couponCode,
             CouponValue: data.CouponValue,
@@ -877,6 +885,8 @@ admin.patch(
             name: data.user.name,
             userId: data.user.userId,
           },
+          AprovedDate:getCurrentDateFormatted(),
+          AprovedDate:getCurrentTime(),
         });
 
         const isUpdate = await VendorSettlement.findOneAndUpdate(
@@ -893,7 +903,9 @@ admin.patch(
         data.superAdmin.status == "pending"
       ) {
         data.sendor.status = "pending";
+        data.sendor.time = getCurrentTime();
         data.superAdmin.status = "accepted";
+        data.superAdmin.time = getCurrentTime();
         const isUpdate = await VendorSettlement.findOneAndUpdate(
           { _id },
           { ...data }
@@ -902,7 +914,9 @@ admin.patch(
       }
 
       data.superAdmin.status = "requestedback";
+      data.superAdmin.time = getCurrentTime();
       data.receiver.status = "accepted";
+      data.receiver.time = getCurrentTime();
 
       const isUpdate = await VendorSettlement.findOneAndUpdate(
         { _id },
@@ -1205,5 +1219,19 @@ function checkCouponValidity(expirationDate) {
     return false;
   }
 }
+
+function getCurrentTime() {
+  const currentDate = new Date();
+  const hours = currentDate.getHours();
+  const minutes = currentDate.getMinutes();
+  const seconds = currentDate.getSeconds();
+
+  const formattedTime = `${hours}:${minutes}:${seconds}`;
+  return formattedTime;
+}
+
+
+console.log("Current Time:", getCurrentTime());
+
 
 module.exports = admin;
