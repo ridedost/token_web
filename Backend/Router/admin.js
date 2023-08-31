@@ -21,29 +21,35 @@ const coponCode = require("coupon-code");
 const checkoutModel = require("../model/checkout_Model");
 const PaymentSettlement = require("../model/paymentSettle");
 
+
 admin.post("/login/:mobile", async (req, res) => {
-  const { mobile } = req.params;
-  const isAdmin = await Admin.findOne({ phoneNumber: mobile });
-  console.log(isAdmin, "this is admin");
-  if (!isAdmin) {
-    return res.status(404).json({ message: "User not found" });
-  }
+  try {
+    const { mobile } = req.params;
+    const isAdmin = await Admin.findOne({ phoneNumber: mobile });
 
-  const { _id } = isAdmin;
+    if (!isAdmin) {
+      return res.status(404).json({ message: "User not found" });
+    }
 
-  var token = jwt.sign({ userId: _id }, "shhhh");
+    const { _id } = isAdmin;
 
-  if (isAdmin?.role === "admin") {
-    token += "1";
-    return res.status(200).json({ message: "login succesfully", token });
-  }
+    var token = jwt.sign({ userId: _id }, "shhhh");
 
-  if (isAdmin?.role === "vendor") {
-    token = token + "2";
+    if (isAdmin?.role === "admin") {
+      token += "1";
+      return res.status(200).json({ message: "Login successful", token });
+    }
 
-    return res.status(200).json({ message: "login succesfully", token });
+    if (isAdmin?.role === "vendor") {
+      token = token + "2";
+      return res.status(200).json({ message: "Login successful", token });
+    }
+  } catch (error) {
+    console.error("Error during login:", error);
+    return res.status(500).json({ message: "Internal server error" });
   }
 });
+
 
 admin.post("/add", loginAuth, async (req, res) => {
   try {
@@ -129,190 +135,255 @@ admin.post("/add", loginAuth, async (req, res) => {
 });
 
 admin.patch("/update/:id", Adminauth, async (req, res) => {
-  const payload = req.body;
+  try {
+    const payload = req.body;
+    const _id = req.params.id;
 
-  const _id = req.params.id;
-  const updateData = await Admin.findByIdAndUpdate({ _id }, { ...payload });
+    const updateData = await Admin.findByIdAndUpdate({ _id }, { ...payload });
 
-  if (!updateData) {
-    return res.status(400).json({ message: "something went wrong" });
+    if (!updateData) {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+
+    await updateData.save();
+    return res.status(200).json({ message: "Successfully updated data" });
+  } catch (error) {
+    console.error("Error updating data:", error);
+    return res.status(500).json({ message: "Internal server error" });
   }
-
-  await updateData.save();
-  return res.status(200).json({ message: "successFully update data" });
 });
 
-admin.get("/vendor", loginAuth, async (req, res) => {
-  const vendors = await Admin.find();
-  if (vendors.length == 0) {
-    return res.status(404).json({ message: "data not found" });
-  }
 
-  res.status(200).json({ message: "succesfully get the data", vendors });
+admin.get("/vendor", loginAuth, async (req, res) => {
+  try {
+    const vendors = await Admin.find();
+    
+    if (vendors.length === 0) {
+      return res.status(404).json({ message: "Data not found" });
+    }
+    
+    res.status(200).json({ message: "Successfully got the data", vendors });
+  } catch (error) {
+    console.error("Error fetching vendor data:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
 });
 
 admin.patch("/approval/:id", AdminAithentication, async (req, res) => {
-  const { id } = req.params;
-  console.log("thi sis id", id);
-  const isAdmin = await Admin.findOneAndUpdate(
-    { _id: id },
-    { status: "completed" }
-  );
+  try {
+    const { id } = req.params;
+    console.log("this is id", id);
 
-  if (!isAdmin) {
-    return res.status(404).json({ message: "vendor not found" });
-  }
-
-  console.log("this is apporval routes", isAdmin);
-  const { vendorId } = isAdmin;
-
-  const isSuperAdmin = await Admin.find({ _id: vendorId });
-
-  if (isSuperAdmin.role !== "admin") {
-    sendNotification(
-      "success",
-      vendorId,
-      "approved Vendor by Admin",
-      `${isAdmin.phoneNumber} Vendor aproved by Admin`
+    const isAdmin = await Admin.findOneAndUpdate(
+      { _id: id },
+      { status: "completed" }
     );
-  }
 
-  return res.status(200).json({ message: "succesfully Aproved by admin" });
+    if (!isAdmin) {
+      return res.status(404).json({ message: "Vendor not found" });
+    }
+
+    console.log("this is approval route", isAdmin);
+    const { vendorId } = isAdmin;
+
+    const isSuperAdmin = await Admin.findById(vendorId);
+
+    if (isSuperAdmin.role !== "admin") {
+      sendNotification(
+        "success",
+        vendorId,
+        "Approved Vendor by Admin",
+        `${isAdmin.phoneNumber} Vendor approved by Admin`
+      );
+    }
+
+    return res.status(200).json({ message: "Successfully approved by admin" });
+  } catch (error) {
+    console.error("Error during approval:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
 });
 
 admin.patch("/reject/:id", AdminAithentication, async (req, res) => {
-  const { id } = req.params;
+  try {
+    const { id } = req.params;
 
-  const isAdmin = await Admin.findOneAndUpdate(
-    { _id: id },
-    { status: "Reject" }
-  );
-  if (!isAdmin) {
-    return res.status(404).json({ message: "vendor not found" });
-  }
-  const { vendorId } = isAdmin;
-  const isSuperAdmin = await Admin.find({ _id: vendorId });
-
-  if (isSuperAdmin.role !== "admin") {
-    sendNotification(
-      "danger",
-      vendorId,
-      "Rejected Vendor by Admin",
-      `${isAdmin.phoneNumber} Vendor Rejected by Admin`
+    const isAdmin = await Admin.findOneAndUpdate(
+      { _id: id },
+      { status: "Reject" }
     );
-  }
 
-  return res.status(200).json({ message: "succesfully reject  " });
+    if (!isAdmin) {
+      return res.status(404).json({ message: "Vendor not found" });
+    }
+
+    const { vendorId } = isAdmin;
+
+    const isSuperAdmin = await Admin.findById(vendorId);
+
+    if (isSuperAdmin.role !== "admin") {
+      sendNotification(
+        "danger",
+        vendorId,
+        "Rejected Vendor by Admin",
+        `${isAdmin.phoneNumber} Vendor Rejected by Admin`
+      );
+    }
+
+    return res.status(200).json({ message: "Successfully rejected" });
+  } catch (error) {
+    console.error("Error during rejection:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
 });
 
-admin.delete("/vendor/:id", AdminAithentication, async (req, res) => {
-  const { id } = req.params;
-  const isAdmin = await Admin.findOneAndDelete({ _id: id });
 
-  if (!isAdmin) {
-    return res.status(404).json({ message: "Not Found" });
+admin.delete("/vendor/:id", AdminAithentication, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const isAdmin = await Admin.findOneAndDelete({ _id: id });
+
+    if (!isAdmin) {
+      return res.status(404).json({ message: "Not Found" });
+    }
+
+    return res.status(200).json({ message: "Deleted Successfully" });
+  } catch (error) {
+    console.error("Error during deletion:", error);
+    return res.status(500).json({ message: "Internal server error" });
   }
-  return res.status(200).json({ message: "Deleted SuccesFully" });
 });
 
 admin.patch("/vendor/update/:id", AdminAithentication, async (req, res) => {
-  const id = req.params;
-  const data = req.body;
-  const updatedData = await Admin.findOneAndUpdate({ _id: id }, data);
-  if (!updatedData) {
-    return res.status(404).json({ message: "User not Found" });
+  try {
+    const id = req.params.id; // Fixed this line to correctly access the parameter
+    const data = req.body;
+    const updatedData = await Admin.findOneAndUpdate({ _id: id }, data);
+
+    if (!updatedData) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    return res.status(200).json({ message: "Successfully updated" });
+  } catch (error) {
+    console.error("Error during update:", error);
+    return res.status(500).json({ message: "Internal server error" });
   }
-  return res.status(200).json({ message: "succesFully update" });
 });
 
+
 admin.get("/recieved/request", AdminAithentication, async (req, res) => {
-  const _id = req.body.adminId.toString();
+  try {
+    const _id = req.body.adminId.toString();
 
-  const allRequest = await VendorSettlement.find({ "superAdmin.adminId": _id });
-  console.log(allRequest);
+    const allRequest = await VendorSettlement.find({ "superAdmin.adminId": _id });
+    console.log(allRequest);
 
-  if (allRequest.length == 0 || !allRequest) {
-    return res
-      .status(404)
-      .json({ message: "no incoming settlement avavilable.." });
+    if (allRequest.length === 0 || !allRequest) {
+      return res
+        .status(404)
+        .json({ message: "No incoming settlement available.." });
+    }
+
+    res
+      .status(200)
+      .json({ message: "Here are all the pending requests", allRequest });
+  } catch (error) {
+    console.error("Error fetching received requests:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
-
-  res
-    .status(200)
-    .json({ message: "here all the pending request..", allRequest });
 });
 
 admin.post("/forward/:_id", AdminAithentication, async (req, res) => {
-  const { _id } = req.params;
+  try {
+    const { _id } = req.params;
 
-  const forwardRequest = await VendorSettlement.findOne({ _id: _id });
-  console.log(forwardRequest);
-  // forwardRequest.sendor.status = "forwarded";
-  forwardRequest.receiver.status = "pending";
-  forwardRequest.superAdmin.status = "forwarded";
+    const forwardRequest = await VendorSettlement.findOne({ _id: _id });
+    console.log(forwardRequest);
+    // forwardRequest.sendor.status = "forwarded";
+    forwardRequest.receiver.status = "pending";
+    forwardRequest.superAdmin.status = "forwarded";
 
-  const isrequested = await VendorSettlement.findByIdAndUpdate(
-    { _id },
-    { ...forwardRequest }
-  );
+    const isRequested = await VendorSettlement.findByIdAndUpdate(
+      { _id },
+      { ...forwardRequest }
+    );
 
-  if (!isrequested) {
-    return res.status(500).json({ message: "something went wrong" });
+    if (!isRequested) {
+      return res.status(500).json({ message: "Something went wrong" });
+    }
+
+    res
+      .status(200)
+      .json({ message: "Successfully forwarded to vendor", forwardRequest });
+  } catch (error) {
+    console.error("Error forwarding request:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
-
-  res
-    .status(200)
-    .json({ message: "succesfully forwarding to vendor", forwardRequest });
 });
+
 
 admin.patch("/return/:_id", AdminAithentication, async (req, res) => {
-  const { _id } = req.params;
+  try {
+    const { _id } = req.params;
 
-  const data = await VendorSettlement.findOne({ _id });
+    const data = await VendorSettlement.findOne({ _id });
 
-  data.superAdmin.status = "returning";
-  // data.sendor.status = "requested";
-  data.sendor.status = "pending";
+    data.superAdmin.status = "returning";
+    // data.sendor.status = "requested";
+    data.sendor.status = "pending";
 
-  const isUpdate = await VendorSettlement.findByIdAndUpdate(
-    { _id },
-    { ...data }
-  );
+    const isUpdate = await VendorSettlement.findByIdAndUpdate(
+      { _id },
+      { ...data }
+    );
 
-  console.log(isUpdate);
+    console.log(isUpdate);
 
-  if (!isUpdate) {
-    return res.status(500).json({ message: "something went wrong..." });
+    if (!isUpdate) {
+      return res.status(500).json({ message: "Something went wrong..." });
+    }
+
+    return res.status(200).json({ message: "Returned to vendor..." });
+  } catch (error) {
+    console.error("Error during return:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
-
-  return res.status(200).json({ message: "return to vendor..." });
 });
 
+
+
+
 admin.patch("/personalInfo/update", loginAuth, async (req, res) => {
-  const payload = req.body;
-  const _id = req.body.vendorId;
-  const { profileImage } = req.body;
+  try {
+    const payload = req.body;
+    const _id = req.body.vendorId;
+    const { profileImage } = req.body;
 
-  if (profileImage) {
-    const image = await cloudinary.uploader.upload(profileImage, {
-      upload_preset: "ridedost",
-    });
-    req.body.profileImage = image;
+    if (profileImage) {
+      const image = await cloudinary.uploader.upload(profileImage, {
+        upload_preset: "ridedost",
+      });
+      req.body.profileImage = image;
+    }
+
+    console.log(req.body);
+    const updateData = await Admin.findByIdAndUpdate(
+      _id,
+      { $set: req.body },
+      { new: true }
+    );
+
+    if (!updateData) {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+
+    await updateData.save();
+    return res.status(200).json({ message: "Successfully updated data" });
+  } catch (error) {
+    console.error("Error updating personal info:", error);
+    return res.status(500).json({ message: "Internal server error" });
   }
-
-  console.log(req.body);
-  const updateData = await Admin.findByIdAndUpdate(
-    _id,
-    { $set: req.body },
-    { new: true }
-  );
-
-  if (!updateData) {
-    return res.status(400).json({ message: "something went wrong" });
-  }
-  // console.log(updateData);
-  await updateData.save();
-  return res.status(200).json({ message: "successFully update data" });
 });
 
 //get data of single user
@@ -424,6 +495,7 @@ admin.post("/checkout", loginAuth, async (req, res) => {
               couponCode: coponCode.generate(),
               generate: {
                 vendorId: vendor_id,
+                useDate: getCurrentDateFormatted(),
               },
               price: discount,
               userName: data[0].name,
@@ -458,6 +530,7 @@ admin.post("/checkout", loginAuth, async (req, res) => {
           couponCode: coponCode.generate(),
           generate: {
             vendorId: vendor_id,
+            generateDate: getCurrentDateFormatted(),
           },
           price: discount,
           userName: data[0].name,
@@ -494,68 +567,74 @@ admin.post("/checkout", loginAuth, async (req, res) => {
 
 // admin request request
 admin.get("/admin/recieved/request", AdminAithentication, async (req, res) => {
-  const _id = req.body.adminId.toString();
+  try {
+    const _id = req.body.adminId.toString();
 
-  const allRequest = await VendorSettlement.find({
-    "superAdmin.adminId": _id,
-    $or: [
-      {
-        $and: [
-          { "sendor.status": "requested" },
-          { "receiver.status": "pending" },
-          { "superAdmin.status": "pending" },
-        ],
-      },
-      {
-        $and: [
-          { "sendor.status": "requested" },
-          { "receiver.status": "accepted" },
-          { "superAdmin.status": "forwarded" },
-        ],
-      },
-      {
-        $and: [
-          { "sendor.status": "requested" },
-          { "receiver.status": "accepted" },
-          { "superAdmin.status": "requestedback" },
-        ],
-      },
-      {
-        $and: [
-          { "sendor.status": "pending" },
-          { "receiver.status": "accepted" },
-          { "superAdmin.status": "returning" },
-        ],
-      },
-      {
-        $and: [
-          { "sendor.status": "pending" },
-          { "receiver.status": "pending" },
-          { "superAdmin.status": "accepted" },
-        ],
-      },
-      {
-        $and: [
-          { "sendor.status": "requested" },
-          { "receiver.status": "pending" },
-          { "superAdmin.status": "forwarded" },
-        ],
-      },
-    ],
-  });
+    const allRequest = await VendorSettlement.find({
+      "superAdmin.adminId": _id,
+      $or: [
+        {
+          $and: [
+            { "sendor.status": "requested" },
+            { "receiver.status": "pending" },
+            { "superAdmin.status": "pending" },
+          ],
+        },
+        {
+          $and: [
+            { "sendor.status": "requested" },
+            { "receiver.status": "accepted" },
+            { "superAdmin.status": "forwarded" },
+          ],
+        },
+        {
+          $and: [
+            { "sendor.status": "requested" },
+            { "receiver.status": "accepted" },
+            { "superAdmin.status": "requestedback" },
+          ],
+        },
+        {
+          $and: [
+            { "sendor.status": "pending" },
+            { "receiver.status": "accepted" },
+            { "superAdmin.status": "returning" },
+          ],
+        },
+        {
+          $and: [
+            { "sendor.status": "pending" },
+            { "receiver.status": "pending" },
+            { "superAdmin.status": "accepted" },
+          ],
+        },
+        {
+          $and: [
+            { "sendor.status": "requested" },
+            { "receiver.status": "pending" },
+            { "superAdmin.status": "forwarded" },
+          ],
+        },
+      ],
+    });
 
-  console.log(allRequest.length);
+    console.log(allRequest.length);
 
-  if (allRequest.length == 0 || !allRequest) {
-    return res
-      .status(404)
-      .json({ message: "no incoming settlement avavilable.." });
+    if (allRequest.length === 0 || !allRequest) {
+      return res
+        .status(404)
+        .json({ message: "No incoming settlement available.." });
+    }
+
+    res
+      .status(200)
+      .json({ message: "Here are all the pending requests", allRequest });
+  } catch (error) {
+    console.error("Error fetching received requests:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
-
-  res
-    .status(200)
-    .json({ message: "here all the pending request..", allRequest });
 });
+
 
 //vendor recieved request
 // admin.get("/vendor/recieved/request", loginAuth, async (req, res) => {
@@ -755,116 +834,128 @@ admin.patch(
   "/vendor/recieved/request/accept/:_id",
   loginAuth,
   async (req, res) => {
-    const { _id } = req.params;
-    console.log(_id);
-    const data = await VendorSettlement.findOne({ _id });
-    console.log(data);
+    try {
+      const { _id } = req.params;
+      console.log(_id);
+      const data = await VendorSettlement.findOne({ _id });
+      console.log(data);
 
-    if (
-      data.superAdmin.status == "accepted" &&
-      data.receiver.status == "accepted"
-    ) {
-      return res.status(409).json({ message: "already accepeted" });
-    }
-
-    if (
-      (data.superAdmin.status == "returning" &&
-        data.sendor.status == "pending") ||
-      (data.sendor.status == "pending" &&
+      if (
         data.superAdmin.status == "accepted" &&
-        data.receiver.status == "pending")
-    ) {
-      data.superAdmin.status = "accepted";
-      data.sendor.status = "accepted";
+        data.receiver.status == "accepted"
+      ) {
+        return res.status(409).json({ message: "Already accepted" });
+      }
+
+      if (
+        (data.superAdmin.status == "returning" &&
+          data.sendor.status == "pending") ||
+        (data.sendor.status == "pending" &&
+          data.superAdmin.status == "accepted" &&
+          data.receiver.status == "pending")
+      ) {
+        data.superAdmin.status = "accepted";
+        data.sendor.status = "accepted";
+        data.receiver.status = "accepted";
+
+        const paymentsettlemen = new PaymentSettlement({
+          requestedBy: {
+            vendorId: data.sendor.vendorId,
+            vendorName: data.sendor.vendorName,
+          },
+          requestedTo: {
+            vendorId: data.receiver.vendorId,
+            vendorName: data.receiver.vendorName,
+          },
+          amount: data.amount,
+          AprovedDate: Date.now(),
+          coupon: {
+            couponCode: data.coupon.couponCode,
+            CouponValue: data.CouponValue,
+          },
+          user: {
+            name: data.user.name,
+            userId: data.user.userId,
+          },
+        });
+
+        const isUpdate = await VendorSettlement.findOneAndUpdate(
+          { _id },
+          { ...data }
+        );
+        const response = await paymentsettlemen.save();
+        return res.status(409).json({ message: "Accepted", response });
+      }
+
+      if (
+        data.sendor.status == "requested" &&
+        data.receiver.status == "pending" &&
+        data.superAdmin.status == "pending"
+      ) {
+        data.sendor.status = "pending";
+        data.superAdmin.status = "accepted";
+        const isUpdate = await VendorSettlement.findOneAndUpdate(
+          { _id },
+          { ...data }
+        );
+        return res.status(200).json({ message: "Successfully accepted" });
+      }
+
+      data.superAdmin.status = "requestedback";
       data.receiver.status = "accepted";
 
-      const paymentsettlemen = new PaymentSettlement({
-        requestedBy: {
-          vendorId: data.sendor.vendorId,
-          vendorName: data.sendor.vendorName,
-        },
-        requestedTo: {
-          vendorId: data.receiver.vendorId,
-          vendorName: data.receiver.vendorName,
-        },
-        amount: data.amount,
-        AprovedDate: Date.now(),
-        coupon: {
-          couponCode: data.coupon.couponCode,
-          CouponValue: data.CouponValue,
-        },
-        user: {
-          name: data.user.name,
-          userId: data.user.userId,
-        },
-      });
-
       const isUpdate = await VendorSettlement.findOneAndUpdate(
         { _id },
         { ...data }
       );
-      const response = await paymentsettlemen.save();
-      return res.status(409).json({ message: " accepeted", response });
+
+      if (!isUpdate) {
+        return res.status(500).json({ message: "Something went wrong..." });
+      }
+
+      return res.status(200).json({ message: "Successfully accepted" });
+    } catch (error) {
+      console.error("Error during request acceptance:", error);
+      res.status(500).json({ message: "Internal server error" });
     }
-
-    if (
-      data.sendor.status == "requested" &&
-      data.receiver.status == "pending" &&
-      data.superAdmin.status == "pending"
-    ) {
-      data.sendor.status = "pending";
-      data.superAdmin.status = "accepted";
-      const isUpdate = await VendorSettlement.findOneAndUpdate(
-        { _id },
-        { ...data }
-      );
-      return res.status(200).json({ message: "succesfully accepeted" });
-    }
-
-    data.superAdmin.status = "requestedback";
-    data.receiver.status = "accepted";
-
-    const isUpdate = await VendorSettlement.findOneAndUpdate(
-      { _id },
-      { ...data }
-    );
-
-    if (!isUpdate) {
-      return res.status(500).json({ message: "something went wrong..." });
-    }
-
-    return res.status(200).json({ message: "succesfully accepeted" });
   }
 );
+
 
 admin.patch(
   "/vendor/recieved/request/rejected/:_id",
   loginAuth,
   async (req, res) => {
-    const { _id } = req.params;
+    try {
+      const { _id } = req.params;
 
-    const data = await VendorSettlement.findOne({ _id });
+      const data = await VendorSettlement.findOne({ _id });
 
-    if (data.superAdmin.status == "rejected") {
-      return res.status(409).json({ message: "already rejected" });
+      if (data.superAdmin.status == "rejected") {
+        return res.status(409).json({ message: "Already rejected" });
+      }
+
+      data.sender.status = "rejected";
+      data.superAdmin.status = "rejected";
+      data.reciever.status = "rejected";
+
+      const isUpdate = await VendorSettlement.findOneAndUpdate(
+        { _id },
+        { ...data }
+      );
+
+      if (!isUpdate) {
+        return res.status(500).json({ message: "Something went wrong..." });
+      }
+
+      return res.status(200).json({ message: "Successfully rejected" });
+    } catch (error) {
+      console.error("Error during request rejection:", error);
+      res.status(500).json({ message: "Internal server error" });
     }
-
-    data.sender.status = "rejected";
-    data.superAdmin.status = "rejected";
-    data.reciever.status = "rejected";
-
-    const isUpdate = await VendorSettlement.findOneAndUpdate(
-      { _id },
-      { ...data }
-    );
-
-    if (!isUpdate) {
-      return res.status(500).json({ message: "something went wrong..." });
-    }
-
-    return res.status(200).json({ message: "succesfully rejected" });
   }
 );
+
 
 
 

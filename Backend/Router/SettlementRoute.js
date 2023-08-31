@@ -6,46 +6,55 @@ const Admin = require("../model/Admin_Model");
 const { set } = require("mongoose");
 
 const settleMentRoute = express.Router();
-
+const itemsPerPage = 10;
 settleMentRoute.get("/coupon/:TovendorId", loginAuth, async (req, res) => {
-  const usageVendor = req.body.vendorId;
+  try {
+    const usageVendor = req.body.vendorId;
+    const generatedVendor = req.params.TovendorId;
 
-  const generatedVendor = req.params.TovendorId;
+    console.log(usageVendor, generatedVendor);
 
-  console.log(usageVendor, generatedVendor);
+    const coupons = await VendorSettlement.find({
+      "sendor.vendorId": usageVendor,
+      "receiver.vendorId": generatedVendor,
+    });
 
-  const coupons = await VendorSettlement.find({
-    "sendor.vendorId": usageVendor,
-    "receiver.vendorId": generatedVendor,
-  });
+    const request = coupons.filter((e) => {
+      return (
+        e.superAdmin.status !== "returning" &&
+        e.superAdmin.status !== "accepted" &&
+        e.sendor.status !== "accepted" &&
+        e.receiver.status !== "accepted"
+      );
+    });
 
- const request= coupons.filter((e)=>{
-     return e.superAdmin. status!=="returning" && e.superAdmin.status!=="accepted" && e.sendor.status!=="accepted" && e.receiver.status!=="accepted" 
-  })
+    console.log(request);
+    console.log(coupons);
 
-  console.log(request)
- console.log(coupons)
-  if (coupons.length == 0 || !coupons) {
-    return res.status(404).json({ message: "no coupon present" });
+    if (coupons.length === 0 || !coupons) {
+      return res.status(404).json({ message: "No coupon present" });
+    }
+
+    res.status(200).json({ message: "Here are all the coupons", request });
+  } catch (error) {
+    console.error("Error fetching coupons:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
-
-  res.status(200).json({ message: "here all the coupons", request});
 });
 
 // Send request to admin for approved settlemenet....
 
 settleMentRoute.post("/send/:couponCode", loginAuth, async (req, res) => {
   try {
-    //taking vendorId...
+    // Taking vendorId...
     const { vendorId } = req.body;
     const { couponCode } = req.params;
 
-    //date time stamp
-
+    // Date time stamp
     const currentTimestamp = Date.now();
     const currentDate = new Date(currentTimestamp);
 
-    //finding co
+    // Finding coupon
 
     const isSettle = await VendorSettlement.findOne({
       "coupon.couponCode": couponCode,
@@ -57,7 +66,7 @@ settleMentRoute.post("/send/:couponCode", loginAuth, async (req, res) => {
     }
 
     if (isSettle.sendor.status !== "pending") {
-      return res.status(409).json({ message: "you have already requested" });
+      return res.status(409).json({ message: "You have already requested" });
     }
 
     const superAdmin = await Admin.findOne({ role: "admin" });
@@ -81,115 +90,145 @@ settleMentRoute.post("/send/:couponCode", loginAuth, async (req, res) => {
     console.log(isSettle);
 
     if (!CouponSettle) {
-      return res.status(500).json({ message: "something went wrong" });
+      return res.status(500).json({ message: "Something went wrong" });
     }
 
-    res.status(200).json({ message: "You have succesfully send request" });
+    res.status(200).json({ message: "You have successfully sent a request" });
   } catch (error) {
-    console.log(error, "this is error");
-    res.status(500).json({ message: "something went wrong" });
+    console.error("Error while sending request:", error);
+    res.status(500).json({ message: "Something went wrong" });
   }
 });
+
 
 settleMentRoute.get("/recieved", loginAuth, async (req, res) => {
-  const { vendorId } = req.body;
+  try {
+    const { vendorId } = req.body;
 
-  const allrecievedReq = await VendorSettlement.find({
-    "reciever.vendorId": vendorId,
-    "reciever.status": "pending",
-    "superAdmin.status": "forwarded",
-  });
+    const allRecievedReq = await VendorSettlement.find({
+      "reciever.vendorId": vendorId,
+      "reciever.status": "pending",
+      "superAdmin.status": "forwarded",
+    });
 
-  console.log(allrecievedReq, "this is allreceived req...");
+    console.log(allRecievedReq, "this is all received requests...");
 
-  if (allrecievedReq.length == 0 || !allrecievedReq) {
-    return res.status(404).json({ message: "no data found..." });
+    if (allRecievedReq.length == 0 || !allRecievedReq) {
+      return res.status(404).json({ message: "No data found..." });
+    }
+
+    res.status(200).json({ message: "Successfully got the data", data: allRecievedReq });
+  } catch (error) {
+    console.error("Error while fetching received requests:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
-
-  res
-    .status(200)
-    .json({ message: "successfully get the data", data: allrecievedReq });
 });
 
+
 settleMentRoute.patch("/accepted/:_id", loginAuth, async (req, res) => {
-  const { _id } = req.params;
+  try {
+    const { _id } = req.params;
 
-  const data = await VendorSettlement.findOne({ _id });
+    const data = await VendorSettlement.findOne({ _id });
 
-  if (data.superAdmin.status == "accepted") {
-    return res.status(409).json({ message: "already accepeted" });
+    if (data.superAdmin.status === "accepted") {
+      return res.status(409).json({ message: "Already accepted" });
+    }
+
+    data.superAdmin.status = "accepted";
+    data.reciever.status = "accepted";
+
+    const isUpdate = await VendorSettlement.findOneAndUpdate(
+      { _id },
+      { ...data }
+    );
+
+    if (!isUpdate) {
+      return res.status(500).json({ message: "Something went wrong..." });
+    }
+
+    return res.status(200).json({ message: "Successfully accepted" });
+  } catch (error) {
+    console.error("Error while accepting:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
-
-  data.superAdmin.status = "accepted";
-  data.reciever.status = "accepted";
-
-  const isUpdate = await VendorSettlement.findOneAndUpdate(
-    { _id },
-    { ...data }
-  );
-
-  if (!isUpdate) {
-    return res.status(500).json({ message: "something went wrong..." });
-  }
-
-  return res.status(200).json({ message: "succesfully accepeted" });
 });
 
 settleMentRoute.patch("/rejected/:_id", loginAuth, async (req, res) => {
-  const { _id } = req.params;
+  try {
+    const { _id } = req.params;
 
-  const data = await VendorSettlement.findOne({ _id });
+    const data = await VendorSettlement.findOne({ _id });
 
-  if (data.superAdmin.status == "accepted") {
-    return res.status(409).json({ message: "already accepeted" });
+    if (data.superAdmin.status === "accepted") {
+      return res.status(409).json({ message: "Already accepted" });
+    }
+
+    data.superAdmin.status = "rejected";
+    data.reciever.status = "rejected";
+
+    const isUpdate = await VendorSettlement.findOneAndUpdate(
+      { _id },
+      { ...data }
+    );
+
+    if (!isUpdate) {
+      return res.status(500).json({ message: "Something went wrong..." });
+    }
+
+    return res.status(200).json({ message: "Successfully rejected" });
+  } catch (error) {
+    console.error("Error while rejecting:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
-
-  data.superAdmin.status = "rejected";
-  data.reciever.status = "rejected";
-
-  const isUpdate = await VendorSettlement.findOneAndUpdate(
-    { _id },
-    { ...data }
-  );
-
-  if (!isUpdate) {
-    return res.status(500).json({ message: "something went wrong..." });
-  }
-
-  return res.status(200).json({ message: "succesfully accepeted" });
 });
+
 
 settleMentRoute.patch("/final/accept/:_id", loginAuth, async (req, res) => {
-  const data = await VendorSettlement.findOne({ _id });
+  try {
+    const { _id } = req.params;
 
-  data.superAdmin.status = "accepted";
+    const data = await VendorSettlement.findOne({ _id });
 
-  data.sendor.status = "accepted";
+    data.superAdmin.status = "accepted";
+    data.sendor.status = "accepted";
 
-  const isUpdate = VendorSettlement.findOneAndUpdate({ _id }, { ...data });
+    const isUpdate = await VendorSettlement.findOneAndUpdate({ _id }, { ...data });
 
-  if (!isUpdate) {
-    return res.status(500).json({ message: "something went wrong..." });
+    if (!isUpdate) {
+      return res.status(500).json({ message: "Something went wrong..." });
+    }
+
+    return res.status(200).json({ message: "Successfully accepted" });
+  } catch (error) {
+    console.error("Error while final accept:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
-
-  res.status(200).json({ message: "succesfully accepted" });
 });
+
 
 settleMentRoute.patch("/final/rejected/:_id", loginAuth, async (req, res) => {
-  const data = await VendorSettlement.findOne({ _id });
+  try {
+    const { _id } = req.params;
 
-  data.superAdmin.status = "rejected";
+    const data = await VendorSettlement.findOne({ _id });
 
-  data.sendor.status = "rejected";
+    data.superAdmin.status = "rejected";
+    data.sendor.status = "rejected";
 
-  const isUpdate = VendorSettlement.findOneAndUpdate({ _id }, { ...data });
+    const isUpdate = await VendorSettlement.findOneAndUpdate({ _id }, { ...data });
 
-  if (!isUpdate) {
-    return res.status(500).json({ message: "something went wrong..." });
+    if (!isUpdate) {
+      return res.status(500).json({ message: "Something went wrong..." });
+    }
+
+    return res.status(200).json({ message: "Successfully rejected" });
+  } catch (error) {
+    console.error("Error while final reject:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
-
-  res.status(200).json({ message: "succesfully accepted" });
 });
+
 
 
 

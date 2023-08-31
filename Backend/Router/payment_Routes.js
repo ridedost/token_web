@@ -11,202 +11,195 @@ const VendorSettlement = require("../model/Settlement");
 const { userModel } = require("../model/user_Model");
 
 
-
 paymentRouter.post("/", adminAuth, async (req, res) => {
-  const payload = req.body;
-  const { name } = payload;
-  const { couponCode, vendorID, productId } = payload;
+  try {
+    const payload = req.body;
+    const { name } = payload;
+    const { couponCode, vendorID, productId } = payload;
 
-  const isProduct = await productModel.findOne({ _id: productId });
+    const isProduct = await productModel.findOne({ _id: productId });
 
-  payload.amount = isProduct.price;
+    payload.amount = isProduct.price;
 
-  if (couponCode) {
-    const isCouponValid = await CouponModel.findOne({ couponCode });
-    const isVendor = await Admin.findOne({ _id: vendorID });
-    if (isCouponValid.status == "Invalid") {
-      return res.status(400).json({ message: "Coupon is Invalid" });
+    if (couponCode) {
+      const isCouponValid = await CouponModel.findOne({ couponCode });
+      const isVendor = await Admin.findOne({ _id: vendorID });
+      if (isCouponValid.status == "Invalid") {
+        return res.status(400).json({ message: "Coupon is Invalid" });
+      }
+      console.log("this is coupon", isCouponValid);
+
+      const { cash } = isVendor;
+      const { point } = isCouponValid;
+      const pointValue = +point * +cash;
+
+      payload.actualAmount = +payload.amount - +pointValue;
+      payload.pointValue = pointValue;
+
+      isCouponValid.redeem.vendorId = vendorID;
+      isCouponValid.redeem.useDate = new Date();
+      isCouponValid.status = "Invalid";
+
+      await CouponModel.findOneAndUpdate(
+        { couponCode: isCouponValid.couponCode },
+        isCouponValid,
+        { new: true }
+      );
+
+      const vendorId = isCouponValid.generate.vendorId;
+
+      sendNotification(
+        "success",
+        vendorId,
+        "Coupon has been Used",
+        "Your coupon has been used by other vendor"
+      );
+
+      //sendor vendor finding....
+
+      const receiverVendor = await Admin.findOne({ _id: vendorId });
+
+      //reciever vendor finding....
+
+      const sendorVendor = await Admin.findOne({
+        _id: isCouponValid.redeem.vendorId,
+      });
+
+      //user details finding ...
+      const { userID } = isCouponValid;
+
+      const isUser = await userModel.findOne({ _id: isCouponValid.userID });
+
+      const settlementObj = {
+        sendor: {
+          vendorId: sendorVendor._id,
+          vendorName: sendorVendor.name,
+        },
+        reciever: {
+          vendorId: receiverVendor._id,
+          vendorName: receiverVendor.name,
+        },
+        amount: pointValue,
+        CouponValue: isCouponValid.point,
+        coupon: {
+          Date: new Date(),
+          couponCode: isCouponValid.couponCode,
+        },
+        user: {
+          name: isUser.name,
+          userId: isCouponValid.userID,
+        },
+      };
+
+      const isSettlement = await VendorSettlement(settlementObj);
+
+      await isSettlement.save();
     }
-    console.log("this is coupon", isCouponValid);
 
-    const { cash } = isVendor;
-    const { point } = isCouponValid;
-    const pointValue = +point * +cash;
+    const isPayment = await paymentModel(payload);
 
-    payload.actualAmount = +payload.amount - +pointValue;
-    payload.pointValue = pointValue;
+    if (!isPayment) {
+      return res.status(500).json({ message: "Internal server error" });
+    }
 
-    isCouponValid.redeem.vendorId = vendorID;
-    isCouponValid.redeem.useDate = new Date();
-    isCouponValid.status = "Invalid";
+    const { amount, userID } = await isPayment.save();
 
-    await CouponModel.findOneAndUpdate(
-      { couponCode: isCouponValid.couponCode },
-      isCouponValid,
-      { new: true }
-    );
+    sendNotification("success", userID, "Payment Done", `${amount} payment Done`);
 
-    const vendorId = isCouponValid.generate.vendorId;
-
-    sendNotification(
-      "success",
-      vendorId,
-      "Coupon has been Used",
-      "Your coupon has been used by other vendor"
-    );
-
- //sendor vendor finding....
-
-    const receiverVendor = await Admin.findOne({ _id: vendorId });
-
-    //reciever vendor finding....
-
-
-    const sendorVendor = await Admin.findOne({
-      _id: isCouponValid.redeem.vendorId,
-    });
-
-
-    //user details finding ...
-    const { userID } = isCouponValid;
-    console.log("thi is coupons ", isCouponValid);
-    
-    const isUser = await userModel.findOne({ _id: isCouponValid.userID });
-
-    const settlementObj = {
-      sendor: {
-        vendorId: sendorVendor._id, // Initialize with the appropriate default value
-        vendorName: sendorVendor.name, // Initialize with the appropriate default value
-      },
-      reciever: {
-        vendorId: receiverVendor._id , // Initialize with the appropriate default value
-        vendorName: receiverVendor.name, // Initialize with the appropriate default value
-      },
-      amount: pointValue, // Initialize with the appropriate default value
-      CouponValue: isCouponValid.point, // Initialize with the appropriate default value
-      // Initialize with the appropriate default value
-      coupon: {
-        Date: new Date(), // Initialize with the appropriate default value
-        couponCode: isCouponValid.couponCode, // Initialize with the appropriate default value
-      },
-      user: {
-        name: isUser.name, // Initialize with the appropriate default value
-        userId: isCouponValid.userID, // Initialize with the appropriate default value
-      },
+    const coupon = {
+      point: "",
+      userId: "",
+      expirationDate: "",
+      status: "",
+      couponCode: "",
+      generate: {},
+      redeem: {},
     };
 
-    const isSettlement = await VendorSettlement(settlementObj);
+    /// send new coupon
 
-    await isSettlement.save();
-  }
+    if (amount >= 1000 && amount <= 2000) {
+      coupon.point = Math.floor(Math.random() * 6) + 10;
+      coupon.userID = userID;
+      const currentDate = new Date();
+      const day = currentDate.getDate();
+      let month = currentDate.getMonth() + 7;
+      month = +month % 12;
 
+      if (month <= 9) {
+        month = "0" + month;
+      }
+      const year = currentDate.getFullYear();
+      const fullDate = year + "-" + month + "-" + day;
 
+      coupon.expirationDate = fullDate;
+      coupon.status = "valid";
 
+      coupon.couponCode = coponCode.generate();
 
+      coupon.generate.vendorId = vendorID;
+      coupon.userName = name;
 
-  const isPayment = await paymentModel(payload);
+      const newCoupon = await CouponModel(coupon);
 
-  if (!isPayment) {
-    return res.status(500).json({ message: "Internal server error" });
-  }
+      await newCoupon.save();
 
-  const { amount, userID } = await isPayment.save();
-
-  sendNotification("success", userID, "Payment Done", `${amount} payment Done`);
-
-  const coupon = {
-    point: "",
-    userId: "",
-    expirationDate: "",
-    status: "",
-    couponCode: "",
-    generate: {},
-    redeem: {},
-  };
-
-
-
-  /// send new coupon
-
-  if (amount >= 1000 && amount <= 2000) {
-    coupon.point = Math.floor(Math.random() * 6) + 10;
-    coupon.userID = userID;
-    const currentDate = new Date();
-    const day = currentDate.getDate();
-    let month = currentDate.getMonth() + 7; // Months are zero-indexed, so we add 1
-    month = +month % 12;
-
-    if (month <= 9) {
-      month = "0" + month;
+      sendNotification(
+        "success",
+        userID,
+        "Get Coupon",
+        `You have get a coupon ${coupon}`
+      );
+      return res
+        .status(200)
+        .json({ message: "successfully payment and get coupon", coupon });
     }
-    const year = currentDate.getFullYear();
-    const fullDate = year + "-" + month + "-" + day;
 
-    coupon.expirationDate = fullDate;
-    coupon.status = "valid";
+    /// send new coupon
 
-    coupon.couponCode = coponCode.generate();
+    if (amount >= 2500) {
+      coupon.point = Math.floor(Math.random() * 6) + 20;
+      coupon.userID = userID;
+      const currentDate = new Date();
+      const day = currentDate.getDate();
+      let month = currentDate.getMonth() + 7;
+      month = +month % 12;
 
-    coupon.generate.vendorId = vendorID;
-    coupon.userName = name;
+      if (month <= 9) {
+        month = "0" + month;
+      }
+      const year = currentDate.getFullYear();
+      const fullDate = year + "-" + month + "-" + day;
 
-    const newCoupon = await CouponModel(coupon);
+      coupon.expirationDate = fullDate;
+      coupon.status = "valid";
 
-    await newCoupon.save();
+      coupon.couponCode = coponCode.generate();
 
-    sendNotification(
-      "success",
-      userID,
-      "Get Coupon",
-      `You have get a coupon ${coupon}`
-    );
-    return res
-      .status(200)
-      .json({ message: "succesfully payment and get coupon", coupon });
-  }
+      coupon.generate.vendorId = vendorID;
+      coupon.userName = name;
 
+      const newCoupon = await CouponModel(coupon);
 
-  /// send new coupon
+      await newCoupon.save();
+      sendNotification(
+        "success",
+        userID,
+        "Get Coupon",
+        `You have get a coupon ${coupon}`
+      );
 
-
-  if (amount >= 2500) {
-    coupon.point = Math.floor(Math.random() * 6) + 20;
-    coupon.userID = userID;
-    const currentDate = new Date();
-    const day = currentDate.getDate();
-    let month = currentDate.getMonth() + 7; // Months are zero-indexed, so we add 1
-    month = +month % 12;
-
-    if (month <= 9) {
-      month = "0" + month;
+      return res
+        .status(200)
+        .json({ message: "successfully payment and get coupon", coupon });
     }
-    const year = currentDate.getFullYear();
-    const fullDate = year + "-" + month + "-" + day;
 
-    coupon.expirationDate = fullDate;
-    coupon.status = "valid";
-
-    coupon.couponCode = coponCode.generate();
-
-    coupon.generate.vendorId = vendorID;
-    coupon.userName = name;
-
-    const newCoupon = await CouponModel(coupon);
-
-    await newCoupon.save();
-    sendNotification(
-      "success",
-      userID,
-      "Get Coupon",
-      `You have get a coupon ${coupon}`
-    );
-
-    return res
-      .status(200)
-      .json({ message: "succesfully payment and get coupon", coupon });
+    res.status(500).json({ message: "payment successfully completed" });
+  } catch (error) {
+    console.error("Error while processing payment:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
-
-  res.status(500).json({ message: "payment succesfully completed" });
 });
+
 
 module.exports = paymentRouter;

@@ -1,23 +1,27 @@
 const jwt = require("jsonwebtoken");
 
 const userAuth = (req, res, next) => {
-  const auth = req.headers.authorization;
+  try {
+    const auth = req.headers.authorization;
+    const token = auth?.split(" ")[1];
+    const decoded = jwt.verify(token, "shhhhh");
 
-  const token = auth?.split(" ")[1];
+    if (!decoded) {
+      return res.status(401).json({ message: "User is not authorized" });
+    }
 
-  const decoded = jwt.verify(token, "shhhhh");
+    const userId = decoded.userId;
 
-  if (!decoded) {
-    return res.status(404).json({ message: "User is not authorised" });
+    req.body.userId = userId;
+
+    next();
+  } catch (error) {
+    console.error("userAuth error:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
-
-  const userId = decoded.userId;
-
-  req.body.userId = userId;
-
-  next();
-
- 
 };
+
+
+
 
 module.exports = { userAuth };

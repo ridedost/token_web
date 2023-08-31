@@ -9,22 +9,30 @@ const AdminModel = require("../model/Admin_Model");
 const user_Router = express.Router();
 
 user_Router.post("/register", async (req, res) => {
-  const { mobile } = req.body;
-  const data = await userModel.findOne({ mobile });
-  if (data) {
-    return res.status(409).json({ message: "user is already present" });
+  try {
+    const { mobile } = req.body;
+    const data = await userModel.findOne({ mobile });
+    
+    if (data) {
+      return res.status(409).json({ message: "User is already present" });
+    }
+    
+    const user = new userModel({ ...req.body });
+    const details = await user.save();
+    
+    if (!details) {
+      return res.status(500).json({ message: "Internal Server Error" });
+    }
+
+    var token = jwt.sign({ userId: user._id }, "shhhhh");
+
+    return res.status(201).json({ message: "User created successfully", token });
+  } catch (error) {
+    console.error("Error while user registration:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
-
-  const user = new userModel({ ...req.body });
-  const details = await user.save();
-  if (!details) {
-    res.status(500).json({ message: "Internal Server Error" });
-  }
-
-  var token = jwt.sign({ userId: user._id }, "shhhhh");
-
-  res.status(201).json({ message: "user created succesFully", token });
 });
+
 
 user_Router.post("/login/:mob", async (req, res) => {
   try {
@@ -47,65 +55,80 @@ user_Router.post("/login/:mob", async (req, res) => {
 });
 
 user_Router.get("/coupon", userAuth, async (req, res) => {
-  const { userId } = req.body;
-  console.log(userId, "this is userId");
-  const coupons = await couponModel.find({ userID: userId });
+  try {
+    const { userId } = req.body;
+    console.log(userId, "this is userId");
+    const coupons = await couponModel.find({ userID: userId });
 
-  if (!coupons) {
-    return res.status(404).json({ message: "there is something went wrong" });
+    if (!coupons) {
+      return res.status(404).json({ message: "There is something went wrong" });
+    }
+
+    if (coupons.length === 0) {
+      return res.status(404).json({ message: "No Coupons are Available" });
+    }
+
+    return res.status(200).json({ message: "Get all the Coupons", coupons });
+  } catch (error) {
+    console.error("Error while getting user coupons:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
-
-  if (coupons.length == 0) {
-    return res.status(404).json({ message: "No Coupons are Available" });
-  }
-
-  return res.status(200).json({ message: "get All the Coupons", coupons });
-  // res.send('done')
 });
 
 user_Router.get("/vendor/list", userAuth, async (req, res) => {
-  const Admins = await AdminModel.find({ status: "completed" });
+  try {
+    const Admins = await AdminModel.find({ status: "completed" });
 
-  if (!Admins) {
-    return res.status(404).json({ message: "something went wrong" });
+    if (!Admins) {
+      return res.status(404).json({ message: "Something went wrong" });
+    }
+
+    if (Admins.length === 0) {
+      return res.status(200).json({ message: "No vendors are available", Admins });
+    }
+
+    return res.status(200).json({ message: "Here is a list of vendors", Admins });
+  } catch (error) {
+    console.error("Error while getting vendor list:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
-
-  if (Admins.length == 0) {
-    return res.status(200).json({ message: "NO vendor are available", Admins });
-  }
-
-  return res.status(200).json({ message: "here are list of vendor", Admins });
 });
 
 //user profile update
 user_Router.patch("/profile/update", userAuth, async (req, res) => {
-  const { userId } = req.body;
-  const payload = req.body;
+  try {
+    const { userId } = req.body;
+    const payload = req.body;
 
-  const {profileImage}=req.body
-  // console.log(profileImage)
-  if (profileImage) {
-    const image = await cloudinary.uploader.upload(profileImage, {
-      upload_preset: "ridedost",
-  });
+    const { profileImage } = req.body;
 
-  req.body.profileImage=image
- console.log(req.body)
- }
-  const updatedProfile = await userModel.findOneAndUpdate(
-    { _id: userId },
-    { $set: req.body },
-    { new: true }
-  );
+    if (profileImage) {
+      const image = await cloudinary.uploader.upload(profileImage, {
+        upload_preset: "ridedost",
+      });
 
-  if (!updatedProfile) {
-    return res.status(404).json({ message: "something went wrong" });
+      req.body.profileImage = image;
+    }
+
+    const updatedProfile = await userModel.findOneAndUpdate(
+      { _id: userId },
+      { $set: req.body },
+      { new: true }
+    );
+
+    if (!updatedProfile) {
+      return res.status(404).json({ message: "Something went wrong" });
+    }
+
+    return res
+      .status(200)
+      .json({ message: "Successfully updated profile", updatedProfile });
+  } catch (error) {
+    console.error("Error while updating profile:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
-
-  return res
-    .status(200)
-    .json({ message: "succesFully updated Profile", updatedProfile });
 });
+
 
 //get data of single user
 user_Router.get("/personalInfo",userAuth,async(req,res)=>{
@@ -122,30 +145,34 @@ user_Router.get("/personalInfo",userAuth,async(req,res)=>{
   
  })
  
+ user_Router.get("/wallet", userAuth, async (req, res) => {
+  try {
+    const { userId } = req.body;
 
-user_Router.get("/wallet", userAuth, async (req, res) => {
-  const { userId } = req.body;
+    const coupons = await couponModel.find({ userID: userId });
 
-  const coupons = await couponModel.find({ userID: userId });
+    if (!coupons) {
+      return res.status(404).json({ message: "Something went wrong" });
+    }
 
-  if (!coupons) {
-    return res.status(404).json({ message: "somwthing went wrong" });
+    if (coupons.length === 0) {
+      return res.status(200).json({ message: "No points available", point: 0 });
+    }
+
+    let point = 0;
+
+    coupons.forEach((ele) => {
+      point += +ele.point;
+    });
+
+    return res.status(200).json({ message: "Here are all the Points", point });
+  } catch (error) {
+    console.error("Error while fetching wallet:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
-
-  if (coupons.length == 0) {
-    return res.status(200).json({ message: "no point available", point: 0 });
-  }
-
-  let point = 0;
-
-  coupons.forEach((ele) => {
-    point += +ele.point;
-  });
-
-  return res.status(200).json({ message: "Here are all the Points", point });
-
-  res.send("done");
 });
+
+
 
 
 

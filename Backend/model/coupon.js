@@ -9,6 +9,7 @@ const couponSchema = mongoose.Schema({
   couponCode: { type: String, required: true },
   generate: {
     vendorId: { type: String, required: true },
+    generateDate: { type: String, default: "N/A" },
   },
   redeem: {
     vendorId: { type: String, default: "N/A" },
