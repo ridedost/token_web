@@ -27,6 +27,5 @@ app.use("/admin/settle", settleMentRoute);
 app.use("/admin/dailyreport", dailyReport);
 app.listen(4200, async () => {
   console.log("port is listing 4200");
-  console.log("new deployent");
   await connection;
 });
