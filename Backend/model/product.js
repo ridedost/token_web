@@ -6,7 +6,9 @@ const ProductSchema = mongoose.Schema({
     name :{type:String, required:true},
     rating :{type:String, required:true},
     price: {type:String,required:true},
-    vendorId:{type: String,required:true}
+    vendorId:{type: String,required:true},
+    productimage:{type:String,required:true},
+    description:{type:String,required:true}
 })
 
 

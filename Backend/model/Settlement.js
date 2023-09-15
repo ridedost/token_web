@@ -6,6 +6,7 @@ const vendorSettlementSchema = mongoose.Schema({
     vendorName: { type: String, required: true },
     Date:{ type: String, default: "N/A" },
    time:{type:String},
+   reject_region:{type:String},
     status: {
       type: String,
       enum: ["pending", "requested", 'accepted','forwarded',"rejected"],
@@ -17,6 +18,7 @@ const vendorSettlementSchema = mongoose.Schema({
     adminId: { type: String },
     time:{type:String},
     Date:{ type: String, default: "N/A" },
+    reject_region:{type:String},
     status: {
       type: String,
       enum: ["pending", "forwarded", 'returning',"requestedback","accepted","rejected"],
@@ -27,6 +29,7 @@ const vendorSettlementSchema = mongoose.Schema({
     vendorId: { type: String, required: true },
     vendorName: { type: String, required: true },
     Date:{ type: String, default: "N/A" },
+    reject_region:{type:String},
     time:{type:String},
     status: {
       type: String,

@@ -36,10 +36,10 @@ const superAdminSchema = new mongoose.Schema({
     type: String,
     default: "pending",
   },
-  // companyLogo:{
-  //   type:Object,
-  //   required:true
-  // },
+  companyLogo:{
+    type:String,
+    required:true
+  },
   address: {
     type: String,
     required: true,
@@ -49,7 +49,7 @@ const superAdminSchema = new mongoose.Schema({
     required: true,
   },
   id_proof: {
-    type: Object,
+    type: String,
     required: true,
   },
   thresholdvalue: {
@@ -65,7 +65,7 @@ const superAdminSchema = new mongoose.Schema({
     type: String,
   },
   profileImage: {
-    type: Object,
+    type: String,
   },
   vendorId: { type: String, default: "N/A" },
 });

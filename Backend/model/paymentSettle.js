@@ -18,7 +18,7 @@ requestedTo: {
   AprovedDate: {
     type: String,
   },
-  AprovedDate: {
+  AprovedTime: {
     type: String,
   },
   coupon: {

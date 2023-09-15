@@ -10,7 +10,8 @@ const dailyReportSchema = mongoose.Schema({
    totalAmountGive:{ type: Number,},
    totalAmountTake:{ type: Number,},
    createdAt:  { type: String, default: "N/A" },
-   time:{type:String}
+   time:{type:String},
+   csvfileurl:{type:String}
   
 });
 

@@ -11,14 +11,18 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "axios": "^1.5.0",
     "cloudinary": "^1.40.0",
     "cors": "^2.8.5",
     "coupon-code": "^0.4.5",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
     "firebase-admin": "^11.10.1",
+    "json2csv": "^6.0.0-alpha.2",
     "jsonwebtoken": "^9.0.0",
     "mongoose": "^7.3.1",
-    "nodemon": "^2.0.22"
+    "node-cron": "^3.0.2",
+    "nodemon": "^2.0.22",
+    "ntp-client": "^0.5.3"
   }
 }

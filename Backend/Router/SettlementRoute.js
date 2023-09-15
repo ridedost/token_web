@@ -6,9 +6,12 @@ const Admin = require("../model/Admin_Model");
 const { set } = require("mongoose");
 
 const settleMentRoute = express.Router();
-const itemsPerPage = 10;
+const itemsPerPage = 8;
 settleMentRoute.get("/coupon/:TovendorId", loginAuth, async (req, res) => {
   try {
+    const page = parseInt(req.query.page) || 1;
+    const startIndex = (page - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
     const usageVendor = req.body.vendorId;
     const generatedVendor = req.params.TovendorId;
 
@@ -19,6 +22,8 @@ settleMentRoute.get("/coupon/:TovendorId", loginAuth, async (req, res) => {
       "receiver.vendorId": generatedVendor,
     });
 
+
+
     const request = coupons.filter((e) => {
       return (
         e.superAdmin.status !== "returning" &&
@@ -27,15 +32,18 @@ settleMentRoute.get("/coupon/:TovendorId", loginAuth, async (req, res) => {
         e.receiver.status !== "accepted"
       );
     });
-
+    const itemsToSend = request .slice(startIndex, endIndex);
+    const totalPages = Math.ceil(request .length / itemsPerPage);
     console.log(request);
     console.log(coupons);
 
-    if (coupons.length === 0 || !coupons) {
-      return res.status(404).json({ message: "No coupon present" });
+    if ( request.length === 0 || !coupons) {
+      return res.status(204).json({ message: "No coupon present" });
     }
 
-    res.status(200).json({ message: "Here are all the coupons", request });
+    res.status(200).json({ message: "Here are all the coupons", request :itemsToSend ,
+    currentPage: page,
+    totalPages: totalPages});
   } catch (error) {
     console.error("Error fetching coupons:", error);
     res.status(500).json({ message: "Internal server error" });

@@ -55,7 +55,7 @@ const AdminAithentication= async (req, res, next) => {
 const loginAuth = async (req, res, next) => {
   try {
     const auth = req.headers.authorization;
-    // console.log(auth);
+ 
     const token = auth?.split(" ")[1];
     const decoded = jwt.verify(token, "shhhh");
     // console.log(decoded.userId)
@@ -63,9 +63,9 @@ const loginAuth = async (req, res, next) => {
     // console.log(decoded.userId)
     req.body.vendorId = decoded.userId;
 
-    if (isAdmin?.role === "admin" || isAdmin?.role === "vendor") {
-      req.body.status = "completed";
-    }
+    // if (isAdmin?.role === "admin" || isAdmin?.role === "vendor") {
+    //   req.body.status = "completed";
+    // }
 
     if (isAdmin?.status === "completed") {
       next();
