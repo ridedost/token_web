@@ -800,11 +800,11 @@ admin.post("/checkout", loginAuth, async (req, res) => {
   try {
     if (data && data.length > 0) {
       console.log(thresholdvalue[0].thresholdvalue);
-
-      if (thresholdvalue && thresholdvalue.length > 0 && req.body.coupon) {
-        const couponValid = await CouponModel.find({
-          couponCode: req.body.coupon,
-        });
+      const couponValid = await CouponModel.find({
+        couponCode: req.body.coupon,
+      });
+      if (thresholdvalue && thresholdvalue.length > 0 && req.body.coupon ) {
+       
         console.log("b",couponValid.length)
         if( couponValid.length===0){
           return res.status(400).json({ error: "Coupon is not valid. Please enter a valid coupon code." });
@@ -820,6 +820,13 @@ admin.post("/checkout", loginAuth, async (req, res) => {
 
         let valid = checkCouponValidity(couponValid[0].expirationDate);
         if (valid && couponValid[0].status == "valid") {
+          if(req.body.amount<couponValid[0].price){
+            return res
+            .status(404)
+            .json(
+              `coupon is point is exceed`
+            );
+          }
           req.body.amount = req.body.amount - couponValid[0].price;
           console.log(req.body.amount);
           const updateData = {
@@ -920,11 +927,11 @@ admin.post("/checkout", loginAuth, async (req, res) => {
             
             const info = new checkoutModel(req.body);
             const respons = await info.save();
-            res
-              .status(200)
-              .json(
-                `${data[0].name} your payment is done  of  ${req.body.amount} rupees`
-              );
+            // res
+            //   .status(200)
+            //   .json(
+            //     `${data[0].name} your payment is done  of  ${req.body.amount} rupees`
+            //   );
             // return res.status(200).json({ message: "Accepted"});
           }
 
@@ -1854,6 +1861,7 @@ admin.get("/wallet", loginAuth, async (req, res) => {
 
 
 admin.patch("/vendor/recieved/request/rejected/:_id",loginAuth,async (req, res) => {
+ 
   try {
     console.log(req.body)
     const { _id } = req.params;
@@ -1887,6 +1895,8 @@ admin.patch("/vendor/recieved/request/rejected/:_id",loginAuth,async (req, res) 
   }
 }
 );
+
+
 
 admin.get("/vendor/rejected/request",loginAuth,async (req, res) => {
   console.log("hhcc")

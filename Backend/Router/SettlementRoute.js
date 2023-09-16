@@ -29,7 +29,8 @@ settleMentRoute.get("/coupon/:TovendorId", loginAuth, async (req, res) => {
         e.superAdmin.status !== "returning" &&
         e.superAdmin.status !== "accepted" &&
         e.sendor.status !== "accepted" &&
-        e.receiver.status !== "accepted"
+        e.receiver.status !== "accepted"&&
+        e.superAdmin.status!=="rejected"
       );
     });
     const itemsToSend = request .slice(startIndex, endIndex);
