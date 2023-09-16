@@ -7,7 +7,7 @@ const dailyReportSchema = mongoose.Schema({
    totalSendRequest:{ type: Number,  },
    totalAproveByAdmin:{ type: Number,  },
    totalForwardByAdmin:{ type: Number, },
-   totalAmountGive:{ type: Number,},
+   totalAmountGive:[String],
    totalAmountTake:{ type: Number,},
    createdAt:  { type: String, default: "N/A" },
    time:{type:String},

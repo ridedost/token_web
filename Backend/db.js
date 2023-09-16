@@ -6,3 +6,5 @@ const url =
 const connection = mongoose.connect(url);
 
 module.exports = { connection };
+
+//"mongodb+srv://chandnwj:chandbabu@cluster0.jsk2z6k.mongodb.net/token-app?retryWrites=true&w=majority"

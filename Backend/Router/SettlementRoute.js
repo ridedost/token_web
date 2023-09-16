@@ -30,7 +30,9 @@ settleMentRoute.get("/coupon/:TovendorId", loginAuth, async (req, res) => {
         e.superAdmin.status !== "accepted" &&
         e.sendor.status !== "accepted" &&
         e.receiver.status !== "accepted"&&
-        e.superAdmin.status!=="rejected"
+        e.superAdmin.status!=="rejected"&&
+        e.sendor.status!=="rejected"&&
+        e.receiver.status!=="rejected"
       );
     });
     const itemsToSend = request .slice(startIndex, endIndex);

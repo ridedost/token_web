@@ -258,6 +258,8 @@ const task = async () => {
       time: getCurrentTime(),
       
     });
+
+ 
     const result = await dailyReport.save();
 
     const currentDate = new Date();
@@ -269,7 +271,7 @@ const task = async () => {
       totalSendRequest: 1,
       totalAproveByAdmin: 1,
       totalForwardByAdmin: 1,
-      totalAmountGive: 1,
+      totalAmountGive: ["b","c","d"],
       totalAmountTake: 1,
       createdAt: 1,
       time: 1,

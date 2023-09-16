@@ -162,13 +162,16 @@ app.use("/admin/coupons", Coupon_validate);
 app.use("/paymentsettlement", paymentSetlement)
 app.use("/admin/settle", settleMentRoute);
 app.use("/admin/dailyreport", dailyReport);
-app.use("/notification",notification);
+app.use("/notification",notification)
+// app.listen(4000, async () => {
+//   console.log("port is listing 4000");
+//   await connection;
+// });
 
 const port = process.env.PORT || 4200;
 app.listen(port, () => {
     console.log(`Server listening on port ${port}`);
 });
-
 
 function getCurrentDateFormatted() {
   const today = new Date();
