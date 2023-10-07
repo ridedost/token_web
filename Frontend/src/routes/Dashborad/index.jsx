@@ -1,95 +1,126 @@
-import React, { useLayoutEffect, useEffect, useState } from "react";
-import Cards from "../../components/Cards";
-import { AiOutlineUser } from "react-icons/ai";
-import { BsFillHeartFill } from "react-icons/bs";
-import { FiCalendar } from "react-icons/fi";
-import VendorsTable from "../../components/VendorsTable";
-import CouponsTable from "../../components/CouponsTable";
-import { getAllVendors, getAllCoupons, getAdminInfo } from "../../Api/adminApi";
-import { vendorsList, getAllUserCoupons } from "../../Api/userApi";
-import { setFetching } from "../../redux/reducer/fetching";
-import { useDispatch } from "react-redux";
-import "./index.css";
-import ProfileDashboard from "../../components/ProfileDashboard";
-import ViewAllVendorsPoupop from "../../components/ViewAllVendorsPoupop";
-import ViewAllCouponPoupop from "../../components/ViewAllCouponPoupop";
-import Amcharts from "../../Charts/Amcharts";
-import DonutChart from "../../Charts/DonutChart";
+/** @format */
+
+import React, { useLayoutEffect, useEffect, useState } from 'react';
+import Cards from '../../components/Cards';
+import { AiOutlineUser } from 'react-icons/ai';
+import { BsFillHeartFill } from 'react-icons/bs';
+import { FiCalendar } from 'react-icons/fi';
+import VendorsTable from '../../components/VendorsTable';
+import CouponsTable from '../../components/CouponsTable';
+import {
+  getAllVendorsValid,
+  getAllCoupons,
+  getAdminInfo,
+  getAllCouponsForVendor,
+  getWalletPoint,
+  getDashboardPoint,
+  getDashboardGraph,
+  getDashboardGraphVendor,
+} from '../../Api/adminApi';
+import {
+  vendorsList,
+  getAllCouponsForUser,
+  getUserInfo,
+  userWalletDetails,
+  getDashboardUserPoint,
+  getDashboardGraphUser,
+} from '../../Api/userApi';
+import { setFetching } from '../../redux/reducer/fetching';
+import { useDispatch } from 'react-redux';
+import './index.css';
+import ProfileDashboard from '../../components/ProfileDashboard';
+import ViewAllVendorsPoupop from '../../components/ViewAllVendorsPoupop';
+import ViewAllCouponPoupop from '../../components/ViewAllCouponPoupop';
+import Amcharts from '../../Charts/Amcharts';
+import DonutChart from '../../Charts/DonutChart';
 
 const Dashboard = () => {
   useLayoutEffect(() => {
-    document.title = "Dashboard";
+    document.title = 'Dashboard';
   }, []);
 
   const data = [
     {
-      title: "Card 1",
+      title: 'Card 1',
       icon: <AiOutlineUser />,
-      value: "123",
+      value: '123',
     },
     {
-      title: "Card 2",
+      title: 'Card 2',
       icon: <BsFillHeartFill />,
-      value: "456",
+      value: '456',
     },
     {
-      title: "Card 3",
+      title: 'Card 3',
       icon: <FiCalendar />,
-      value: "789",
+      value: '789',
     },
     {
-      title: "Card 4",
+      title: 'Card 4',
       icon: <FiCalendar />,
-      value: "789",
+      value: '789',
     },
   ];
   const [vendorInfo, setVendorInfo] = useState({});
+  const [points, setPoints] = useState({});
   const [vendors, setVendors] = useState([]);
   const [adminVendors, setAdminVendors] = useState([]);
+  const [graph, setGraph] = useState([]);
   const [coupons, setCoupons] = useState([]);
   const [userCoupons, setUserCoupons] = useState([]);
   const [isLoading, setLoading] = useState(true);
   const [showAllVendors, setShowAllVendors] = useState(false);
   const [showAllCoupons, setShowAllCoupons] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [max, setMax] = useState('');
+  const [sales, setSales] = useState('');
+
+  const [redeem, setRedeem] = useState(null);
+  const [generate, setGenerate] = useState(null);
+
   const dispatch = useDispatch();
 
   useEffect(() => {
-    fetchAllAdminVendors();
-    fetchAllCoupons();
+    fetchAllAdminVendors(currentPage);
+    fetchAllCoupons(currentPage);
     getPersonalInfo();
+    fetchWalletPoints();
+    fetchPoints();
+    fetchBarGraph();
     // fetchAllVendorsAsUser();
     // fetchAllCouponsAsUser();
   }, []);
 
-  const fetchAllAdminVendors = async () => {
-    const maintoken = localStorage.getItem("auth_token");
+  const fetchAllAdminVendors = async (currentPage) => {
+    const maintoken = localStorage.getItem('auth_token');
     const role = maintoken.charAt(maintoken.length - 1);
     const token = maintoken.slice(0, -1);
 
     dispatch(setFetching(true));
     try {
-      if (role === "1") {
-        const response = await getAllVendors(token);
+      if (role === '1') {
+        const response = await getAllVendorsValid(currentPage, token);
         if (response.status === 200) {
-          const data = response?.data.vendors;
-          setAdminVendors(data);
+          setAdminVendors(response?.data.vendorsList);
+          setTotalPages(response.data.totalPages);
         } else {
           setAdminVendors([]);
         }
-      } else if (role === "2") {
-        const response = await getAllVendors(token);
+      } else if (role === '2') {
+        const response = await getAllVendorsValid(currentPage, token);
         if (response.status === 200) {
-          const data = response?.data.vendors;
-          setAdminVendors(data);
+          setAdminVendors(response?.data.vendorsList);
+          setTotalPages(response.data.totalPages);
         } else {
           setAdminVendors([]);
         }
-      } else if (role === "3") {
-        const response = await vendorsList(token);
+      } else if (role === '3') {
+        const response = await vendorsList(currentPage, token);
         if (response.status === 200) {
           console.warn(response);
-          const data = response?.data.Admins;
-          setAdminVendors(data);
+          setAdminVendors(response?.data.Admins);
+          setTotalPages(response.data.totalPages);
         } else {
           setAdminVendors([]);
         }
@@ -103,38 +134,37 @@ const Dashboard = () => {
     }
   };
 
-  const fetchAllVendorsList = async () => {
-    const maintoken = localStorage.getItem("auth_token");
+  const fetchAllVendorsList = async (currentPage) => {
+    const maintoken = localStorage.getItem('auth_token');
     const role = maintoken.charAt(maintoken.length - 1);
     const token = maintoken.slice(0, -1);
 
     dispatch(setFetching(true));
     setShowAllVendors(true);
     try {
-      if (role === "1") {
-        const response = await getAllVendors(token);
+      if (role === '1') {
+        const response = await getAllVendorsValid(currentPage, token);
         if (response.status === 200) {
-          const data = response?.data.vendors;
-          setAdminVendors(data);
+          setAdminVendors(response.data.vendorsList);
+          setTotalPages(response.data.totalPages);
         } else {
           setAdminVendors([]);
         }
-      } else if (role === "2") {
-        const response = await getAllVendors(token);
+      } else if (role === '2') {
+        const response = await getAllVendorsValid(currentPage, token);
         if (response.status === 200) {
-          const data = response?.data.vendors;
-          setAdminVendors(data);
+          setAdminVendors(response?.data.vendorsList);
+          setTotalPages(response.data.totalPages);
         } else {
           setAdminVendors([]);
         }
-      } else if (role === "3") {
-        const response = await vendorsList(token);
+      } else if (role === '3') {
+        const response = await vendorsList(currentPage, token);
         if (response.status === 200) {
-          console.warn(response);
-          const data = response?.data.Admins;
-          setAdminVendors(data);
+          setAdminVendors(response.data?.Admins);
+          setTotalPages(response.data.totalPages);
         } else {
-          setAdminVendors([]);
+          setVendors([]);
         }
       }
     } catch (error) {
@@ -144,35 +174,20 @@ const Dashboard = () => {
     }
   };
 
-  const fetchAllCouponsList = async () => {
-    const maintoken = localStorage.getItem("auth_token");
+  const fetchAllCouponsList = async (currentPage) => {
+    const maintoken = localStorage.getItem('auth_token');
     const role = maintoken.charAt(maintoken.length - 1);
     const token = maintoken.slice(0, -1);
 
     dispatch(setFetching(true));
     setShowAllCoupons(true);
     try {
-      if (role === "1") {
-        const response = await getAllCoupons(token);
+      if (role === '3') {
+        const response = await getAllCouponsForUser(currentPage, token);
         if (response.status === 200) {
-          const data = response?.data.newCoupons;
-          setCoupons(data);
-        } else {
-          setCoupons([]);
-        }
-      } else if (role === "2") {
-        const response = await getAllCoupons(token);
-        if (response.status === 200) {
-          const data = response?.data.newCoupons;
-          setCoupons(data);
-        } else {
-          setCoupons([]);
-        }
-      } else if (role === "3") {
-        const response = await getAllUserCoupons(token);
-        if (response.status === 200) {
-          const data = response?.data.newCoupons;
-          setCoupons(data);
+          console.warn(response);
+          setCoupons(response?.data.couponlist);
+          setTotalPages(response.data.totalPages);
         } else {
           setCoupons([]);
         }
@@ -184,85 +199,45 @@ const Dashboard = () => {
     }
   };
 
-  const fetchAllVendorsAsUser = async () => {
-    const maintoken = localStorage.getItem("auth_token");
-    const role = maintoken.charAt(maintoken.length - 1);
-    const token = maintoken.slice(0, -1);
-    dispatch(setFetching(true));
-
-    try {
-      if (role === "3") {
-        const response = await vendorsList(token);
-        if (response.status === 200) {
-          const data = response.data.Admins;
-          setVendors(data);
-        } else {
-          setVendors([]);
-        }
-      }
-    } catch (error) {
-      setVendors([]);
-    } finally {
-      setLoading(false);
-      dispatch(setFetching(false));
-    }
-  };
-
-  const fetchAllCouponsAsUser = async () => {
-    const maintoken = localStorage.getItem("auth_token");
+  const fetchAllCoupons = async (currentPage) => {
+    const maintoken = localStorage.getItem('auth_token');
     const role = maintoken.charAt(maintoken.length - 1);
     const token = maintoken.slice(0, -1);
 
     try {
-      if (role === "3") {
-        const response = await getAllUserCoupons(token);
+      if (role === '1') {
+        const response = await getAllCoupons(currentPage, token);
         if (response.status === 200) {
-          console.log(response);
-          const data = response;
-          setUserCoupons(data);
-        } else {
-          setUserCoupons([]);
-        }
-      }
-    } catch (error) {
-      console.error("Error fetching user coupons:", error);
-      setUserCoupons([]);
-    }
-  };
-
-  const fetchAllCoupons = async () => {
-    const maintoken = localStorage.getItem("auth_token");
-    const role = maintoken.charAt(maintoken.length - 1);
-    const token = maintoken.slice(0, -1);
-
-    try {
-      if (role === "1") {
-        const response = await getAllCoupons(token);
-        if (response.status === 200) {
-          const data = response?.data.newCoupons;
-          setCoupons(data);
+          console.warn(response);
+          setGenerate(response.data.valid_coupon);
+          setRedeem(response.data.redeem_coupon);
+          setCoupons(response?.data.couponlist);
+          setTotalPages(response.data.totalPages);
         } else {
           setCoupons([]);
         }
-      } else if (role === "2") {
-        const response = await getAllCoupons(token);
+      } else if (role === '2') {
+        const response = await getAllCouponsForVendor(currentPage, token);
+        console.warn(response);
         if (response.status === 200) {
-          const data = response?.data.newCoupons;
-          setCoupons(data);
+          setGenerate(response.data.valid_coupon);
+          setRedeem(response.data.redeem_coupon);
+          setCoupons(response?.data.couponlist);
+          setTotalPages(response.data.totalPages);
         } else {
           setCoupons([]);
         }
-      } else if (role === "3") {
-        const response = await getAllUserCoupons(token);
+      } else if (role === '3') {
+        const response = await getAllCouponsForUser(currentPage, token);
         if (response.status === 200) {
-          const data = response?.data.newCoupons;
-          setCoupons(data);
+          setCoupons(response.data.couponlist);
+          setTotalPages(response.data.totalPages);
         } else {
           setCoupons([]);
         }
       }
     } catch (error) {
-      console.error("Error fetching all coupons:", error);
+      console.error('Error fetching all coupons:', error);
       setCoupons([]);
     } finally {
       setLoading(false);
@@ -271,71 +246,229 @@ const Dashboard = () => {
   };
 
   const getPersonalInfo = async () => {
-    const maintoken = localStorage.getItem("auth_token");
+    const maintoken = localStorage.getItem('auth_token');
     const role = maintoken.charAt(maintoken.length - 1);
     const token = maintoken.slice(0, -1);
-
     try {
-      const response = await getAdminInfo(token);
-
-      if (response.status === 200) {
-        const data = response.data.vendorInfo;
-        setVendorInfo(data);
+      if (role === '1') {
+        const response = await getAdminInfo(token);
+        if (response.status === 200) {
+          const data = response.data.vendorInfo;
+          setVendorInfo(data);
+        }
+      } else if (role === '2') {
+        const response = await getAdminInfo(token);
+        if (response.status === 200) {
+          const data = response.data.vendorInfo;
+          setVendorInfo(data);
+        }
+      } else if (role === '3') {
+        const response = await getUserInfo(token);
+        if (response.status === 200) {
+          const data = response.data.vendorInfo;
+          setVendorInfo(data);
+        }
       }
     } catch (error) {
       console.log(error);
     }
   };
 
-  // Conditionally render the charts based on some condition (e.g., a state value)
-  const [showPieChart, setShowPieChart] = useState(true);
-  const [showLineChart, setShowLineChart] = useState(true);
+  const fetchWalletPoints = async () => {
+    const maintoken = localStorage.getItem('auth_token');
+    const role = maintoken.charAt(maintoken.length - 1);
+    const token = maintoken.slice(0, -1);
+    dispatch(setFetching(true));
+    try {
+      if (role === '1') {
+        const response = await getWalletPoint(token);
+        if (response.status === 200) {
+          setMax(response?.data.max);
+        } else {
+          setMax('');
+        }
+      } else if (role === '2') {
+        const response = await getWalletPoint(token);
+        if (response.status === 200) {
+          setMax(response?.data.max);
+        } else {
+          setMax('');
+        }
+      } else if (role === '3') {
+        const response = await userWalletDetails(token);
+        if (response.status === 200) {
+          setMax(response?.data.max);
+        } else {
+          setMax('');
+        }
+      }
+    } catch (error) {
+      // setAdminVendors([]);
+    } finally {
+      dispatch(setFetching(false));
+    }
+  };
 
-  const maintoken = localStorage.getItem("auth_token");
+  const fetchPoints = async () => {
+    const maintoken = localStorage.getItem('auth_token');
+    const role = maintoken.charAt(maintoken.length - 1);
+    const token = maintoken.slice(0, -1);
+    dispatch(setFetching(true));
+    try {
+      if (role === '1') {
+        const response = await getDashboardPoint(token);
+        if (response.status === 200) {
+          console.warn(response);
+          setPoints(response?.data.points);
+        } else {
+          setPoints({});
+        }
+      } else if (role === '2') {
+        const response = await getDashboardPoint(token);
+        if (response.status === 200) {
+          console.warn(response);
+          setPoints(response?.data.points);
+        } else {
+          setPoints({});
+        }
+      } else if (role === '3') {
+        const response = await getDashboardUserPoint(token);
+        if (response.status === 200) {
+          console.warn(response);
+          setPoints(response?.data.points);
+        } else {
+          setPoints({});
+        }
+      }
+    } catch (error) {
+    } finally {
+      dispatch(setFetching(false));
+    }
+  };
+
+  const fetchBarGraph = async () => {
+    const maintoken = localStorage.getItem('auth_token');
+    const role = maintoken.charAt(maintoken.length - 1);
+    const token = maintoken.slice(0, -1);
+    dispatch(setFetching(true));
+    try {
+      if (role === '1') {
+        const response = await getDashboardGraph(token);
+        if (response.status === 200) {
+          console.warn(response.data);
+          setGraph(response?.data);
+        } else {
+          setGraph([]);
+        }
+      } else if (role === '2') {
+        const response = await getDashboardGraphVendor(token);
+        if (response.status === 200) {
+          console.warn(response);
+          setGraph(response?.data);
+        } else {
+          setGraph([]);
+        }
+      } else if (role === '3') {
+        const response = await getDashboardGraphUser(token);
+        if (response.status === 200) {
+          console.warn(response);
+          setGraph(response?.data);
+        } else {
+          setGraph([]);
+        }
+      }
+    } catch (error) {
+    } finally {
+      dispatch(setFetching(false));
+    }
+  };
+
+  const maintoken = localStorage.getItem('auth_token');
   const role = maintoken.charAt(maintoken.length - 1);
 
-  const datas = [
-    { label: "Jan", value: 85 },
-    { label: "Feb", value: 10 },
-    { label: "Mar", value: 60 },
-    { label: "Apr", value: 80 },
-    { label: "May", value: 40 },
-    { label: "Jun", value: 35 },
-    { label: "Jul", value: 25 },
-    { label: "Aug", value: 28 },
-    { label: "Sep", value: 70 },
-    { label: "Oct", value: 10 },
-    { label: "Nov", value: 70 },
-    { label: "Dec", value: 60 },
-  ];
-  let maxObject = datas[0]; // Initialize with the first object
-  for (const data of datas) {
+  // const datas = [
+  //   { label: 'Jan', value: 85 },
+  //   { label: 'Feb', value: 10 },
+  //   { label: 'Mar', value: 60 },
+  //   { label: 'Apr', value: 80 },
+  //   { label: 'May', value: 40 },
+  //   { label: 'Jun', value: 35 },
+  //   { label: 'Jul', value: 25 },
+  //   { label: 'Aug', value: 28 },
+  //   { label: 'Sep', value: 70 },
+  //   { label: 'Oct', value: 10 },
+  //   { label: 'Nov', value: 70 },
+  //   { label: 'Dec', value: 60 },
+  // ];
+
+  let maxObject = graph[0]; // Initialize with the first object
+  for (const data of graph) {
     if (data.value > maxObject.value) {
       maxObject = data; // Update maxObject if a larger value is found
     }
   }
 
-  const sum = datas.reduce((acc, item) => acc + item.value, 0);
-  const totalPoints = 100;
-  const creditedPoints = 60;
-  const debitedPoints = 30;
+  const sum = graph.reduce((acc, item) => acc + item.value, 0);
+
+  const totalPoints = points?.total_point || 0;
+  const creditedPoints = points?.redeem_point || 0;
+  const debitedPoints = points?.generate_point || 0;
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+  const handlePageClick = (page) => {
+    setCurrentPage(page);
+  };
+
+  const pageNumbers = Array.from(
+    { length: totalPages },
+    (_, index) => index + 1,
+  );
+
   return (
     <div className="">
-      <h5 className="hello-text">Hi Andrei,</h5>
-      <h3 className="" style={{ textAlign: "left" }}>
+      <h5 className="hello-text">Hi {vendorInfo[0]?.name},</h5>
+      <h3 className="" style={{ textAlign: 'left' }}>
         Welcome to Ride Dost!
       </h3>
 
       <div className="grid-container">
-        <Cards data={data} />
+        <Cards
+          totalCoupons={generate + redeem}
+          totalVendors={adminVendors?.length}
+          max={max}
+          data={data}
+          sales={sales}
+        />
         <div id="div1" className="grid-col">
           <div className="cards_1">
-            <Amcharts data={datas} maxObject={maxObject} sum={sum} />
+            <Amcharts
+              data={graph}
+              maxObject={maxObject}
+              sum={sum}
+              setSales={setSales}
+            />
           </div>
         </div>
         <div id="div2" className="grid-col">
           <div className="cards_2 cards-padding">
-            <ProfileDashboard vendorInfo={vendorInfo} />
+            <ProfileDashboard
+              vendorInfo={vendorInfo}
+              totalCoupons={coupons?.length}
+              totalVendors={adminVendors?.length}
+              validCouponsLength={generate}
+              redeemCouponsLength={redeem}
+            />
           </div>
         </div>
         <div id="div3" className="grid-col">
@@ -401,15 +534,12 @@ const Dashboard = () => {
           setShowAllVendors={setShowAllVendors}
         />
       ) : (
-        ""
+        ''
       )}
       {showAllCoupons ? (
-        <ViewAllCouponPoupop
-          coupons={coupons}
-          setShowAllCoupons={setShowAllCoupons}
-        />
+        <ViewAllCouponPoupop setShowAllCoupons={setShowAllCoupons} />
       ) : (
-        ""
+        ''
       )}
     </div>
   );

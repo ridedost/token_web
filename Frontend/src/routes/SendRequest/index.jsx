@@ -1,57 +1,71 @@
-import React, { useState, useEffect } from "react";
-import "./index.css";
+/** @format */
+
+import React, { useState, useEffect } from 'react';
+import './index.css';
 import {
   AiOutlineLeft,
   AiOutlineRight,
   AiOutlineClockCircle,
-} from "react-icons/ai";
-import { getAllVendors, viewCoupons } from "../../Api/adminApi";
-import { setFetching } from "../../redux/reducer/fetching";
-import { useDispatch } from "react-redux";
-import { toast } from "react-toastify";
-import User from "../../assets/header/user.svg";
-import SendRequestPoupop from "../../components/SendRequestPoupop";
+} from 'react-icons/ai';
+import { getAllVendorsValid, viewCoupons } from '../../Api/adminApi';
+import { setFetching } from '../../redux/reducer/fetching';
+import { useDispatch } from 'react-redux';
+import { toast } from 'react-toastify';
+import User from '../../assets/header/user.svg';
+import SendRequestPoupop from '../../components/SendRequestPoupop';
+import Pagination from '../../components/Pagination';
+import { IndexFunction } from '../../utils/IndexFunction';
 
 const SendRequest = () => {
   const [showSendRequest, setShowSendRequest] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const [vendors, setVendors] = useState([]);
   const [coupons, setCoupons] = useState([]);
+  const [routes, setRoutes] = useState(false);
+  const [conflict, setConflict] = useState(false);
+  const [adminId, setAdminId] = useState('');
 
-  const itemsPerPage = 10;
+  const itemsPerPage = 8;
 
   const dispatch = useDispatch();
 
   useEffect(() => {
-    document.title = "Send Request";
-    fetchVendors();
-  }, []);
+    document.title = 'Send Request';
+    fetchVendors(currentPage);
+  }, [currentPage]);
 
-  const fetchVendors = async () => {
-    const maintoken = localStorage.getItem("auth_token");
+  const fetchVendors = async (currentPage) => {
+    const maintoken = localStorage.getItem('auth_token');
     const role = maintoken.charAt(maintoken.length - 1);
     const token = maintoken.slice(0, -1);
-    dispatch(setFetching(true));
+
     try {
-      if (role === "1") {
-        const response = await getAllVendors(token);
+      if (role === '1') {
+        dispatch(setFetching(true));
+        const response = await getAllVendorsValid(currentPage, token);
         if (response.status === 200) {
-          const data = response.data.vendors.map((user) => ({
+          const data = response.data.vendorsList.map((user) => ({
             ...user,
             show: false,
           }));
           setVendors(data);
+          setTotalPages(response.data.totalPages);
+          setRoutes(true);
         } else {
           setVendors([]);
         }
-      } else if (role === "2") {
-        const response = await getAllVendors(token);
+      } else if (role === '2') {
+        dispatch(setFetching(true));
+        const response = await getAllVendorsValid(currentPage, token);
         if (response.status === 200) {
-          const data = response.data.vendors.map((user) => ({
+          const data = response.data.vendorsList.map((user) => ({
             ...user,
             show: false,
           }));
           setVendors(data);
+          setTotalPages(response.data.totalPages);
+          setRoutes(true);
         } else {
           setVendors([]);
         }
@@ -63,92 +77,121 @@ const SendRequest = () => {
     }
   };
 
-  // Pagination
-  const lastIndex = currentPage * itemsPerPage;
-  const firstIndex = lastIndex - itemsPerPage;
-  const currentData = vendors?.slice(firstIndex, lastIndex);
-
-  const paginate = (pageNumber) => setCurrentPage(pageNumber);
-
-  const handleViewCoupons = async (id) => {
+  const handleViewCoupons = async (id, currentPage) => {
     // let dataIdValue = this.getAttribute("data-id");
     // console.log("data-id value:", dataIdValue);
+    setAdminId(id);
     dispatch(setFetching(true));
     setShowSendRequest(true);
-    const maintoken = localStorage.getItem("auth_token");
+    const maintoken = localStorage.getItem('auth_token');
     const role = maintoken.charAt(maintoken.length - 1);
     const token = maintoken.slice(0, -1);
+
     try {
-      if (role === "1") {
-        const response = await viewCoupons(id, token);
+      if (role === '1') {
+        const response = await viewCoupons(id, currentPage, token);
         if (response.status === 200) {
           console.warn(response);
-          const data = response.data.request;
-          setCoupons(data);
+          setCoupons(response.data.request);
+          setTotalPages(response.data.totalPages);
           dispatch(setFetching(false));
           // fetchVendors();
-        } else {
-          setVendors([]);
+        } else if (response.status === 204) {
+          setCoupons([]);
+          fetchVendors();
+          setTotalPages(0);
         }
       }
-      if (role === "2") {
-        const response = await viewCoupons(id, token);
+      if (role === '2') {
+        const response = await viewCoupons(id, currentPage, token);
         if (response.status === 200) {
           console.warn(response);
-          const data = response.data.request;
-          setCoupons(data);
+          setCoupons(response.data.request);
+          setTotalPages(response.data.totalPages);
           dispatch(setFetching(false));
           // fetchVendors();
-        } else {
-          setVendors([]);
+        } else if (response.status === 204) {
+          setCoupons([]);
+          fetchVendors();
+          setTotalPages(0);
         }
       }
     } catch (error) {
-      setVendors([]);
+      setCoupons([]);
       fetchVendors();
     } finally {
       dispatch(setFetching(false));
     }
   };
 
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+  const handlePageClick = (page) => {
+    setCurrentPage(page);
+  };
+
+  const pageNumbers = Array.from(
+    { length: totalPages },
+    (_, index) => index + 1,
+  );
+  const maintoken = localStorage.getItem('auth_token');
+  const role = maintoken.charAt(maintoken.length - 1);
+  const token = maintoken.slice(0, -1);
+  // console.warn(totalPages);
   return (
     <>
       <div className="table-subContainer">
         <h5>Send Request</h5>
-        <div className="table-main">
+        <div className="table-main table-main-routes">
           <div className="table-container">
-            <div className="table-wrapper px-4">
+            <div className="table-wrapper px-4" style={{ height: '68vh' }}>
               <table className="tables">
                 <thead className="table-head head-design">
-                  <tr className="head-tr" style={{ height: "4rem" }}>
+                  <tr className="head-tr" style={{ height: '4rem' }}>
                     <th>Sr. No.</th>
                     <th>Name</th>
-                    <th>Email</th>
-                    <th>Phone Number</th>
+                    {role === '1' ? <th>Email</th> : null}
+                    {role === '1' ? <th>Phone Number</th> : null}
                     <th>Company</th>
                     <th>Action</th>
                     <th></th>
                   </tr>
                 </thead>
                 <tbody className="table-body">
-                  {vendors?.length > 0 ? (
-                    currentData.map((user, index) => (
+                  {vendors.length > 0 ? (
+                    vendors.map((user, index) => (
                       <tr className="body-tr" key={index}>
-                        <td>{index + 1}</td>
+                        <td>
+                          {IndexFunction(
+                            (currentPage - 1) * itemsPerPage + index + 1,
+                          )}
+                        </td>
                         <td>
                           <img
-                            src={User}
+                            src={user?.profileImage?.url || User}
                             className="rounded-circle header-profile-user "
                           />
                           {user.name}
                         </td>
-                        <td>{user.email}</td>
-                        <td>{user.phoneNumber}</td>
+                        {role === '1' ? <td>{user.email}</td> : null}
+                        {role === '1' ? <td>{user.phoneNumber}</td> : null}
                         <td>{user.companyName}</td>
                         <td>
                           <div className="status-edit">
                             <span
-                              onClick={() => handleViewCoupons(user._id)}
+                              onClick={() => {
+                                handleViewCoupons(user._id);
+                              }}
                               className="status-text-edit"
                             >
                               View Coupons
@@ -167,45 +210,16 @@ const SendRequest = () => {
                 </tbody>
               </table>
             </div>
-          </div>
-          <div className="pagination">
-            {vendors?.length > 0 && (
-              <ul className="pagination-list">
-                <li
-                  className={`pagination-item ${
-                    currentPage === 1 ? "disabled" : ""
-                  }`}
-                  onClick={() => currentPage !== 1 && paginate(currentPage - 1)}
-                >
-                  <AiOutlineLeft />
-                </li>
-                {Array.from({
-                  length: Math.ceil(vendors?.length / itemsPerPage),
-                }).map((_, index) => (
-                  <li
-                    key={index}
-                    className={`pagination-item ${
-                      currentPage === index + 1 ? "active" : ""
-                    }`}
-                    onClick={() => paginate(index + 1)}
-                  >
-                    {index + 1}
-                  </li>
-                ))}
-                <li
-                  className={`pagination-item ${
-                    currentPage === Math.ceil(vendors?.length / itemsPerPage)
-                      ? "disabled"
-                      : ""
-                  }`}
-                  onClick={() =>
-                    currentPage !== Math.ceil(vendors?.length / itemsPerPage) &&
-                    paginate(currentPage + 1)
-                  }
-                >
-                  <AiOutlineRight />
-                </li>
-              </ul>
+            {showSendRequest ? null : (
+              <Pagination
+                routes={routes}
+                currentPage={currentPage}
+                totalPages={totalPages}
+                handlePrevPage={handlePrevPage}
+                handleNextPage={handleNextPage}
+                handlePageClick={handlePageClick}
+                pageNumbers={pageNumbers}
+              />
             )}
           </div>
         </div>
@@ -216,9 +230,11 @@ const SendRequest = () => {
           setCoupons={setCoupons}
           setShowSendRequest={setShowSendRequest}
           fetchVendors={fetchVendors}
+          adminId={adminId}
+          setAdminId={setAdminId}
         />
       ) : (
-        ""
+        ''
       )}
     </>
   );

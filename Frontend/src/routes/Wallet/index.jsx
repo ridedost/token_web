@@ -1,160 +1,96 @@
-import React, { useState, useEffect } from "react";
-import "./index.css";
-import { getAllUserCoupons } from "../../Api/userApi";
-import CouponsTable from "../../components/CouponsTable";
-import { useDispatch } from "react-redux";
-import { setFetching } from "../../redux/reducer/fetching";
-import { getAllCoupons, getAllVendors } from "../../Api/adminApi";
-import { vendorsList } from "../../Api/userApi";
-import Amcharts from "../../Charts/Amcharts";
-import Control from "../../components/Control";
-import Refresh from "../../assets/refresh-icon.svg";
-import VendorsTable from "../../components/VendorsTable";
+/** @format */
+
+import React, { useState, useEffect } from 'react';
+import './index.css';
+import { getAllCouponsForUser } from '../../Api/userApi';
+import CouponsTable from '../../components/CouponsTable';
+import { useDispatch } from 'react-redux';
+import { setFetching } from '../../redux/reducer/fetching';
+import {
+  getAllCoupons,
+  getAllCouponsForVendor,
+  getAllVendors,
+  getWalletPoint,
+  getDashboardGraph,
+  getDashboardGraphVendor,
+} from '../../Api/adminApi';
+import {
+  vendorsList,
+  userWalletDetails,
+  getDashboardGraphUser,
+} from '../../Api/userApi';
+import Amcharts from '../../Charts/Amcharts';
+import Control from '../../components/Control';
+import Refresh from '../../assets/refresh-icon.svg';
+import VendorsTable from '../../components/VendorsTable';
+import ViewAllCouponPoupop from '../../components/ViewAllCouponPoupop';
 const Wallet = () => {
-  const [vendors, setVendors] = useState([]);
   const [adminVendors, setAdminVendors] = useState([]);
   const [coupons, setCoupons] = useState([]);
   const [userCoupons, setUserCoupons] = useState([]);
+  const [graph, setGraph] = useState([]);
   const [showAllCoupons, setShowAllCoupons] = useState(false);
-  const [showAllVendors, setShowAllVendors] = useState(false);
-  const [isLoading, setLoading] = useState(true);
-
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [max, setMax] = useState('');
+  const [sales, setSales] = useState('');
   const dispatch = useDispatch();
   useEffect(() => {
-    fetchAllVendors();
-    fetchAllCouponsAsUser();
+    document.title = 'Wallet';
+    fetchAllCouponsAsUser(currentPage);
+    fetchWalletPoints();
+    fetchBarGraph();
   }, []);
-  const fetchAllVendorsList = async () => {
-    const maintoken = localStorage.getItem("auth_token");
-    const role = maintoken.charAt(maintoken.length - 1);
-    const token = maintoken.slice(0, -1);
 
-    dispatch(setFetching(true));
-    setShowAllVendors(true);
-    try {
-      if (role === "1") {
-        const response = await getAllVendors(token);
-        if (response.status === 200) {
-          const data = response.data.vendors;
-          setAdminVendors(data);
-        } else {
-          setAdminVendors([]);
-        }
-      } else if (role === "2") {
-        const response = await getAllVendors(token);
-        if (response.status === 200) {
-          const data = response.data.vendors;
-          setAdminVendors(data);
-        } else {
-          setAdminVendors([]);
-        }
-      }
-    } catch (error) {
-      setAdminVendors([]);
-    } finally {
-      dispatch(setFetching(false));
-    }
-  };
-
-  const fetchAllCouponsAsUser = async () => {
-    const maintoken = localStorage.getItem("auth_token");
+  const fetchAllCouponsAsUser = async (currentPage) => {
+    const maintoken = localStorage.getItem('auth_token');
     const role = maintoken.charAt(maintoken.length - 1);
     const token = maintoken.slice(0, -1);
 
     try {
-      if (role === "3") {
-        const response = await getAllUserCoupons(token);
+      if (role === '1') {
+        const response = await getAllCoupons(currentPage, token);
         if (response.status === 200) {
-          const data = response.data.newCoupons;
-          setUserCoupons(data);
+          setUserCoupons(response.data.couponlist);
+          setTotalPages(response.data.totalPages);
+        } else {
+          setUserCoupons([]);
+        }
+      } else if (role === '2') {
+        const response = await getAllCouponsForVendor(currentPage, token);
+        if (response.status === 200) {
+          setUserCoupons(response.data.couponlist);
+          setTotalPages(response.data.totalPages);
+        } else {
+          setUserCoupons([]);
+        }
+      } else if (role === '3') {
+        const response = await getAllCouponsForUser(currentPage, token);
+        if (response.status === 200) {
+          setUserCoupons(response.data.couponlist);
+          setTotalPages(response.data.totalPages);
         } else {
           setUserCoupons([]);
         }
       }
     } catch (error) {
-      console.error("Error fetching user coupons:", error);
+      console.error('Error fetching user coupons:', error);
       setUserCoupons([]);
     }
   };
 
-  const fetchAllVendors = async () => {
-    const maintoken = localStorage.getItem("auth_token");
-    const role = maintoken.charAt(maintoken.length - 1);
-    const token = maintoken.slice(0, -1);
-    dispatch(setFetching(true));
-
-    try {
-      if (role === "3") {
-        const response = await vendorsList(token);
-        if (response.status === 200) {
-          const data = response.data.Admins;
-          setVendors(data);
-        } else {
-          setVendors([]);
-        }
-      }
-    } catch (error) {
-      setVendors([]);
-    } finally {
-      setLoading(false);
-      dispatch(setFetching(false));
-    }
-  };
-
-  const fetchAllAdminVendors = async () => {
-    const maintoken = localStorage.getItem("auth_token");
-    const role = maintoken.charAt(maintoken.length - 1);
-    const token = maintoken.slice(0, -1);
-
-    dispatch(setFetching(true));
-    try {
-      if (role === "1") {
-        const response = await getAllVendors(token);
-        if (response.status === 200) {
-          const data = response.data.vendors;
-          setAdminVendors(data);
-        } else {
-          setAdminVendors([]);
-        }
-      } else if (role === "2") {
-        const response = await getAllVendors(token);
-        if (response.status === 200) {
-          const data = response.data.vendors;
-          setAdminVendors(data);
-        } else {
-          setAdminVendors([]);
-        }
-      }
-    } catch (error) {
-      console.warn(error);
-      setAdminVendors([]);
-    } finally {
-      setLoading(false);
-      dispatch(setFetching(false));
-    }
-  };
-
   const fetchAllCouponsList = async () => {
-    const maintoken = localStorage.getItem("auth_token");
+    const maintoken = localStorage.getItem('auth_token');
     const role = maintoken.charAt(maintoken.length - 1);
     const token = maintoken.slice(0, -1);
-
     dispatch(setFetching(true));
     setShowAllCoupons(true);
     try {
-      if (role === "1") {
-        const response = await getAllCoupons(token);
+      if (role === '3') {
+        const response = await getAllCouponsForUser(token);
         if (response.status === 200) {
-          const data = response.data.newCoupons;
-          setCoupons(data);
-        } else {
-          setCoupons([]);
-        }
-      } else if (role === "2") {
-        const response = await getAllCoupons(token);
-        if (response.status === 200) {
-          const data = response.data.newCoupons;
-          setCoupons(data);
+          const data = response?.data?.max;
+          setMax(data);
         } else {
           setCoupons([]);
         }
@@ -166,45 +102,108 @@ const Wallet = () => {
     }
   };
 
-  const datas = [
-    { label: "Jan", value: 85 },
-    { label: "Feb", value: 10 },
-    { label: "Mar", value: 60 },
-    { label: "Apr", value: 80 },
-    { label: "May", value: 40 },
-    { label: "Jun", value: 35 },
-    { label: "Jul", value: 25 },
-    { label: "Aug", value: 28 },
-    { label: "Sep", value: 70 },
-    { label: "Oct", value: 10 },
-    { label: "Nov", value: 70 },
-    { label: "Dec", value: 60 },
-  ];
+  const fetchWalletPoints = async () => {
+    const maintoken = localStorage.getItem('auth_token');
+    const role = maintoken.charAt(maintoken.length - 1);
+    const token = maintoken.slice(0, -1);
+    dispatch(setFetching(true));
+    try {
+      if (role === '1') {
+        const response = await getWalletPoint(token);
+        if (response.status === 200) {
+          setMax(response?.data.max);
+        } else {
+          setMax('');
+        }
+      } else if (role === '2') {
+        const response = await getWalletPoint(token);
+        if (response.status === 200) {
+          setMax(response?.data.max);
+        } else {
+          setMax('');
+        }
+      } else if (role === '3') {
+        const response = await userWalletDetails(token);
+        if (response.status === 200) {
+          setMax(response?.data.max);
+        } else {
+          setMax('');
+        }
+      }
+    } catch (error) {
+      // setAdminVendors([]);
+    } finally {
+      dispatch(setFetching(false));
+    }
+  };
 
-  let maxObject = datas[0]; // Initialize with the first object
-  for (const data of datas) {
-    if (data.value > maxObject.value) {
-      maxObject = data; // Update maxObject if a larger value is found
+  const fetchBarGraph = async () => {
+    const maintoken = localStorage.getItem('auth_token');
+    const role = maintoken.charAt(maintoken.length - 1);
+    const token = maintoken.slice(0, -1);
+    dispatch(setFetching(true));
+    try {
+      if (role === '1') {
+        const response = await getDashboardGraph(token);
+        if (response.status === 200) {
+          console.warn(response.data);
+          setGraph(response?.data);
+        } else {
+          setGraph([]);
+        }
+      } else if (role === '2') {
+        const response = await getDashboardGraphVendor(token);
+        if (response.status === 200) {
+          console.warn(response);
+          setGraph(response?.data);
+        } else {
+          setGraph([]);
+        }
+      } else if (role === '3') {
+        const response = await getDashboardGraphUser(token);
+        if (response.status === 200) {
+          console.warn(response);
+          setGraph(response?.data);
+        } else {
+          setGraph([]);
+        }
+      }
+    } catch (error) {
+    } finally {
+      dispatch(setFetching(false));
+    }
+  };
+
+  let maxObject = graph[0]; // Initialize with the first object
+  for (const data of graph) {
+    if (data.amount > maxObject.amount) {
+      maxObject = data; // Update maxObject if a larger amount is found
     }
   }
 
-  const sum = datas.reduce((acc, item) => acc + item.value, 0);
-  console.warn(adminVendors);
+  const sum = graph.reduce((acc, item) => acc + item.amount, 0);
+
+  console.warn(userCoupons);
   return (
     <div className="">
-      <h3 className="" style={{ textAlign: "left" }}>
+      <h5 className="" style={{ textAlign: 'left' }}>
         Wallet
-      </h3>
+      </h5>
 
       <div className="wallet-container">
         <div className="wallet-graph">
-          <div className="cards_1" style={{ marginBottom: "15px" }}>
-            <Amcharts data={datas} maxObject={maxObject} sum={sum} />
+          <div className="cards_1" style={{ marginBottom: '15px' }}>
+            <Amcharts
+              data={graph}
+              maxObject={maxObject}
+              sum={sum}
+              setSales={setSales}
+            />
           </div>
           <div className="wallet-coupon">
             <div className="cards_2">
               <CouponsTable
-                userCoupons={userCoupons}
+                coupons={userCoupons}
                 fetchAllCouponsList={fetchAllCouponsList}
               />
             </div>
@@ -214,13 +213,15 @@ const Wallet = () => {
           </div>
         </div>
         <div className="wallet-point">
-          <div className="cards_2 cards-padding" style={{ minHeight: "100%" }}>
-            <div className="cards-sales" style={{ marginTop: "15px" }}>
+          <div className="cards_2 cards-padding" style={{ minHeight: '100%' }}>
+            <div className="cards-sales" style={{ marginTop: '15px' }}>
               <div class="points-flex">
                 <div class="cards-para-div">
                   <span class="sales-para">Points Balance</span>
                   <div class="cards-numbers">
-                    <span class="cards-value">RD 2,458</span>
+                    <span class="cards-value">
+                      RD {max.toString().slice(0, 7)}
+                    </span>
                   </div>
                   <div class="graph-zigzag-sales">
                     <img src={Refresh} />
@@ -242,9 +243,16 @@ const Wallet = () => {
           </div>
         </div>
       </div>
+      {showAllCoupons ? (
+        <ViewAllCouponPoupop
+          coupons={coupons}
+          setShowAllCoupons={setShowAllCoupons}
+        />
+      ) : (
+        ''
+      )}
     </div>
   );
 };
 
 export default Wallet;
-// view coupons   7693015061

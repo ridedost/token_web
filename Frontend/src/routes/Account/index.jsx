@@ -16,10 +16,10 @@ const Account = () => {
 
   const maintoken = localStorage.getItem("auth_token");
   const role = maintoken?.charAt(maintoken.length - 1);
-  const token = maintoken.slice(0, -1);
+  const token = maintoken?.slice(0, -1);
 
   // console.log(maintoken);
-  // console.log(role);
+  // console.warn(role);
   // console.log(token);
 
   const [loginToastShown, setLoginToastShown] = useState(false);

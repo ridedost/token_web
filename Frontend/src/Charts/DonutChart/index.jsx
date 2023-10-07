@@ -1,17 +1,19 @@
-import React from "react";
-import ReactApexChart from "react-apexcharts";
-import "./index.css";
+/** @format */
+
+import React from 'react';
+import ReactApexChart from 'react-apexcharts';
+import './index.css';
 
 function GraficoDonut({ TotalPoints, CreditadePoints, DebitadePoints }) {
   const series = [TotalPoints, CreditadePoints, DebitadePoints];
 
   const options = {
     chart: {
-      type: "donut",
+      type: 'donut',
     },
     legend: {
       show: false,
-      position: "bottom",
+      position: 'bottom',
       width: 120,
     },
     responsive: [
@@ -22,12 +24,12 @@ function GraficoDonut({ TotalPoints, CreditadePoints, DebitadePoints }) {
             width: 300,
           },
           legend: {
-            position: "bottom",
+            position: 'bottom',
           },
         },
       },
     ],
-    labels: ["TotalPoints", "CreditadePoints", "DebitadePoints"],
+    labels: ['TotalPoints', 'CreditadePoints', 'DebitadePoints'],
     dataLabels: {
       enabled: true,
       formatter: function (val, opts) {
@@ -48,15 +50,15 @@ function GraficoDonut({ TotalPoints, CreditadePoints, DebitadePoints }) {
     annotations: {
       points: [
         {
-          x: "50%",
-          y: "50%",
+          x: '50%',
+          y: '50%',
           marker: {
             size: 0,
           },
           label: {
             text: TotalPoints,
             style: {
-              fontSize: "16px",
+              fontSize: '16px',
             },
           },
         },
@@ -77,9 +79,9 @@ const DonutChart = ({ TotalPoints, CreditadePoints, DebitadePoints }) => {
       <h3>Points</h3>
       <div className="donut-chart">
         <GraficoDonut
-          TotalPoints={TotalPoints}
-          CreditadePoints={CreditadePoints}
-          DebitadePoints={DebitadePoints}
+          TotalPoints={TotalPoints || 0}
+          CreditadePoints={CreditadePoints || 0}
+          DebitadePoints={DebitadePoints || 0}
         />
       </div>
     </>

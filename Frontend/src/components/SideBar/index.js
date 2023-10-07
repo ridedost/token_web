@@ -7,7 +7,7 @@ import {
   AiOutlineProfile,
   AiOutlineTeam,
   AiOutlineSend,
-  AiFillCloseCircle,
+  AiFillCloseCircle,AiOutlinePauseCircle
 } from "react-icons/ai";
 import { PiUsersThreeBold } from "react-icons/pi";
 import { GrSend, GrClose } from "react-icons/gr";
@@ -15,7 +15,7 @@ import { FaUsers, FaRegHandshake } from "react-icons/fa";
 import {
   MdOutlineThumbUp,
   MdOutlineThumbDownOffAlt,
-  MdOutlineShoppingCartCheckout,
+  MdOutlineShoppingCartCheckout,MdOutlineAccountBalanceWallet
 } from "react-icons/md";
 import { RiFileDownloadLine } from "react-icons/ri";
 import { useSelector } from "react-redux";
@@ -72,6 +72,11 @@ const Sidebar = ({ onLogout, showSidebar, setShowSidebar }) => {
       Icon: PiUsersThreeBold,
     },
     {
+      title: "Suspended List",
+      route: "suspended",
+      Icon: AiOutlinePauseCircle,
+    },
+    {
       title: "Product List",
       route: "productlist",
       Icon: AiOutlineShoppingCart,
@@ -105,6 +110,11 @@ const Sidebar = ({ onLogout, showSidebar, setShowSidebar }) => {
       title: "Daily Reports",
       route: "dailyreports",
       Icon: RiFileDownloadLine,
+    },
+     {
+      title: "Wallet",
+      route: "wallet",
+      Icon: MdOutlineAccountBalanceWallet,
     },
   ];
 

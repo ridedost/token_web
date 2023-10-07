@@ -1,6 +1,17 @@
 import axios from "axios";
+// import io from 'socket.io-client';
 
 const BASE_URL = process.env.REACT_APP_SERVER_URL;
+
+// socketIO.js
+// Initialize socketIO once when your application loads
+// export const socketIO = io(`${BASE_URL}/`, {
+//   cors: {
+//     origin: '*'
+//   }
+// });
+
+
 
 //to check if admin is exists
 export const checkIfAdminExists = async (number) => {
@@ -13,7 +24,7 @@ export const checkIfAdminExists = async (number) => {
   }
 };
 
-//admin register
+//add vendor 
 export const addVendor = async (userData, token) => {
   try {
     const response = await axios.post(`${BASE_URL}/admin/add`, userData, {
@@ -27,27 +38,70 @@ export const addVendor = async (userData, token) => {
   }
 };
 
-// get all vendors
-export const getAllVendors = async (token) => {
+// get all pending vendors
+export const getAllVendors = async (page,token) => {
   try {
-    const response = await axios.get(`${BASE_URL}/admin/vendor`, {
+    const response = await axios.get(`${BASE_URL}/admin/vendor/pending?page=${page}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
     return response;
   } catch (error) {
-    // console.warn(error);
-    console.log(error);
     return { status: false };
     // throw error;
   }
 };
 
-// get all coupons
-export const getAllCoupons = async (token) => {
+// get all valid vendors
+export const getAllVendorsValid = async (page,token) => {
   try {
-    const response = await axios.get(`${BASE_URL}/admin/coupons`, {
+    const response = await axios.get(`${BASE_URL}/admin/vendor/valid?page=${page}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response;
+  } catch (error) {
+    return { status: false };
+    // throw error;
+  }
+};
+
+// get all suspended vendors
+export const getAllVendorsSuspendedList = async (page,token) => {
+  try {
+    const response = await axios.get(`${BASE_URL}/admin/admin/vendor/suspendedlist?page=${page}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response;
+  } catch (error) {
+    return { status: false };
+    // throw error;
+  }
+};
+
+// get all coupons admin
+export const getAllCoupons = async (page,token) => {
+  console.warn(page,token)
+  try {
+    const response = await axios.get(`${BASE_URL}/admin/coupons/admincoupon?page=${page}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+// get all coupons for vendor
+export const getAllCouponsForVendor = async (page,token) => {
+  try {
+    const response = await axios.get(`${BASE_URL}/admin/coupons/vendorcoupon?page=${page}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -97,9 +151,9 @@ export const vendorApprove = async (id, token) => {
 };
 
 //to reject vendors
-export const vendorReject = async (id, token) => {
+export const vendorReject = async (id,reject_region, token) => {
   try {
-    const response = await axios.patch(`${BASE_URL}/admin/reject/${id}`, null, {
+    const response = await axios.patch(`${BASE_URL}/admin/vendor/recieved/request/rejected/${id}`, reject_region, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -114,6 +168,21 @@ export const vendorReject = async (id, token) => {
 export const vendorDelete = async (id, token) => {
   try {
     const response = await axios.delete(`${BASE_URL}/admin/vendor/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+//to suspend vendor
+export const suspendVendor = async (id, token) => {
+  console.warn(token)
+  try {
+    const response = await axios.patch(`${BASE_URL}/admin/vendor/suspended/${id}`, null,{
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -143,9 +212,9 @@ export const vendorUpdate = async (id, userData, token) => {
 };
 
 //to get all products
-export const getAllProducts = async (token) => {
+export const getAllProducts = async (id,page,token) => {
   try {
-    const response = await axios.get(`${BASE_URL}/admin/product`, {
+    const response = await axios.get(`${BASE_URL}/admin/product/${id}?page=${page}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -206,9 +275,10 @@ export const editProducts = async (id, token, editProduct) => {
 };
 
 //to view coupons
-export const viewCoupons = async (id, token) => {
+export const viewCoupons = async (id, page,token) => {
+  console.warn(id, page,token)
   try {
-    const response = await axios.get(`${BASE_URL}/admin/settle/coupon/${id}`, {
+    const response = await axios.get(`${BASE_URL}/admin/settle/coupon/${id}?page=${page}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -252,12 +322,12 @@ export const allSendRequestForVendors = async (token) => {
   }
 };
 
-//to view only admin all request
+//to view only admin all send request 
 
-export const allSendRequestForAdmin = async (token) => {
+export const allSendRequestForAdmin = async (page,token) => {
   try {
     const response = await axios.get(
-      `${BASE_URL}/admin/admin/recieved/request`,
+      `${BASE_URL}/admin/admin/recieved/request?page=${page}`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -270,8 +340,25 @@ export const allSendRequestForAdmin = async (token) => {
   }
 };
 
-//.....................................
+//to get all reject request 
 
+export const getAllRejectRequestForAdmin = async (page,token) => {
+  try {
+    const response = await axios.get(
+      `${BASE_URL}/admin/vendor/rejected/request?page=${page}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+// to update  admin and vendor info
 export const updateAdminInfo = async (token, formData) => {
   try {
     const response = await axios.patch(
@@ -289,6 +376,7 @@ export const updateAdminInfo = async (token, formData) => {
   }
 };
 
+// to get  admin and vendor info
 export const getAdminInfo = async (token) => {
   try {
     const response = await axios.get(`${BASE_URL}/admin/personalInfo`, {
@@ -302,7 +390,7 @@ export const getAdminInfo = async (token) => {
   }
 };
 
-//Checkout
+//to post Checkout
 export const checkoutPost = async (token, formData) => {
   try {
     const response = await axios.post(`${BASE_URL}/admin/checkout`, formData, {
@@ -316,11 +404,11 @@ export const checkoutPost = async (token, formData) => {
   }
 };
 
-//Checkout
-export const paymentSettlement = async (token) => {
+//for admin get  payment settlement 
+export const paymentSettlement = async (page,token) => {
   try {
     const response = await axios.get(
-      `${BASE_URL}/paymentsettlement/payment-settlements`,
+      `${BASE_URL}/paymentsettlement/payment-settlements?page=${page}`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -333,7 +421,24 @@ export const paymentSettlement = async (token) => {
   }
 };
 
-// forward
+//for vendor get  payment settlement 
+export const paymentSettlementForVendor = async (page,token) => {
+  try {
+    const response = await axios.get(
+      `${BASE_URL}/paymentsettlement/payment-settlements/vendor?page=${page}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+// forward request
 export const forwardRequest = async (token, _id) => {
   try {
     const response = await axios.post(
@@ -351,6 +456,7 @@ export const forwardRequest = async (token, _id) => {
   }
 };
 
+// to accept  request
 export const acceptRequest = async (token, id) => {
   try {
     const response = await axios.patch(
@@ -368,10 +474,7 @@ export const acceptRequest = async (token, id) => {
   }
 };
 
-//......................
-
-// For Return click
-
+// For Return request
 export const returnRequest = async (token, id) => {
   try {
     const response = await axios.patch(`${BASE_URL}/admin/return/${id}`, null, {
@@ -379,6 +482,176 @@ export const returnRequest = async (token, id) => {
         Authorization: `Bearer ${token}`,
       },
     });
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+//to get daily reports
+export const getDailyReports = async (page,token) => {
+  try {
+    const response = await axios.get(
+      `${BASE_URL}/admin/dailyreport/generate-csvfile?page=${page}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+//to get admin wallet
+export const getWalletPoint = async (token) => {
+  try {
+    const response = await axios.get(
+      `${BASE_URL}/admin/wallet`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+//dashboard points
+export const getDashboardPoint = async (token) => {
+  try {
+    const response = await axios.get(
+      `${BASE_URL}/admin/vendor/point/dashboard`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+//dashboard graph data for admin
+export const getDashboardGraph = async (token) => {
+  try {
+    const response = await axios.get(
+      `${BASE_URL}/admin/payment/month-data/amount`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+//dashboard graph data for vendor
+export const getDashboardGraphVendor = async (token) => {
+  try {
+    const response = await axios.get(
+      `${BASE_URL}/admin/payment/coupon/month-data`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+//search pending vendor Name
+export const searchName = async (name,page,token) => {
+  try {
+    const response = await axios.get(
+      `${BASE_URL}/admin/vendor/pending/user/${name}?page=${page}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+//search valid vendor Name
+export const searchValidVendor = async (name,page,token) => {
+  try {
+    const response = await axios.get(
+      `${BASE_URL}/admin/vendor/valid/${name}?page=${page}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+//search vendor Name
+export const searchProductVendor = async (name,page,token) => {
+  try {
+    const response = await axios.get(
+      `${BASE_URL}/admin/product/admin/product/${name}?page=${page}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+//notification Count
+export const notificationCount = async (token) => {
+  try {
+    const response = await axios.get(
+      `${BASE_URL}/notification/unread-count`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+//notification Count
+export const notificationRead = async (token) => {
+  try {
+    const response = await axios.put(
+      `${BASE_URL}/notification/mark-as-read`,null,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
     return response;
   } catch (error) {
     throw error;

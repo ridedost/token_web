@@ -1,18 +1,20 @@
-import React from "react";
-import "./index.css";
-import { FaUsers } from "react-icons/fa";
-import { LuLayers, LuTag, LuBriefcase } from "react-icons/lu";
-import GraphVendor from "../../assets/graph-vendor.svg";
-import VectorPoints from "../../assets/header/vector-points.svg";
-import SalesGraph from "../../assets/sales-graph.svg";
-import Bars_3 from "../../assets/bars/bars_3.svg";
-import Bars_4 from "../../assets/bars/bars_4.svg";
-import Bars_5 from "../../assets/bars/bars_5.svg";
-import Bars_6 from "../../assets/bars/bars_6.svg";
-import Bars_7 from "../../assets/bars/bars_7.svg";
-import VendorsGroup from "../../assets/vendors-group.svg";
+/** @format */
 
-const Cards = ({ data }) => {
+import React from 'react';
+import './index.css';
+import { FaUsers } from 'react-icons/fa';
+import { LuLayers, LuTag, LuBriefcase } from 'react-icons/lu';
+import GraphVendor from '../../assets/graph-vendor.svg';
+import VectorPoints from '../../assets/header/vector-points.svg';
+import SalesGraph from '../../assets/sales-graph.svg';
+import Bars_3 from '../../assets/bars/bars_3.svg';
+import Bars_4 from '../../assets/bars/bars_4.svg';
+import Bars_5 from '../../assets/bars/bars_5.svg';
+import Bars_6 from '../../assets/bars/bars_6.svg';
+import Bars_7 from '../../assets/bars/bars_7.svg';
+import VendorsGroup from '../../assets/vendors-group.svg';
+
+const Cards = ({ totalCoupons, totalVendors, max, data, sales }) => {
   const dataPoints = [70, 50, 90, 30, 60];
   return (
     <React.Fragment>
@@ -92,7 +94,7 @@ const Cards = ({ data }) => {
             <span className="cards-para">Coupons</span>
           </div>
           <div className="cards-numbers">
-            <span className="cards-value">158.7</span>
+            <span className="cards-value">{totalCoupons || 0}</span>
           </div>
           <div className="coupons-container">
             <img src={Bars_3} />
@@ -112,7 +114,7 @@ const Cards = ({ data }) => {
             <div className="cards-para-div">
               <span className="cards-para">New Vendors</span>
               <div className="cards-numbers">
-                <span className="cards-value">1,587</span>
+                <span className="cards-value">{totalVendors || 0}</span>
               </div>
             </div>
             <div className="graph-zigzag">
@@ -130,7 +132,9 @@ const Cards = ({ data }) => {
             <div className="cards-para-div">
               <span className="cards-para">Points</span>
               <div className="cards-numbers">
-                <span className="cards-value">RD 350.40</span>
+                <span className="cards-value">
+                  RD {max.toString().slice(0, 5) || 0}
+                </span>
               </div>
             </div>
           </div>
@@ -142,7 +146,9 @@ const Cards = ({ data }) => {
             <div className="cards-para-div">
               <span className="sales-para">Sales</span>
               <div className="cards-numbers">
-                <span className="cards-value">$540.50</span>
+                <span className="cards-value">
+                  ₹{sales.toString().slice(0, 5) || 0}
+                </span>
               </div>
               <div className="graph-zigzag-sales">
                 <img src={SalesGraph} />

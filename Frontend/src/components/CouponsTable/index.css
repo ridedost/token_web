@@ -1,3 +1,5 @@
+/** @format */
+
 .alignItems {
   display: flex;
   align-items: center;
@@ -7,7 +9,7 @@
   width: 280px;
   background: #dae4f6;
   height: 55px;
-  opacity: 0.96;
+  opacity: 0.8;
   margin-left: 7px;
 }
 
@@ -30,4 +32,10 @@
   padding: 15px;
   color: #fd3737;
   font-weight: 500;
+}
+
+@media (max-width: 425px) {
+  .redeemed {
+    width: 205px;
+  }
 }

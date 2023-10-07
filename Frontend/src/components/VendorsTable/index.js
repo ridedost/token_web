@@ -13,6 +13,7 @@ import { AiOutlineMail } from "react-icons/ai";
 import ViewAllVendorsPoupop from "../ViewAllVendorsPoupop";
 
 const VendorsTable = ({ adminVendors, fetchAllVendorsList }) => {
+  console.warn(adminVendors)
   return (
     <React.Fragment>
       <div className="list-heading">

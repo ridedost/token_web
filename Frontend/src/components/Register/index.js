@@ -9,7 +9,7 @@ import { toast } from "react-toastify";
 
 const Register = () => {
   const mobileNumber = useSelector((state) => state.mobileNumber.number);
-  // console.log(mobileNumber);
+  // console.warn(mobileNumber);
   const convertedNumber = mobileNumber.replace("+91", "");
   const [user, setUser] = useState({
     mobile: "",

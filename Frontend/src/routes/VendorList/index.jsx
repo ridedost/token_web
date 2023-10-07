@@ -1,80 +1,97 @@
-import React, { useState, useEffect } from "react";
-import "./index.css";
-import { AiOutlineLeft, AiOutlineRight } from "react-icons/ai";
+/** @format */
+
+import React, { useState, useEffect } from 'react';
+import './index.css';
 import {
-  MdOutlineThumbUpOffAlt,
-  MdOutlineThumbDownOffAlt,
-  MdDeleteOutline,
-} from "react-icons/md";
-import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
-import { getAllVendors, vendorDelete } from "../../Api/adminApi";
-import { vendorsList } from "../../Api/userApi";
-import User from "../../assets/header/user.svg";
-import { setFetching } from "../../redux/reducer/fetching";
-import { useDispatch } from "react-redux";
-import { toast } from "react-toastify";
+  getAllVendorsValid,
+  suspendVendor,
+  searchValidVendor,
+} from '../../Api/adminApi';
+import { HiOutlineSearch } from 'react-icons/hi';
+import {
+  vendorsList,
+  getAllProductForPerticularVendor,
+} from '../../Api/userApi';
+import User from '../../assets/header/user.svg';
+import { setFetching } from '../../redux/reducer/fetching';
+import { useDispatch } from 'react-redux';
+import { toast } from 'react-toastify';
+import Pagination from '../../components/Pagination';
+import { IndexFunction } from '../../utils/IndexFunction';
+import jwtDecode from 'jwt-decode';
+import ViewAllProductsPoupop from '../../components/ViewAllProductsPoupop';
 
 const VendorList = () => {
   const [currentPage, setCurrentPage] = useState(1);
-  const [selectedOption, setSelectedOption] = useState("");
+  const [totalPages, setTotalPages] = useState(1);
+  const [selectedOption, setSelectedOption] = useState('');
   const [vendors, setVendors] = useState([]);
   const [vendorsLists, setVendorsLists] = useState([]);
+  const [routes, setRoutes] = useState(false);
+  const [products, setProducts] = useState([]);
+  const [userId, setUserId] = useState('');
+  const [showProdusts, setShowProdusts] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
   const itemsPerPage = 8;
 
   // Define 'role' here
-  const maintoken = localStorage.getItem("auth_token");
+  const maintoken = localStorage.getItem('auth_token');
   const role = maintoken.charAt(maintoken.length - 1);
 
   const dispatch = useDispatch();
 
   useEffect(() => {
-    document.title = "Vendors List";
-    fetchVendors();
-  }, []);
+    document.title = 'Vendors List';
 
-  const fetchVendors = async () => {
-    // Remove 'const role = ...' from here
+    fetchVendors(currentPage);
+  }, [currentPage]);
+
+  const fetchVendors = async (currentPage) => {
     const token = maintoken.slice(0, -1);
     dispatch(setFetching(true));
 
     try {
-      if (role === "1") {
-        const response = await getAllVendors(token);
+      if (role === '1') {
+        const response = await getAllVendorsValid(currentPage, token);
         if (response.status === 200) {
-          const data = response.data.vendors;
-          setVendors(data);
+          console.warn(response.data);
+          setVendors(response.data.vendorsList);
+          setTotalPages(response.data.totalPages);
+          setRoutes(true);
           setVendorsLists([]); // Reset vendorsList in case it was previously set
         } else {
-          console.error("Error fetching vendors:", response);
+          console.error('Error fetching vendors:', response);
           setVendors([]);
         }
-      } else if (role === "2") {
-        const response = await vendorsList(token);
+      } else if (role === '2') {
+        const response = await getAllVendorsValid(currentPage, token);
         if (response.status === 200) {
-          const data = response.data.Admins;
-          setVendorsLists(data);
+          setVendorsLists(response.data.vendorsList);
+          setTotalPages(response.data.totalPages);
+          setRoutes(true);
           setVendors([]); // Reset vendors in case it was previously set
         } else {
-          console.error("Error fetching vendors:", response);
+          console.error('Error fetching vendors:', response);
           setVendorsLists([]);
         }
-      } else if (role === "3") {
-        const response = await vendorsList(token);
+      } else if (role === '3') {
+        const response = await vendorsList(currentPage, token);
         if (response.status === 200) {
-          const data = response.data.Admins;
-          setVendorsLists(data);
+          setVendorsLists(response.data.Admins);
+          setTotalPages(response.data.totalPages);
+          setRoutes(true);
           setVendors([]); // Reset vendors in case it was previously set
         } else {
-          console.error("Error fetching vendors:", response);
+          console.error('Error fetching vendors:', response);
           setVendorsLists([]);
         }
       } else {
-        console.error("Invalid role:", role);
+        console.error('Invalid role:', role);
         setVendors([]);
         setVendorsLists([]);
       }
     } catch (error) {
-      console.error("Error fetching vendors:", error);
+      console.error('Error fetching vendors:', error);
       setVendors([]);
       setVendorsLists([]);
     } finally {
@@ -82,39 +99,60 @@ const VendorList = () => {
     }
   };
   // Pagination
-  const lastIndex = currentPage * itemsPerPage;
-  const firstIndex = lastIndex - itemsPerPage;
-  const currentData =
-    role === "1"
-      ? vendors?.slice(firstIndex, lastIndex)
-      : vendorsLists?.slice(firstIndex, lastIndex) || [];
 
-  // Change page
-  const paginate = (pageNumber) => setCurrentPage(pageNumber);
-
-  const handleApprove = (id) => {
-    console.log("Approve", id);
-    // Handle the approval logic here
+  const handleViewProducts = async (id, currentPage) => {
+    // let dataIdValue = this.getAttribute("data-id");
+    // console.log("data-id value:", dataIdValue);
+    // setUserId(id);
+    dispatch(setFetching(true));
+    setShowProdusts(true);
+    const maintoken = localStorage.getItem('auth_token');
+    const role = maintoken.charAt(maintoken.length - 1);
+    const token = maintoken.slice(0, -1);
+    setUserId(id);
+    try {
+      if (role === '3') {
+        const response = await getAllProductForPerticularVendor(
+          id,
+          currentPage,
+          token,
+        );
+        if (response.status === 200) {
+          console.warn(response);
+          setProducts(response.data.product);
+          setTotalPages(response.data.totalPages);
+          dispatch(setFetching(false));
+          // fetchVendors();
+        } else if (response.status === 204) {
+          setProducts([]);
+          fetchVendors();
+          setTotalPages(0);
+        }
+      }
+    } catch (error) {
+      setProducts([]);
+      fetchVendors();
+    } finally {
+      dispatch(setFetching(false));
+    }
   };
 
-  const handleReject = (id) => {
-    console.log("Reject", id);
-    // Handle the rejection logic here
-  };
-
-  const handleDelete = async (id) => {
-    console.log("Delete", id);
-    const maintoken = localStorage.getItem("auth_token");
+  const handleSuspended = async (id) => {
+    console.log('Delete', id);
+    const maintoken = localStorage.getItem('auth_token');
     const role = maintoken.charAt(maintoken.length - 1);
     const token = maintoken.slice(0, -1);
     try {
-      const response = await vendorDelete(id, token);
+      const response = await suspendVendor(id, token);
       // console.warn(response);
       if (response.status === 200) {
-        toast.success("Vendor Deleted Successfully");
-        fetchVendors();
+        toast.success('Vendor Suspended Successfully');
+        // fetchVendors();
       }
-    } catch (error) {}
+    } catch (error) {
+      console.warn(error);
+      toast.error('Internal Server');
+    }
   };
 
   const handleDropdown = (id) => {
@@ -122,7 +160,7 @@ const VendorList = () => {
       prevVendors.map((user) => ({
         ...user,
         show: user._id === id ? !user.show : user.show,
-      }))
+      })),
     );
   };
 
@@ -130,27 +168,95 @@ const VendorList = () => {
     setSelectedOption(event.target.value);
   };
 
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+  const handlePageClick = (page) => {
+    setCurrentPage(page);
+  };
+
+  const pageNumbers = Array.from(
+    { length: totalPages },
+    (_, index) => index + 1,
+  );
+  console.log(products);
+
+  useEffect(() => {
+    const maintoken = localStorage.getItem('auth_token');
+    const role = maintoken.charAt(maintoken.length - 1);
+    const token = maintoken.slice(0, -1);
+    // Function to fetch data based on the search term and current page
+    const handleSearch = async () => {
+      try {
+        const response = await searchValidVendor(
+          searchTerm,
+          currentPage,
+          token,
+        );
+        const { vendorsList, totalPages, message } = response.data;
+        if (message === 'Data not found') {
+          setVendors([]);
+        } else {
+          setVendors(vendorsList);
+          setTotalPages(totalPages);
+        }
+      } catch (error) {
+        console.error('Error fetching vendor data:', error);
+      }
+    };
+
+    handleSearch(); // Call the fetchData function when the component mounts or when searchTerm/currentPage changes.
+  }, [searchTerm, currentPage]);
+
   return (
     <div className="table-subContainer">
-      <h5>Vendors List</h5>
-      <div className="table-main">
+      <div className="justifyBetween">
+        <h5>Vendors List</h5>
+        {role === '3' ? null : (
+          <div className="searchBar">
+            <input
+              type="text"
+              placeholder="Search in vendor list"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+
+            <span id="search">
+              <HiOutlineSearch />
+            </span>
+            {/* <span id="arrow">
+            <VscArrowRight />
+          </span> */}
+          </div>
+        )}
+      </div>
+      <div className="table-main table-main-routes margin_top">
         <div className="table-container">
-          <div className="table-wrapper px-4">
+          <div className="table-wrapper px-4" style={{ height: '68vh' }}>
             <table className="tables">
               <thead className="table-head head-design">
-                {role === "1" && (
-                  <tr className="head-tr" style={{ height: "4rem" }}>
+                {role === '1' && (
+                  <tr className="head-tr" style={{ height: '4rem' }}>
                     <th>Sr. No.</th>
                     <th>Name</th>
                     <th>Email</th>
                     <th>Phone Number</th>
                     <th>Company</th>
-                    <th>Price</th>
+                    {/* <th>Price</th> */}
                     <th>Action</th>
                   </tr>
                 )}
-                {role === "2" && (
-                  <tr className="head-tr" style={{ height: "4rem" }}>
+                {role === '2' && (
+                  <tr className="head-tr" style={{ height: '4rem' }}>
                     <th>Sr. No.</th>
                     <th>Company Name</th>
                     <th>Owner Name</th>
@@ -158,21 +264,26 @@ const VendorList = () => {
                     <th>Email</th>
                   </tr>
                 )}
-                {role === "3" && (
-                  <tr className="head-tr" style={{ height: "4rem" }}>
+                {role === '3' && (
+                  <tr className="head-tr" style={{ height: '4rem' }}>
                     <th>Sr. No.</th>
                     <th>Company Name</th>
                     <th>Owner Name</th>
                     <th>Phone</th>
                     <th>Email</th>
+                    <th>Status</th>
                   </tr>
                 )}
               </thead>
               <tbody className="table-body">
-                {role === "1" && vendors.length > 0 ? (
-                  currentData.map((user, index) => (
+                {role === '1' || vendors?.length > 0 ? (
+                  vendors?.map((user, index) => (
                     <tr className="body-tr" key={index}>
-                      <td>{index + 1}</td>
+                      <td>
+                        {IndexFunction(
+                          (currentPage - 1) * itemsPerPage + index + 1,
+                        )}
+                      </td>
                       <td>
                         <img
                           src={user?.profileImage?.url || User}
@@ -183,7 +294,7 @@ const VendorList = () => {
                       <td>{user.email}</td>
                       <td>{user.phoneNumber}</td>
                       <td>{user.companyName}</td>
-                      <td>{user.cash}</td>
+                      {/* <td>{user.cash}</td> */}
                       <td>
                         <div className="dropdown">
                           <button
@@ -198,83 +309,54 @@ const VendorList = () => {
                           <ul
                             className={`${
                               index >= 7
-                                ? "dropdown-menu drop-up"
-                                : "dropdown-menu drop-down"
+                                ? 'dropdown-menu drop-up'
+                                : 'dropdown-menu drop-down'
                             }`}
                             aria-labelledby="dropdownMenuButton1"
                           >
                             <li>
                               <span
-                                onClick={() => handleDelete(user._id)}
-                                className="dropdown-item dropdown-color-reject"
+                                onClick={() => handleSuspended(user._id)}
+                                className="dropdown-item dropdown-color-pending"
                               >
-                                Delete
+                                Suspend
                               </span>
                             </li>
                           </ul>
                         </div>
-                        {/* <button
-                        className="status-button-delete"
-                        onClick={() => handleDelete(user._id)}
-                      >
-                        <MdDeleteOutline fontSize={18} />
-                        &nbsp;Delete
-                      </button> */}
-                        {/* <div className="status-pending">
-                        <span
-                          className={`d-inline-block dropdown ${
-                            user.show ? "show" : ""
-                          }`}
-                        >
-                          <span
-                            className="status-text-pending"
-                            onClick={() => handleDropdown(user._id)}
-                          >
-                            Action &nbsp;
-                            {user.show ? (
-                              <IoIosArrowUp fontSize={15} />
-                            ) : (
-                              <IoIosArrowDown fontSize={15} />
-                            )}
-                          </span>
-                          {user.show && (
-                            <div
-                              className="dropdown-menu-end dropdown-menu show"
-                              style={{ padding: "13px" }}
-                            >
-                              <div className="status-reject">
-                                <span
-                                  onClick={() => handleDelete(user._id)}
-                                  className="status-text-reject"
-                                >
-                                  Delete
-                                </span>
-                              </div>
-                            </div>
-                          )}
-                        </span>
-                      </div> */}
                       </td>
                     </tr>
                   ))
-                ) : role === "2" && vendorsLists.length > 0 ? (
-                  currentData.map((user, index) => (
-                    <tr className="body-tr" key={index}>
-                      <td>{index + 1}</td>
+                ) : role === '2' && vendorsLists.length > 0 ? (
+                  vendorsLists.map((user, vendorIndex) => (
+                    <tr className="body-tr" key={vendorIndex}>
+                      <td>{vendorIndex + 1}</td>
                       <td>{user.companyName}</td>
                       <td>{user.companyOwner}</td>
                       <td>{user.phoneNumber}</td>
                       <td>{user.email}</td>
                     </tr>
                   ))
-                ) : role === "3" && vendorsLists.length > 0 ? (
-                  currentData.map((user, index) => (
-                    <tr className="body-tr" key={index}>
-                      <td>{index + 1}</td>
+                ) : role === '3' && vendorsLists.length > 0 ? (
+                  vendorsLists.map((user, userIndex) => (
+                    <tr className="body-tr" key={userIndex}>
+                      <td>{userIndex + 1}</td>
                       <td>{user.companyName}</td>
                       <td>{user.companyOwner}</td>
                       <td>{user.phoneNumber}</td>
                       <td>{user.email}</td>
+                      <td>
+                        <div className="status-edit">
+                          <span
+                            onClick={() => {
+                              handleViewProducts(user._id, currentPage);
+                            }}
+                            className="status-text-edit"
+                          >
+                            View Product
+                          </span>
+                        </div>
+                      </td>
                     </tr>
                   ))
                 ) : (
@@ -287,87 +369,25 @@ const VendorList = () => {
               </tbody>
             </table>
           </div>
-        </div>
-        <div className="pagination">
-          {role === "1" && vendors.length > 0 && (
-            <ul className="pagination-list">
-              <li
-                className={`pagination-item ${
-                  currentPage === 1 ? "disabled" : ""
-                }`}
-                onClick={() => currentPage !== 1 && paginate(currentPage - 1)}
-              >
-                <AiOutlineLeft />
-              </li>
-              {Array.from({
-                length: Math.ceil(vendors?.length / itemsPerPage),
-              }).map((_, index) => (
-                <li
-                  key={index}
-                  className={`pagination-item ${
-                    currentPage === index + 1 ? "active" : ""
-                  }`}
-                  onClick={() => paginate(index + 1)}
-                >
-                  {index + 1}
-                </li>
-              ))}
-              <li
-                className={`pagination-item ${
-                  currentPage === Math.ceil(vendors?.length / itemsPerPage)
-                    ? "disabled"
-                    : ""
-                }`}
-                onClick={() =>
-                  currentPage !== Math.ceil(vendors?.length / itemsPerPage) &&
-                  paginate(currentPage + 1)
-                }
-              >
-                <AiOutlineRight />
-              </li>
-            </ul>
-          )}
-          {role === "2" && vendorsLists.length > 0 && (
-            <ul className="pagination-list">
-              <li
-                className={`pagination-item ${
-                  currentPage === 1 ? "disabled" : ""
-                }`}
-                onClick={() => currentPage !== 1 && paginate(currentPage - 1)}
-              >
-                <AiOutlineLeft />
-              </li>
-              {Array.from({
-                length: Math.ceil(vendorsLists?.length / itemsPerPage),
-              }).map((_, index) => (
-                <li
-                  key={index}
-                  className={`pagination-item ${
-                    currentPage === index + 1 ? "active" : ""
-                  }`}
-                  onClick={() => paginate(index + 1)}
-                >
-                  {index + 1}
-                </li>
-              ))}
-              <li
-                className={`pagination-item ${
-                  currentPage === Math.ceil(vendorsLists?.length / itemsPerPage)
-                    ? "disabled"
-                    : ""
-                }`}
-                onClick={() =>
-                  currentPage !==
-                    Math.ceil(vendorsLists?.length / itemsPerPage) &&
-                  paginate(currentPage + 1)
-                }
-              >
-                <AiOutlineRight />
-              </li>
-            </ul>
-          )}
+          <Pagination
+            routes={routes}
+            currentPage={currentPage}
+            totalPages={totalPages}
+            handlePrevPage={handlePrevPage}
+            handleNextPage={handleNextPage}
+            handlePageClick={handlePageClick}
+            pageNumbers={pageNumbers}
+          />
         </div>
       </div>
+      {showProdusts ? (
+        <ViewAllProductsPoupop
+          setShowProdusts={setShowProdusts}
+          products={products}
+          setProducts={setProducts}
+          userId={userId}
+        />
+      ) : null}
     </div>
   );
 };

@@ -1,17 +1,15 @@
-import React, { useState, useEffect, useReducer } from "react";
-import "./index.css";
+/** @format */
+
+import React, { useState, useEffect, useReducer } from 'react';
+import './index.css';
 import {
   AiOutlineLeft,
   AiOutlineRight,
   AiOutlineClockCircle,
-} from "react-icons/ai";
-import {
-  MdOutlineThumbUpOffAlt,
-  MdOutlineThumbDownOffAlt,
-  MdDeleteOutline,
-} from "react-icons/md";
-import { BsHourglassSplit, BsDot } from "react-icons/bs";
-import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
+} from 'react-icons/ai';
+import { HiOutlineSearch } from 'react-icons/hi';
+import { VscArrowRight } from 'react-icons/vsc';
+import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
 
 import {
   getAllVendors,
@@ -20,48 +18,54 @@ import {
   vendorReject,
   vendorDelete,
   adminUpdate,
-} from "../../Api/adminApi";
-import { setFetching } from "../../redux/reducer/fetching";
-import { useDispatch } from "react-redux";
-import { toast } from "react-toastify";
-import User from "../../assets/header/user.svg";
-import EditVendorsModal from "../EditVendorsModal";
+  searchName,
+  suspendVendor,
+} from '../../Api/adminApi';
+import { setFetching } from '../../redux/reducer/fetching';
+import { useDispatch } from 'react-redux';
+import { toast } from 'react-toastify';
+import User from '../../assets/header/user.svg';
+import EditVendorsModal from '../EditVendorsModal';
+import Pagination from '../Pagination';
+import { IndexFunction } from '../../utils/IndexFunction';
 
 const Table = () => {
   const [showEditVendor, setShowEditVendor] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const [vendor, setVendor] = useState({});
+  const [searchTerm, setSearchTerm] = useState('');
   const [editVendors, setEditVendors] = useReducer(
     (state, newState) => ({ ...state, ...newState }),
     {
-      name: "",
-      companyName: "",
-    }
+      name: '',
+      companyName: '',
+    },
   );
-
-  const [editVendorsId, setEditVendorsId] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
+  const [routes, setRoutes] = useState(false);
+  const [editVendorsId, setEditVendorsId] = useState('');
   const [vendors, setVendors] = useState([]);
-  const itemsPerPage = 10;
+  const itemsPerPage = 8;
 
   const dispatch = useDispatch();
 
   useEffect(() => {
-    fetchVendors();
-  }, []);
+    fetchVendors(currentPage);
+  }, [currentPage]);
 
-  const fetchVendors = async () => {
-    const maintoken = localStorage.getItem("auth_token");
+  const fetchVendors = async (currentPage) => {
+    const maintoken = localStorage.getItem('auth_token');
     const role = maintoken.charAt(maintoken.length - 1);
     const token = maintoken.slice(0, -1);
     dispatch(setFetching(true));
     try {
-      const response = await getAllVendors(token);
+      const response = await getAllVendors(currentPage, token);
       if (response.status === 200) {
-        const data = response.data.vendors.map((user) => ({
-          ...user,
-          show: false,
-        }));
+        console.log(response);
+        const data = response.data.vendorsList;
         setVendors(data);
+        setTotalPages(response.data.totalPages);
+        setRoutes(true);
       } else {
         setVendors([]);
       }
@@ -75,118 +79,133 @@ const Table = () => {
   // Pagination
   const lastIndex = currentPage * itemsPerPage;
   const firstIndex = lastIndex - itemsPerPage;
-  const currentData = vendors.slice(firstIndex, lastIndex);
+  const currentData = vendors?.slice(firstIndex, lastIndex);
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   const handleApprove = async (id) => {
-    const maintoken = localStorage.getItem("auth_token");
+    const maintoken = localStorage.getItem('auth_token');
     const role = maintoken.charAt(maintoken.length - 1);
     const token = maintoken.slice(0, -1);
     dispatch(setFetching(true));
     try {
-      if (role === "1") {
+      if (role === '1') {
         const response = await vendorApprove(id, token);
         console.log(response);
         if (response.status === 200) {
           dispatch(setFetching(false));
-          toast.success("Vendors Successfully Approved!");
+          toast.success('Vendors Successfully Approved!');
           fetchVendors();
         }
       }
     } catch (error) {
       dispatch(setFetching(false));
-      toast.error("Vendor not found!");
+      toast.error('Vendor not found!');
     }
     // Handle the approval logic here
   };
 
   const handleReject = async (_id) => {
-    const maintoken = localStorage.getItem("auth_token");
+    const maintoken = localStorage.getItem('auth_token');
     const role = maintoken.charAt(maintoken.length - 1);
     const token = maintoken.slice(0, -1);
 
     dispatch(setFetching(true));
 
     try {
-      if (role === "1") {
+      if (role === '1') {
         const response = await vendorReject(_id, token);
         console.log(response);
         if (response.status === 200) {
           dispatch(setFetching(false));
-          toast.success("Vendors Successfully updated!");
+          toast.success('Vendors Successfully updated!');
           fetchVendors();
         }
       }
     } catch (error) {
       dispatch(setFetching(false));
-      toast.error("vendor not found!");
+      toast.error('vendor not found!');
     }
   };
 
   const handleDelete = async (_id) => {
-    const maintoken = localStorage.getItem("auth_token");
+    const maintoken = localStorage.getItem('auth_token');
     const role = maintoken.charAt(maintoken.length - 1);
     const token = maintoken.slice(0, -1);
 
     dispatch(setFetching(true));
     try {
-      if (role === "1") {
+      if (role === '1') {
         const response = await vendorDelete(_id, token);
         console.log(response);
         if (response.status === 200) {
           dispatch(setFetching(false));
-          toast.success("Vendors Successfully Deleted!");
+          toast.success('Vendors Successfully Deleted!');
           fetchVendors();
         }
       }
     } catch (error) {
       dispatch(setFetching(false));
-      toast.error("vendor not found!");
+      toast.error('vendor not found!');
     }
   };
 
+  const handleSuespend = async (id) => {
+    console.log('Delete', id);
+    const maintoken = localStorage.getItem('auth_token');
+    const role = maintoken.charAt(maintoken.length - 1);
+    const token = maintoken.slice(0, -1);
+    try {
+      const response = await suspendVendor(id, token);
+      // console.warn(response);
+      if (response.status === 200) {
+        toast.success('Vendor Deleted Successfully');
+        fetchVendors();
+      }
+    } catch (error) {}
+  };
+
   const handleEditVendors = async (id) => {
-    const maintoken = localStorage.getItem("auth_token");
+    const maintoken = localStorage.getItem('auth_token');
     const role = maintoken.charAt(maintoken.length - 1);
     const token = maintoken.slice(0, -1);
 
     dispatch(setFetching(true));
 
     try {
-      if (role === "1") {
+      if (role === '1') {
         // console.log("admin");
         const response = await adminUpdate(id, token, editVendors);
         if (response.status === 200) {
           setShowEditVendor(false);
-          toast.success("Vendor edited successfully!");
+          toast.success('Vendor edited successfully!');
           setShowEditVendor(false);
           fetchVendors();
         } else {
-          toast.error("Error editing Vendors. Please try again later!");
+          toast.error('Error editing Vendors. Please try again later!');
         }
       }
-      if (role === "2") {
+      if (role === '2') {
         // console.log("vendor");
         const response = await vendorUpdate(id, token, editVendors);
         if (response.status === 200) {
           setShowEditVendor(false);
-          toast.success("Vendor edited successfully!");
+          toast.success('Vendor edited successfully!');
           setShowEditVendor(false);
           fetchVendors();
         } else {
-          toast.error("Error editing Vendors. Please try again later!");
+          toast.error('Error editing Vendors. Please try again later!');
         }
       }
     } catch (error) {
-      toast.error("Error editing Vendors. Please try again later!");
+      toast.error('Error editing Vendors. Please try again later!');
       setShowEditVendor(false);
     } finally {
       dispatch(setFetching(false));
-      setEditVendorsId("");
+      setEditVendorsId('');
       setEditVendors({
-        name: "",
-        companyName: "",
+        name: '',
+        companyName: '',
       });
       setShowEditVendor(false);
     }
@@ -197,7 +216,7 @@ const Table = () => {
       prevVendors.map((user) => ({
         ...user,
         show: user._id === id ? !user.show : user.show,
-      }))
+      })),
     );
   };
 
@@ -211,14 +230,76 @@ const Table = () => {
     setShowEditVendor(true);
   };
 
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+  const handlePageClick = (page) => {
+    setCurrentPage(page);
+  };
+
+  const pageNumbers = Array.from(
+    { length: totalPages },
+    (_, index) => index + 1,
+  );
+
+  useEffect(() => {
+    const maintoken = localStorage.getItem('auth_token');
+    const role = maintoken.charAt(maintoken.length - 1);
+    const token = maintoken.slice(0, -1);
+    // Function to fetch data based on the search term and current page
+    const handleSearch = async () => {
+      try {
+        const response = await searchName(searchTerm, currentPage, token);
+        const { vendorsList, totalPages, message } = response.data;
+        if (message === 'Data not found') {
+          setVendors([]);
+        } else {
+          setVendors(vendorsList);
+          setTotalPages(totalPages);
+        }
+      } catch (error) {
+        console.error('Error fetching vendor data:', error);
+      }
+    };
+
+    handleSearch(); // Call the fetchData function when the component mounts or when searchTerm/currentPage changes.
+  }, [searchTerm, currentPage]);
+
   return (
     <>
-      <div className="table-main">
+      <div className="justifyBetween">
+        <h5>Manage Team</h5>
+        <div className="searchBar">
+          <input
+            type="text"
+            placeholder="Search in manage team"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+
+          <span id="search">
+            <HiOutlineSearch />
+          </span>
+          {/* <span id="arrow">
+            <VscArrowRight />
+          </span> */}
+        </div>
+      </div>
+      <div className="table-main table-main-routes margin_top">
         <div className="table-container">
-          <div className="table-wrapper px-4">
+          <div className="table-wrapper px-4" style={{ height: '68vh' }}>
             <table className="tables">
               <thead className="table-head head-design">
-                <tr className="head-tr" style={{ height: "4rem" }}>
+                <tr className="head-tr" style={{ height: '4rem' }}>
                   <th>Sr. No.</th>
                   <th>Name</th>
                   <th>Email</th>
@@ -229,13 +310,17 @@ const Table = () => {
                 </tr>
               </thead>
               <tbody className="table-body">
-                {vendors.length > 0 ? (
-                  currentData.map((user, index) => (
+                {vendors?.length > 0 ? (
+                  vendors.map((user, index) => (
                     <tr className="body-tr" key={index}>
-                      <td>{index + 1}</td>
+                      <td>
+                        {IndexFunction(
+                          (currentPage - 1) * itemsPerPage + index + 1,
+                        )}
+                      </td>
                       <td>
                         <img
-                          src={user?.profileImage?.url || User}
+                          src={user?.profileImage || User}
                           className="rounded-circle header-profile-user "
                         />
                         {user.name}
@@ -244,7 +329,7 @@ const Table = () => {
                       <td>{user.phoneNumber}</td>
                       <td>{user.companyName}</td>
                       <td>
-                        {user.status === "completed" && (
+                        {user.status === 'completed' && (
                           <>
                             <div className="dropdown">
                               <button
@@ -257,17 +342,19 @@ const Table = () => {
                                 Approved &nbsp;
                               </button>
                               <ul
-                                className="dropdown-menu drop-down"
+                                className={`${
+                                  index >= 7
+                                    ? 'dropdown-menu drop-up'
+                                    : 'dropdown-menu drop-down'
+                                }`}
                                 aria-labelledby="dropdownMenuButton1"
                               >
                                 <li>
                                   <span
-                                    onClick={() =>
-                                      handleEditButtonClick(user, user._id)
-                                    }
-                                    className="dropdown-item dropdown-color-edit"
+                                    onClick={() => handleSuespend(user._id)}
+                                    className="dropdown-item dropdown-color-pending"
                                   >
-                                    Edit
+                                    Suspend
                                   </span>
                                 </li>
                                 <div className="dropdown-divider"></div>
@@ -284,7 +371,7 @@ const Table = () => {
                           </>
                         )}
 
-                        {user.status === "pending" && (
+                        {user.status === 'pending' && (
                           <>
                             <div className="dropdown">
                               <button
@@ -322,11 +409,11 @@ const Table = () => {
                           </>
                         )}
 
-                        {user.status === "Reject" && (
+                        {user.status === 'Reject' && (
                           <div className="status-reject">
                             <span
                               className={`d-inline-block dropdown ${
-                                user.show ? "show" : ""
+                                user.show ? 'show' : ''
                               }`}
                             >
                               <span
@@ -343,7 +430,7 @@ const Table = () => {
                               {user.show && (
                                 <div
                                   className="dropdown-menu-end dropdown-menu show"
-                                  style={{ padding: "13px" }}
+                                  style={{ padding: '13px' }}
                                 >
                                   <div className="dropdown-divider"></div>
                                   <div className="status-reject">
@@ -372,46 +459,15 @@ const Table = () => {
               </tbody>
             </table>
           </div>
-        </div>
-        <div className="pagination">
-          {vendors.length > 0 && (
-            <ul className="pagination-list">
-              <li
-                className={`pagination-item ${
-                  currentPage === 1 ? "disabled" : ""
-                }`}
-                onClick={() => currentPage !== 1 && paginate(currentPage - 1)}
-              >
-                <AiOutlineLeft />
-              </li>
-              {Array.from({
-                length: Math.ceil(vendors.length / itemsPerPage),
-              }).map((_, index) => (
-                <li
-                  key={index}
-                  className={`pagination-item ${
-                    currentPage === index + 1 ? "active" : ""
-                  }`}
-                  onClick={() => paginate(index + 1)}
-                >
-                  {index + 1}
-                </li>
-              ))}
-              <li
-                className={`pagination-item ${
-                  currentPage === Math.ceil(vendors.length / itemsPerPage)
-                    ? "disabled"
-                    : ""
-                }`}
-                onClick={() =>
-                  currentPage !== Math.ceil(vendors.length / itemsPerPage) &&
-                  paginate(currentPage + 1)
-                }
-              >
-                <AiOutlineRight />
-              </li>
-            </ul>
-          )}
+          <Pagination
+            routes={routes}
+            currentPage={currentPage}
+            totalPages={totalPages}
+            handlePrevPage={handlePrevPage}
+            handleNextPage={handleNextPage}
+            handlePageClick={handlePageClick}
+            pageNumbers={pageNumbers}
+          />
         </div>
       </div>
       {showEditVendor ? (

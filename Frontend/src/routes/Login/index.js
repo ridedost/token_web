@@ -44,29 +44,34 @@ const Login = () => {
   // console.log(authToken);
 
   useEffect(() => {
+    document.title="Ride Dost"
     localStorage.getItem("auth_token") &&
       navigate("/dashboard", { replace: true });
   }, [navigate, authToken]);
 
-  const isIndianPhoneNumber = (phoneNumber) => {
-    const regex = /^\+91[6-9]\d{9}$/;
-    return regex.test(phoneNumber) && phoneNumber.length >= 10;
-  };
+const isIndianPhoneNumber = (phoneNumber) => {
+  const regex = /^\+91[6-9]\d{9}$/;
+  return regex.test(phoneNumber) && phoneNumber.length === 13;
+};
 
-  const handlePhoneNumberChange = (event) => {
-    const { value } = event.target;
-    let phoneNumber = value.trim(); // Trim whitespace from the phone number
+const handlePhoneNumberChange = (event) => {
+  const { value } = event.target;
+  let phoneNumber = value.trim(); // Trim whitespace from the phone number
 
-    // Remove any existing "+91" country code
-    phoneNumber = phoneNumber.replace("+91", "");
+  // Remove any existing "+91" country code
+  phoneNumber = phoneNumber.replace("+91", "");
 
-    // Add the "+91" country code if the phone number is not empty
-    const formattedPhoneNumber = phoneNumber ? `+91${phoneNumber}` : "";
+  // Limit the phone number to 10 digits
+  phoneNumber = phoneNumber.slice(0, 10);
 
-    setPhoneNumber(formattedPhoneNumber);
-    const isValid = isIndianPhoneNumber(formattedPhoneNumber); // Check validity with country code
-    setIsValid(isValid);
-  };
+  // Add the "+91" country code if the phone number is not empty
+  const formattedPhoneNumber = phoneNumber ? `+91${phoneNumber}` : "";
+
+  setPhoneNumber(formattedPhoneNumber);
+  const isValid = isIndianPhoneNumber(formattedPhoneNumber); // Check validity with country code
+  setIsValid(isValid);
+};
+
 
   const handleOtpChange = (event) => {
     const { value } = event.target;
@@ -99,6 +104,7 @@ const Login = () => {
   // };
 
   const onSignup = async (convertedNumber) => {
+    console.warn(convertedNumber);
     // const formatPh = phoneNumber;
     // const convertedNumber = formatPh.replace("+91", "");
     dispatch(setFetching(true));
@@ -106,22 +112,22 @@ const Login = () => {
       const response = await checkIfUserExists(convertedNumber);
       console.log(response);
       if (response.status === 200) {
-        toast.success(
-          "Congratulations! You have successfully logged in as a User!"
-        );
+        toast.success("Congratulations! You have successfully logged in!");
         const authToken = response.data.token;
         localStorage.setItem(AUTH_TOKEN_KEY, authToken);
         dispatch(setAuthToken(authToken)); // Dispatch the action to update the authToken
         dispatch(loginUser(true));
         dispatch(setFetching(false));
-        if (authToken) {
+         const maintoken = localStorage.getItem("auth_token");
+        const role = maintoken?.charAt(maintoken.length - 1);
+         const token = maintoken?.slice(0, -1);
+         console.warn(role)
+
+        if (authToken ) {
           navigate("/dashboard");
         }
-      }
+}
     } catch (error) {
-      // addToast("User does not exist in the database", {
-      //   appearance: "error",
-      // });
       dispatch(setFetching(false));
       setUser(true);
     }
@@ -134,12 +140,7 @@ const Login = () => {
     try {
       const response = await checkIfAdminExists(convertedNumber);
       if (response.status === 200) {
-        // addToast("Congratulations! You have successfully logged in as Admin!", {
-        //   appearance: "success",
-        // });
-        toast.success(
-          "Congratulations! You have successfully logged in as Admin!"
-        );
+        toast.success("Congratulations! You have successfully logged in!");
         const authToken = response.data.token;
         localStorage.setItem(AUTH_TOKEN_KEY, authToken);
         dispatch(setAuthToken(authToken)); // Dispatch the action to update the authToken
@@ -150,9 +151,7 @@ const Login = () => {
         }
       }
     } catch (error) {
-      // addToast("Admin does not exist in the database", {
-      //   appearance: "error",
-      // });
+      dispatch(setMobileNumber(convertedNumber));
       onSignup(convertedNumber);
     }
   };
@@ -188,9 +187,10 @@ const Login = () => {
     // const convertedNumber = formatPh.replace("+91", "");
     // console.log(formatPh);
     // sendOTP(phoneNumber);
+    
     onLogin(phoneNumber);
   };
-
+console.warn(phoneNumber)
   return (
     <section className="form-body">
       <div className="website-logo">

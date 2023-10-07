@@ -1,0 +1,12 @@
+/** @format */
+
+.no-product {
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.fullWidth {
+  width: 100%;
+}

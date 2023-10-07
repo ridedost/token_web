@@ -1,3 +1,48 @@
+/** @format */
+
 .table-subContainer {
-  height: calc(100vh - 230px);
+  height: calc(100vh - 145px);
+}
+.justifyBetween {
+  display: flex;
+  justify-content: space-between;
+  height: 50px;
+}
+.searchBar {
+  position: relative;
+}
+.searchBar > input {
+  border: 0.81px solid #d5d2dc;
+  border-radius: 10px;
+  width: 300px;
+  height: 45px;
+  padding: 0px 36px;
+  outline: 0;
+}
+
+.searchBar > #search {
+  position: absolute;
+  top: 10px;
+  left: 15px;
+  color: #9691a4;
+}
+.searchBar > #arrow {
+  position: absolute;
+  top: 8px;
+  right: 15px;
+  color: #9691a4;
+}
+
+@media (max-width: 425px) {
+  .justifyBetween {
+    justify-content: space-between;
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
+@media (max-width: 375px) {
+  .searchBar > input {
+    width: 270px;
+  }
 }

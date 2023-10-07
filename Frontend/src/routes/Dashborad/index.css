@@ -276,6 +276,13 @@
 
 /* Responsive breakpoints */
 
+@media 
+(max-width:425px) {
+  .grid-container{
+    justify-content: center;
+  }
+}
+
 @media (max-width: 375px) {
   .cards-padding {
     padding: 15px 0px;

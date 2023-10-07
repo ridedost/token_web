@@ -12,8 +12,8 @@
 .lds-roller {
   display: inline-block;
   position: absolute;
-  top: 50%;
-  left: 48%;
+  top: 48vh;
+  left: 48vw;
   width: 4rem;
   height: 4rem;
 }
@@ -98,9 +98,9 @@
 
 /* media query part */
 @media (max-width: 1024px) {
-  .lds-roller {
+  /* .lds-roller {
     left: 46%;
-  }
+  } */
   .loader-container {
     background-color: rgba(33, 31, 31, 0.79);
     display: flex;
@@ -109,24 +109,30 @@
     z-index: 1056;
   }
 }
+@media (max-width: 992px) {
+  .lds-roller {
+    left: 46vw;
+  }
+}
+
 @media (max-width: 768px) {
   .lds-roller {
-    left: 45%;
+    left: 45vw;
   }
 }
 
 @media (max-width: 425px) {
   .lds-roller {
-    left: 42%;
+    left: 42vw;
   }
 }
 @media (max-width: 375px) {
   .lds-roller {
-    left: 40%;
+    left: 41vw;
   }
 }
 @media (max-width: 320px) {
   .lds-roller {
-    left: 41%;
+    left: 40vw;
   }
 }

@@ -1,3 +1,5 @@
+/** @format */
+
 .check-logo {
   width: 60px;
   height: 60px;
@@ -16,9 +18,32 @@
   justify-content: flex-start;
 }
 
+.modal-height {
+  height: 357px;
+}
+
+.modal-content > input {
+  max-width: 420px;
+  margin-inline: 20px;
+}
+
+.modal-height > button {
+  margin-inline: 20px;
+}
+
 .confirm-text > p {
   font-size: 18px;
   color: #727b8599;
+}
+
+@media (max-width: 500px) {
+  .modal-height > button {
+    margin-inline: 0px;
+  }
+  .modal-content > input {
+    max-width: 420px;
+    margin-inline: 0px;
+  }
 }
 
 @media (max-width: 468px) {
@@ -26,12 +51,24 @@
     height: 245px;
     padding: 55px 10px;
   }
+  .modal-height {
+    height: 357px;
+  }
+}
+
+@media (max-width: 425px) {
+  .modal-height {
+    height: 385px;
+  }
 }
 
 @media (max-width: 375px) {
   .modal-confirm {
     height: 285px;
     padding: 55px 10px;
+  }
+  .modal-height {
+    height: 410px;
   }
 }
 

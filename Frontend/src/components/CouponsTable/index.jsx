@@ -1,17 +1,19 @@
-import React, { useEffect, useState } from "react";
-import { getAllVendors } from "../../Api/adminApi";
-import { vendorsList } from "../../Api/userApi";
+/** @format */
 
-import "./index.css";
-import { setFetching } from "../../redux/reducer/fetching";
-import { useDispatch } from "react-redux";
-import User from "../../assets/header/user.svg";
-import RightArrow from "../../assets/right-arrow-vector.svg";
-import ProfileImg from "../../assets/header/user.svg";
-import Bar from "../../assets/vertical-bar.svg";
-import RedBar from "../../assets/bars/bar-red.svg";
-import { AiOutlineMail } from "react-icons/ai";
-import ViewAllVendorsPoupop from "../ViewAllVendorsPoupop";
+import React, { useEffect, useState } from 'react';
+import { getAllVendors } from '../../Api/adminApi';
+import { vendorsList } from '../../Api/userApi';
+
+import './index.css';
+import { setFetching } from '../../redux/reducer/fetching';
+import { useDispatch } from 'react-redux';
+import User from '../../assets/header/user.svg';
+import RightArrow from '../../assets/right-arrow-vector.svg';
+import ProfileImg from '../../assets/header/user.svg';
+import Bar from '../../assets/vertical-bar.svg';
+import RedBar from '../../assets/bars/bar-red.svg';
+import { AiOutlineMail } from 'react-icons/ai';
+import ViewAllVendorsPoupop from '../ViewAllVendorsPoupop';
 
 const CouponsTable = ({ coupons, fetchAllCouponsList }) => {
   return (
@@ -33,18 +35,22 @@ const CouponsTable = ({ coupons, fetchAllCouponsList }) => {
                   <h4>{coupon.couponCode}</h4>
                   <div className="contact">
                     <span>{coupon.userName}</span> <span>.</span>
-                    <span>&nbsp;{coupon.point} points</span>
+                    <span>
+                      &nbsp;{coupon.point.toString().slice(0, 3)} points
+                    </span>
                   </div>
                 </div>
-                {/* <div className="redeemed">
+                {coupon?.status == 'redeem' ? (
+                  <div className="redeemed">
                     <h5>REDEEMED</h5>
-                  </div> */}
+                  </div>
+                ) : null}
                 {/* <div className="expire">
                     <h5>EXPIRED</h5>
                   </div> */}
               </div>
             ))
-          : ""}
+          : ''}
       </section>
     </React.Fragment>
   );

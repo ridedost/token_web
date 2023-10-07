@@ -1,12 +1,14 @@
+/** @format */
+
 .checkout-page {
   width: 100%;
-  height: 100%;
+  height: 86vh;
   padding-inline: 200px;
 }
 
 .checkout-container {
   width: 100%;
-  height: 100%;
+  height: 86vh;
   box-shadow: var(--box-shadow-color);
   background: var(--color-white);
   padding: 100px 150px;
@@ -27,6 +29,7 @@ form > .phone-number {
   height: 100px;
   display: flex;
   flex-direction: column;
+  position: relative;
 }
 
 .phone-number > label {
@@ -42,7 +45,23 @@ form > .phone-number {
   font-weight: 400;
   padding-inline: 15px;
 }
-
+.phone-number > span {
+  position: absolute;
+  top: 48px;
+  right: 20px;
+  color: #f46b6b;
+  font-size: 25px;
+}
+.amount {
+  position: relative;
+}
+.amount > span {
+  position: absolute;
+  top: 48px;
+  right: 20px;
+  color: #f46b6b;
+  font-size: 25px;
+}
 .mid-input-field {
   display: flex;
   justify-content: space-between;
@@ -125,6 +144,16 @@ form > .phone-number {
   right: 12px;
 }
 
+.checkout-label {
+  position: relative;
+}
+
+.checkout-label > span {
+  position: absolute;
+  top: 5px;
+  color: red;
+}
+
 @media (max-width: 1866px) {
   .checkout-container {
     padding: 45px 120px;
@@ -138,8 +167,8 @@ form > .phone-number {
   .button-container > p {
     padding-top: 20px;
     color: var(--color-antique);
-    font-weight: 400;
-    font-size: initial;
+    font-weight: 200;
+    font-size: 12px;
   }
 }
 

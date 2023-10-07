@@ -1,9 +1,11 @@
+/** @format */
+
 .margin-inline {
   width: fit-content;
 }
 
 .modal-content-table {
-  max-width: 1200px;
+  /* max-width: 1200px;
   width: 100%;
   background-color: var(--color-white);
   padding: 60px 20px;
@@ -11,7 +13,19 @@
   height: 100%;
   border: 0;
   border-radius: 15px;
+  position: relative; */
+  max-width: 80vw;
+  width: 100%;
+  background-color: var(--color-white);
+  padding: 60px 20px 20px 20px;
+  max-height: 69vh;
+  height: 100%;
+  border: 0;
+  border-radius: 15px;
   position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .card-align {

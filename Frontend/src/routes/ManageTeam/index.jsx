@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from "react";
-import Table from "../../components/Table";
-import "./index.css";
-import { getAllVendors } from "../../Api/adminApi";
-import { setFetching } from "../../redux/reducer/fetching";
-import { useDispatch } from "react-redux";
+/** @format */
+
+import React, { useEffect, useState } from 'react';
+import Table from '../../components/Table';
+import './index.css';
+import { getAllVendors } from '../../Api/adminApi';
+import { setFetching } from '../../redux/reducer/fetching';
+import { useDispatch } from 'react-redux';
 
 const ManageTeam = () => {
   // const [vendors, setVendors] = useState([]);
@@ -11,7 +13,7 @@ const ManageTeam = () => {
   // const dispatch = useDispatch();
 
   useEffect(() => {
-    document.title = "Manage Team";
+    document.title = 'Manage Team';
     // fetchVendor();
   }, []);
 
@@ -38,7 +40,7 @@ const ManageTeam = () => {
 
   return (
     <div className="table-subContainer">
-      <h5>Manage Team</h5>
+      {/* <h5>Manage Team</h5> */}
       <Table />
     </div>
   );

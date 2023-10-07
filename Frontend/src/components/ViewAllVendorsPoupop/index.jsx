@@ -1,8 +1,89 @@
-import React from "react";
-import "./index.css";
-import { AiFillCloseCircle } from "react-icons/ai";
+/** @format */
 
-const ViewAllVendorsPoupop = ({ adminVendors, setShowAllVendors }) => {
+import React, { useEffect, useState } from 'react';
+import './index.css';
+import { AiFillCloseCircle } from 'react-icons/ai';
+import Pagination from '../Pagination';
+import { IndexFunction } from '../../utils/IndexFunction';
+import { setFetching } from '../../redux/reducer/fetching';
+import { useDispatch } from 'react-redux';
+import { getAllCoupons, getAllVendorsValid } from '../../Api/adminApi';
+import { vendorsList } from '../../Api/userApi';
+
+const ViewAllVendorsPoupop = ({ setShowAllVendors }) => {
+  const [adminVendors, setAdminVendors] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+
+  const itemsPerPage = 8;
+
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    fetchAllVendorsList(currentPage);
+  }, [currentPage]);
+
+  const fetchAllVendorsList = async (currentPage) => {
+    const maintoken = localStorage.getItem('auth_token');
+    const role = maintoken.charAt(maintoken.length - 1);
+    const token = maintoken.slice(0, -1);
+
+    dispatch(setFetching(true));
+    setShowAllVendors(true);
+    try {
+      if (role === '1') {
+        const response = await getAllVendorsValid(currentPage, token);
+        if (response.status === 200) {
+          setAdminVendors(response?.data.vendorsList);
+          setTotalPages(response.data.totalPages);
+        } else {
+          setAdminVendors([]);
+        }
+      } else if (role === '2') {
+        const response = await getAllVendorsValid(currentPage, token);
+        if (response.status === 200) {
+          setAdminVendors(response?.data.vendorsList);
+          setTotalPages(response.data.totalPages);
+        } else {
+          setAdminVendors([]);
+        }
+      } else if (role === '3') {
+        const response = await vendorsList(currentPage, token);
+        if (response.status === 200) {
+          setAdminVendors(response?.data.Admins);
+          setTotalPages(response.data.totalPages);
+        } else {
+          setAdminVendors([]);
+        }
+      }
+    } catch (error) {
+      setAdminVendors([]);
+    } finally {
+      dispatch(setFetching(false));
+    }
+  };
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+  const handlePageClick = (page) => {
+    setCurrentPage(page);
+  };
+
+  const pageNumbers = Array.from(
+    { length: totalPages },
+    (_, index) => index + 1,
+  );
+
   return (
     <div className="modal">
       <div className="modal-content-table ">
@@ -12,16 +93,19 @@ const ViewAllVendorsPoupop = ({ adminVendors, setShowAllVendors }) => {
         <div
           className="table-main"
           style={{
-            boxShadow: "0px 0px 0px 0px",
-            marginTop: "0px",
-            height: "100%",
+            boxShadow: '0px 0px 0px 0px',
+            marginTop: '0px',
+            height: '100%',
           }}
         >
-          <div className=" margin-inline card-align" style={{ top: "0px" }}>
-            <div className="table-wrapper px-4" style={{ maxHeight: "454px" }}>
+          <div
+            className=" margin-inline card-align"
+            style={{ top: '0px', height: '100%' }}
+          >
+            <div className="table-wrapper px-4" style={{ maxHeight: '52vh' }}>
               <table className="tables">
                 <thead className="table-head head-design">
-                  <tr className="head-tr" style={{ height: "4rem" }}>
+                  <tr className="head-tr" style={{ height: '4rem' }}>
                     <th>Sr. No.</th>
                     <th>Name</th>
                     <th>Email</th>
@@ -34,7 +118,11 @@ const ViewAllVendorsPoupop = ({ adminVendors, setShowAllVendors }) => {
                   {adminVendors?.length > 0 ? (
                     adminVendors?.map((vendor, index) => (
                       <tr className="body-tr" key={index}>
-                        <td>{index + 1}</td>
+                        <td>
+                          {IndexFunction(
+                            (currentPage - 1) * itemsPerPage + index + 1,
+                          )}
+                        </td>
                         <td>{vendor.name}</td>
                         <td>{vendor.email}</td>
                         <td>{vendor.companyName}</td>
@@ -54,6 +142,14 @@ const ViewAllVendorsPoupop = ({ adminVendors, setShowAllVendors }) => {
             </div>
           </div>
         </div>
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          handlePrevPage={handlePrevPage}
+          handleNextPage={handleNextPage}
+          handlePageClick={handlePageClick}
+          pageNumbers={pageNumbers}
+        />
       </div>
     </div>
   );

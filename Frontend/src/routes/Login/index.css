@@ -3,6 +3,7 @@
 }
 
 .website-logo {
+  position: fixed;
   z-index: 1000;
   display: inline-block;
   top: 50%;
@@ -52,6 +53,7 @@ a {
 
 .img-holder {
   width: 550px;
+  position:fixed;
 }
 
 .img-holder {
@@ -147,7 +149,7 @@ a {
 
 .h3,
 h3 {
-  font-size: 1.75rem;
+  font-size: 2vw;
 }
 .h1,
 .h2,
@@ -444,6 +446,13 @@ textarea {
 }
 
 /* media query part  */
+@media (max-width:1885px) {
+  .h3,
+    h3 {
+      font-size: 2vw;
+    }
+}
+
 
 @media (min-width: 993px) {
   .website-logo .logo {
@@ -486,9 +495,9 @@ textarea {
     position: fixed;
   }
 
-  .img-holder {
+  /* .img-holder {
     position: fixed;
-  }
+  } */
   .form-holder .form-content {
     padding: 0px 20px 0px;
   }

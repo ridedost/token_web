@@ -1,3 +1,5 @@
+/** @format */
+
 #page-topbar {
   position: fixed;
   top: 0;
@@ -63,7 +65,7 @@
   transition: 0.3s;
 }
 
-body[data-sidebar="dark"] .logo-dark {
+body[data-sidebar='dark'] .logo-dark {
   display: none;
 }
 
@@ -71,7 +73,7 @@ body[data-sidebar="dark"] .logo-dark {
   line-height: 70px;
 }
 
-body[data-sidebar="dark"] .logo-light {
+body[data-sidebar='dark'] .logo-light {
   display: block;
 }
 
@@ -102,9 +104,9 @@ body[data-sidebar="dark"] .logo-light {
   text-decoration: none;
 }
 
-[type="button"]:not(:disabled),
-[type="reset"]:not(:disabled),
-[type="submit"]:not(:disabled),
+[type='button']:not(:disabled),
+[type='reset']:not(:disabled),
+[type='submit']:not(:disabled),
 button:not(:disabled) {
   cursor: pointer;
 }
@@ -285,8 +287,8 @@ button:not(:disabled) {
 
 .alert-icon {
   position: absolute;
-  top: 10px;
-  left: 20px;
+  top: 4px;
+  left: 18px;
 }
 
 .header-profile-user {

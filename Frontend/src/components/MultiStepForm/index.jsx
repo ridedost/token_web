@@ -1,14 +1,16 @@
-import React, { useState } from "react";
-import "./index.css";
-import { LuCheckCircle } from "react-icons/lu";
-import { addVendor } from "../../Api/adminApi";
-import { setFetching } from "../../redux/reducer/fetching";
-import { useNavigate } from "react-router-dom";
-import Check from "../../assets/check.svg";
-import Circle from "../../assets/blue-circle.svg";
-import Upload from "../../assets/upload-file.svg";
-import Background from "../../assets/submit-background.svg";
+/** @format */
 
+import React, { useState } from 'react';
+import './index.css';
+import { LuCheckCircle } from 'react-icons/lu';
+import { addVendor } from '../../Api/adminApi';
+import { setFetching } from '../../redux/reducer/fetching';
+import { useNavigate } from 'react-router-dom';
+import Check from '../../assets/check.svg';
+import Circle from '../../assets/blue-circle.svg';
+import Upload from '../../assets/upload-file.svg';
+import Background from '../../assets/submit-background.svg';
+import { VscStarFull } from 'react-icons/vsc';
 const MultiStepForm = ({
   currentStep,
   handleChange,
@@ -18,6 +20,8 @@ const MultiStepForm = ({
   handleIdProof,
   handleLogo,
   handleReset,
+  comLogoName,
+  idProofLogo,
 }) => {
   return (
     <>
@@ -28,21 +32,21 @@ const MultiStepForm = ({
               <ul className="twitter-bs-wizard-nav nav nav-pills nav-justified">
                 <li className="nav-item">
                   <a
-                    className={`nav-link ${currentStep === 1 ? "active" : ""}`}
+                    className={`nav-link ${currentStep === 1 ? 'active' : ''}`}
                   >
                     <span className="step-number">1</span>
                   </a>
                 </li>
                 <li className="nav-item">
                   <a
-                    className={`nav-link ${currentStep === 2 ? "active" : ""}`}
+                    className={`nav-link ${currentStep === 2 ? 'active' : ''}`}
                   >
                     <span className="step-number">2</span>
                   </a>
                 </li>
                 <li className="nav-item">
                   <a
-                    className={`nav-link ${currentStep === 3 ? "active" : ""}`}
+                    className={`nav-link ${currentStep === 3 ? 'active' : ''}`}
                   >
                     <span className="step-number">3</span>
                   </a>
@@ -51,11 +55,11 @@ const MultiStepForm = ({
             </div>
           </div>
         </div>
-        <div className="break-line" style={{ marginTop: "25px" }}></div>
+        <div className="break-line" style={{ marginTop: '25px' }}></div>
         <div>
-          {currentStep === 1 ? <h2>Componey Details</h2> : ""}
-          {currentStep === 2 ? <h2>Owner Details</h2> : ""}
-          {currentStep === 3 ? <h2>Submit your quote request</h2> : ""}
+          {currentStep === 1 ? <h2>Componey Details</h2> : ''}
+          {currentStep === 2 ? <h2>Owner Details</h2> : ''}
+          {currentStep === 3 ? <h2>Submit your quote request</h2> : ''}
         </div>
         <form
           className="tab-content twitter-bs-wizard-tab-content"
@@ -66,6 +70,9 @@ const MultiStepForm = ({
             <div>
               <div className="form-row">
                 <div className="form-col">
+                  <label className="add-label">
+                    Company Name &nbsp;<span>*</span>
+                  </label>
                   <input
                     type="text"
                     id="firstName"
@@ -75,8 +82,12 @@ const MultiStepForm = ({
                     onChange={handleChange}
                     required
                   />
+                  {/* <span>*</span> */}
                 </div>
                 <div className="form-col-left">
+                  <label className="add-label">
+                    Company Owner&nbsp;<span>*</span>
+                  </label>
                   <input
                     type="text"
                     id="lastName"
@@ -86,15 +97,19 @@ const MultiStepForm = ({
                     onChange={handleChange}
                     required
                   />
+                  {/* <span>*</span> */}
                 </div>
               </div>
               <div className="form-row">
                 <div className="form-col-left">
+                  <label className="add-label">
+                    Company Logo &nbsp;<span>*</span>
+                  </label>
                   <input
                     type="text"
                     id="firstName"
                     name="logo"
-                    placeholder="Company Logo"
+                    placeholder={comLogoName ? comLogoName : 'Company Logo'}
                     required
                   />
                   <input
@@ -103,11 +118,15 @@ const MultiStepForm = ({
                     name="logo"
                     className="fileChange"
                     onChange={handleLogo}
-                    placeholder="Company Logo"
+                    placeholder={comLogoName ? comLogoName : 'Company Logo'}
                   />
                   <img src={Upload} />
+                  {/* <span>*</span> */}
                 </div>
                 <div className="form-col">
+                  <label className="add-label">
+                    Address &nbsp;<span>*</span>
+                  </label>
                   <input
                     type="text"
                     id="firstName"
@@ -117,12 +136,16 @@ const MultiStepForm = ({
                     onChange={handleChange}
                     required
                   />
+                  {/* <span>*</span> */}
                 </div>
               </div>
               <div className="form-row">
                 <div className="form-col">
+                  <label className="add-label">
+                    Coupon Threshold &nbsp;<span>*</span>
+                  </label>
                   <input
-                    type="text"
+                    type="number"
                     id="firstName"
                     name="thresholdvalue"
                     placeholder="Coupon Threshold"
@@ -130,27 +153,35 @@ const MultiStepForm = ({
                     onChange={handleChange}
                     required
                   />
+                  {/* <span>*</span> */}
                 </div>
                 <div className="form-col-left">
+                  <label className="add-label">
+                    Percentage % &nbsp;<span>*</span>
+                  </label>
                   <input
-                    type="text"
+                    type="number"
                     id=""
-                    style={{ width: "100%" }}
+                    style={{ width: '100%' }}
                     name="presentageValue"
-                    placeholder="Percentage"
+                    placeholder="Percentage %"
                     value={formData.presentageValue}
                     onChange={handleChange}
                     required
                   />
+                  {/* <span>*</span> */}
                 </div>
               </div>
-            </div>
+            </div>,
           )}
           {renderStep(
             2,
             <div>
               <div className="form-row">
                 <div className="form-col">
+                  <label className="add-label">
+                    Owner Name &nbsp;<span>*</span>
+                  </label>
                   <input
                     type="text"
                     id="firstName"
@@ -160,8 +191,12 @@ const MultiStepForm = ({
                     onChange={handleChange}
                     required
                   />
+                  {/* <span>*</span> */}
                 </div>
                 <div className="form-col-left">
+                  <label className="add-label">
+                    Email ID &nbsp;<span>*</span>
+                  </label>
                   <input
                     type="text"
                     id="lastName"
@@ -171,12 +206,16 @@ const MultiStepForm = ({
                     onChange={handleChange}
                     required
                   />
+                  {/* <span>*</span> */}
                 </div>
               </div>
               <div className="form-row">
                 <div className="form-col-left">
+                  <label className="add-label">
+                    Phone Number &nbsp;<span>*</span>
+                  </label>
                   <input
-                    type="text"
+                    type="number"
                     id="lastName"
                     name="phoneNumber"
                     placeholder="Phone Number"
@@ -184,13 +223,17 @@ const MultiStepForm = ({
                     onChange={handleChange}
                     required
                   />
+                  {/* <span>*</span> */}
                 </div>
                 <div className="form-col">
+                  <label className="add-label">
+                    ID Proof &nbsp;<span>*</span>
+                  </label>
                   <input
                     type="text"
                     id="firstName"
                     name="id-proof"
-                    placeholder="ID Proof"
+                    placeholder={idProofLogo ? idProofLogo : 'ID Proof'}
                     required
                   />
                   <input
@@ -199,12 +242,13 @@ const MultiStepForm = ({
                     name="id-proof"
                     className="fileChange"
                     onChange={handleIdProof}
-                    placeholder="ID Proof"
+                    placeholder={idProofLogo ? idProofLogo : 'ID Proof'}
                   />
                   <img src={Upload} />
+                  {/* <span>*</span> */}
                 </div>
               </div>
-            </div>
+            </div>,
           )}
 
           {renderStep(
@@ -226,7 +270,7 @@ const MultiStepForm = ({
                   </button>
                 </div>
               </div>
-            </div>
+            </div>,
           )}
         </form>
       </div>

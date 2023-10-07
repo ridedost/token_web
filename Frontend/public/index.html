@@ -9,7 +9,7 @@
       name="description"
       content="Web site created using create-react-app"
     />
-    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+<link rel="apple-touch-icon" href="./favicon.ico">
     <!--
       manifest.json provides metadata used when your web app is installed on a
       user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
@@ -30,7 +30,14 @@
       work correctly both with client-side routing and a non-root public URL.
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
-    <title>React App</title>
+    <title>Ride Dost</title>
+    <!-- <script src="./socket.io.js"></script> -->
+    <!-- <script>
+     function socketOne (id){
+       var socketIO = io("http://localhost:4000/");
+       socketIO.emit("connected", "Hello123")
+     }
+    </script> -->
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
@@ -51,4 +58,7 @@
     integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
     crossorigin="anonymous"
   ></script>
-</html>
+ 
+  <!-- <script>var socketIO = io("http://localhost:4000/");
+    socketIO.emit("connected", "Hello123");</script> -->
+  </html>

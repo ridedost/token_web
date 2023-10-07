@@ -1,3 +1,5 @@
+/** @format */
+
 .vertical-menu {
   width: 290px;
   z-index: 1000;
@@ -107,7 +109,7 @@
   color: #74788d;
   position: relative;
   font-size: 18px;
-  font-family: "Inter", sans-serif;
+  font-family: 'Inter', sans-serif;
   font-weight: 500;
   display: flex;
   align-items: center;
@@ -148,7 +150,7 @@
   text-transform: uppercase;
   color: var(--color-info-dark);
   font-weight: 600;
-  font-family: "Inter", sans-serif;
+  font-family: 'Inter', sans-serif;
   opacity: 0.5;
 }
 
@@ -292,6 +294,14 @@
   }
   .hide-content {
     padding: 32px 40px;
+  }
+}
+
+@media (max-height: 880px) {
+  .nav-links-container {
+    overflow-y: scroll;
+    height: 100%;
+    max-height: 60vh;
   }
 }
 

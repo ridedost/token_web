@@ -1,3 +1,5 @@
+/** @format */
+
 .form-container {
   box-shadow: var(--box-shadow-color);
   width: 100%;
@@ -23,14 +25,29 @@
   position: relative;
 }
 
+.form-col > span {
+  position: absolute;
+  top: 18px;
+  right: 80px;
+  color: #f46b6b;
+  font-size: 25px;
+}
+
 .form-col-left {
   width: 42%;
   position: relative;
 }
+.form-col-left > span {
+  position: absolute;
+  top: 18px;
+  right: 80px;
+  color: #f46b6b;
+  font-size: 25px;
+}
 
 .form-col > .fileChange {
   position: absolute;
-  top: 0;
+  top: 36px;
   left: 0;
   opacity: 0;
   z-index: 2;
@@ -47,14 +64,14 @@
 
 .form-col > img {
   position: absolute;
-  top: 0;
+  top: 36px;
   right: 0;
   height: 65px;
 }
 
 .form-col-left > .fileChange {
   position: absolute;
-  top: 0;
+  top: 36px;
   left: 0;
   opacity: 0;
   z-index: 2;
@@ -71,7 +88,7 @@
 
 .form-col-left > img {
   position: absolute;
-  top: 0;
+  top: 36px;
   right: 0;
   height: 65px;
 }
@@ -141,12 +158,12 @@
 
   .form-col {
     width: 100%;
-    padding-bottom: 20px;
+    padding-bottom: 12px;
   }
 
   .form-col-left {
     width: 100%;
-    padding-bottom: 20px;
+    padding-bottom: 12px;
   }
 }
 
@@ -178,11 +195,11 @@
 
   .form-col {
     width: 100%;
-    padding-bottom: 20px;
+    padding-bottom: 12px;
   }
 
   .form-col-left {
     width: 100%;
-    padding-bottom: 20px;
+    padding-bottom: 12px;
   }
 }

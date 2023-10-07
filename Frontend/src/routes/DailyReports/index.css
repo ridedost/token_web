@@ -1,12 +1,15 @@
+/** @format */
+
 .report-row {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   flex-direction: row;
   align-items: center;
   padding-inline: 250px;
   margin-bottom: 70px;
   flex-wrap: wrap;
   row-gap: 35px;
+  column-gap: 35px;
 }
 
 .report-col {
@@ -75,6 +78,12 @@
   width: 300px;
 }
 
+@media (max-width: 1866px) {
+  .report-row {
+    padding-inline: 170px;
+  }
+}
+
 @media (max-width: 1850px) {
   .report-row {
     padding-inline: 170px;
@@ -83,18 +92,18 @@
 
 @media (max-width: 1720px) {
   .report-row {
-    padding-inline: 120px;
+    padding-inline: 90px;
   }
 }
 
 @media (max-width: 1600px) {
   .report-row {
-    padding-inline: 70px;
+    padding-inline: 30px;
   }
 }
 @media (max-width: 1500px) {
   .report-row {
-    padding-inline: 30px;
+    padding-inline: 00px;
   }
 }
 
@@ -104,14 +113,30 @@
   }
 }
 
+@media (max-width: 1390px) {
+  .report-row {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}
+
 @media (max-width: 1300px) {
   .report-row {
     flex-wrap: wrap;
-    row-gap: 20px;
   }
 
   .report-col {
-    width: 49%;
+    width: 42%;
+  }
+}
+
+@media (max-width: 1180px) {
+  .report-row {
+    flex-wrap: wrap;
+  }
+
+  .report-col {
+    width: 47%;
   }
 }
 

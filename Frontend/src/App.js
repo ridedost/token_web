@@ -22,9 +22,15 @@ import Checkout from "./routes/Checkout";
 import DailyReports from "./routes/DailyReports";
 import UserDashboard from "./routes/UserDashboard";
 import RejectedRequest from "./routes/RejectedRequests";
+import Suspended from "./routes/Suspended";
 
 function App() {
   const fetching = useSelector((state) => state.fetching);
+  
+  const maintoken = localStorage.getItem("auth_token");
+  const role = maintoken?.charAt(maintoken.length - 1);
+  const token = maintoken?.slice(0, -1);
+  console.warn(role)
 
   return (
     <>
@@ -49,10 +55,9 @@ function App() {
           <Route path="profileinfo" element={<ProfileInfo />} />
           <Route path="checkout" element={<Checkout />} />
           <Route path="dailyreports" element={<DailyReports />} />
-          <Route path="userdashboard" element={<UserDashboard />} />
+          <Route path="suspended" element={<Suspended />} />
         </Route>
         <Route path="/login" element={<Login />} />
-
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </>
@@ -60,3 +65,18 @@ function App() {
 }
 
 export default App;
+//  {role === "1"&& <><Route index element={<Dashboard />} />
+//           <Route path="dashboard" element={<Dashboard />} /></>}
+//           {role === "2"&& <><Route index element={<Dashboard />} />
+//           <Route path="dashboard" element={<Dashboard />} /></>}
+//           {role === "3"&& <><Route index element={<UserDashboard />} /> 
+//           <Route path="userdashboard" element={<UserDashboard />} />
+//           </>}
+
+
+
+
+//  {role === "3"? <><Route index element={<UserDashboard />} /> 
+//           <Route path="userdashboard" element={<UserDashboard />} />
+//           </>:<><Route index element={<Dashboard />} />
+//           <Route path="dashboard" element={<Dashboard />} /></>}

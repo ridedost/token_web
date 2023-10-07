@@ -1,6 +1,8 @@
-import React, { useState } from "react";
-import "./index.css";
-import { MdOutlineDashboard } from "react-icons/md";
+/** @format */
+
+import React, { useState } from 'react';
+import './index.css';
+import { MdOutlineDashboard } from 'react-icons/md';
 import {
   AiOutlineShoppingCart,
   AiOutlineUsergroupAdd,
@@ -8,26 +10,28 @@ import {
   AiOutlineTeam,
   AiOutlineSend,
   AiFillCloseCircle,
-} from "react-icons/ai";
-import { LiaFileInvoiceDollarSolid } from "react-icons/lia";
-import { GrSend, GrClose } from "react-icons/gr";
-import { FaUsers, FaRegHandshake } from "react-icons/fa";
+} from 'react-icons/ai';
+import { LiaFileInvoiceDollarSolid } from 'react-icons/lia';
+import { GrSend, GrClose } from 'react-icons/gr';
+import { FaUsers, FaRegHandshake } from 'react-icons/fa';
 import {
   MdOutlineThumbUp,
   MdOutlineShoppingCartCheckout,
-} from "react-icons/md";
+  MdOutlineAccountBalanceWallet,
+  MdOutlineThumbDownOffAlt,
+} from 'react-icons/md';
 
-import { useSelector } from "react-redux";
-import NavLinks from "../NavLinks";
-import LogoDark from "../../assets/header/rd 1 (1).png";
-import Logout from "../../assets/header/logout-icon.svg";
-import LogoNazoxLight from "../../assets/header/Ride-Dost-Dark.png";
-import { useNavigate } from "react-router-dom";
-import Cancel from "../../assets/cancle-btn.svg";
-import NavLinkSmall from "../NavLinkSmall";
+import { useSelector } from 'react-redux';
+import NavLinks from '../NavLinks';
+import LogoDark from '../../assets/header/rd 1 (1).png';
+import Logout from '../../assets/header/logout-icon.svg';
+import LogoNazoxLight from '../../assets/header/Ride-Dost-Dark.png';
+import { useNavigate } from 'react-router-dom';
+import Cancel from '../../assets/cancle-btn.svg';
+import NavLinkSmall from '../NavLinkSmall';
 
 const VendorSidebar = ({ onLogout, showSidebar, setShowSidebar }) => {
-  const [active, setActive] = useState("");
+  const [active, setActive] = useState('');
 
   const isOpen = useSelector((state) => state.sidebar.isOpen);
   const navigate = useNavigate();
@@ -42,9 +46,9 @@ const VendorSidebar = ({ onLogout, showSidebar, setShowSidebar }) => {
   };
 
   const logout = () => {
-    localStorage.removeItem("auth_token");
+    localStorage.removeItem('auth_token');
     onLogout();
-    navigate("/login");
+    navigate('/login');
     // addToast("Logout Successfully!", {
     //   appearance: "success",
     // });
@@ -52,8 +56,8 @@ const VendorSidebar = ({ onLogout, showSidebar, setShowSidebar }) => {
 
   const navData = [
     {
-      title: "Dashboard",
-      route: "dashboard",
+      title: 'Dashboard',
+      route: 'dashboard',
       Icon: MdOutlineDashboard,
     },
     // {
@@ -72,8 +76,8 @@ const VendorSidebar = ({ onLogout, showSidebar, setShowSidebar }) => {
     //   Icon: LiaFileInvoiceDollarSolid,
     // },
     {
-      title: "Add Vendor",
-      route: "addvendor",
+      title: 'Add Vendor',
+      route: 'addvendor',
       Icon: AiOutlineUsergroupAdd,
     },
     // {
@@ -82,52 +86,62 @@ const VendorSidebar = ({ onLogout, showSidebar, setShowSidebar }) => {
     //   Icon: FaUsers,
     // },
     {
-      title: "Product List",
-      route: "productlist",
+      title: 'Product List',
+      route: 'productlist',
       Icon: AiOutlineShoppingCart,
     },
     {
-      title: "Send Request",
-      route: "sendrequest",
+      title: 'Send Request',
+      route: 'sendrequest',
       Icon: AiOutlineSend,
     },
     {
-      title: " Approval Req.",
-      route: "approvalrequest",
+      title: ' Approval Req.',
+      route: 'approvalrequest',
       Icon: MdOutlineThumbUp,
     },
     {
-      title: "Payment Settle",
-      route: "paymentsettlements",
+      title: 'Rejected Req.',
+      route: 'rejectedrequest',
+      Icon: MdOutlineThumbDownOffAlt,
+    },
+    {
+      title: 'Payment Settle',
+      route: 'paymentsettlements',
       Icon: FaRegHandshake,
     },
     {
-      title: "Checkout",
-      route: "checkout",
+      title: 'Checkout',
+      route: 'checkout',
       Icon: MdOutlineShoppingCartCheckout,
+    },
+    {
+      title: 'Wallet',
+      route: 'wallet',
+      Icon: MdOutlineAccountBalanceWallet,
     },
   ];
 
   return (
     <>
-      <div className={`${isOpen ? "vertical-menu" : "vertical-menu-hide"}`}>
+      <div className={`${isOpen ? 'vertical-menu' : 'vertical-menu-hide'}`}>
         <div className="sidebar-height">
           <div
             className={`${
-              isOpen ? "navbar-brand-box" : "navbar-brand-box-hide"
+              isOpen ? 'navbar-brand-box' : 'navbar-brand-box-hide'
             }`}
           >
             <a className="logo logo-dark">
               {isOpen ? (
                 <span className="logo-lg">
-                  <img src={LogoNazoxLight} alt="" style={{ width: "225px" }} />
+                  <img src={LogoNazoxLight} alt="" style={{ width: '225px' }} />
                 </span>
               ) : (
                 <span className="logo-sm">
                   <img
                     src={LogoDark}
                     alt=""
-                    style={{ width: "55px", height: "37px" }}
+                    style={{ width: '55px', height: '37px' }}
                   />
                 </span>
               )}
@@ -137,8 +151,8 @@ const VendorSidebar = ({ onLogout, showSidebar, setShowSidebar }) => {
             <ul
               className={`${
                 isOpen
-                  ? "metismenu list-unstyled mm-show"
-                  : "metismenu-hide list-unstyled mm-show"
+                  ? 'metismenu list-unstyled mm-show'
+                  : 'metismenu-hide list-unstyled mm-show'
               }`}
             >
               <NavLinks
@@ -150,19 +164,19 @@ const VendorSidebar = ({ onLogout, showSidebar, setShowSidebar }) => {
             </ul>
           </div>
           <div
-            className={`${isOpen ? "logout-section" : "logout-section-hide"}`}
+            className={`${isOpen ? 'logout-section' : 'logout-section-hide'}`}
           >
             <div
               className={`${
-                isOpen ? "logout-alignment" : "logout-alignment-hide"
+                isOpen ? 'logout-alignment' : 'logout-alignment-hide'
               }`}
             >
               <span
                 className="d-flex"
-                style={{ cursor: "pointer" }}
+                style={{ cursor: 'pointer' }}
                 onClick={handleLogout}
               >
-                <span className={`${isOpen ? "logout-text" : "display-none"}`}>
+                <span className={`${isOpen ? 'logout-text' : 'display-none'}`}>
                   Logout
                 </span>
                 <img src={Logout} alt="Logout" />
@@ -183,7 +197,7 @@ const VendorSidebar = ({ onLogout, showSidebar, setShowSidebar }) => {
             </div> */}
             <div className="hide-content">
               {/* <div className="logo-container"> */}
-              <img src={LogoNazoxLight} alt="" style={{ width: "225px" }} />
+              <img src={LogoNazoxLight} alt="" style={{ width: '225px' }} />
               {/* </div> */}
               <span
                 className="cancle-sidebar"
@@ -196,8 +210,8 @@ const VendorSidebar = ({ onLogout, showSidebar, setShowSidebar }) => {
             </div>
             <div className="small-mm-active">
               <ul
-                className={`${"small-metismenu  list-unstyled mm-show mm-active"}`}
-                style={{ width: "280px" }}
+                className={`${'small-metismenu  list-unstyled mm-show mm-active'}`}
+                style={{ width: '280px' }}
               >
                 <NavLinkSmall
                   handleClick={handleClick}
@@ -211,7 +225,7 @@ const VendorSidebar = ({ onLogout, showSidebar, setShowSidebar }) => {
               <div className="logout-alignment">
                 <span
                   className="d-flex"
-                  style={{ cursor: "pointer" }}
+                  style={{ cursor: 'pointer' }}
                   onClick={handleLogout}
                 >
                   <span className="logout-text">Logout</span>
@@ -222,7 +236,7 @@ const VendorSidebar = ({ onLogout, showSidebar, setShowSidebar }) => {
           </div>
         </div>
       ) : (
-        ""
+        ''
       )}
     </>
   );
